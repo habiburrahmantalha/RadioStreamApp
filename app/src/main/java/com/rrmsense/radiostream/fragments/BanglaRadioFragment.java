@@ -10,21 +10,17 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.rrmsense.radiostream.activities.MainActivity;
-import com.rrmsense.radiostream.interfaces.AdapterCallback;
 import com.rrmsense.radiostream.R;
 import com.rrmsense.radiostream.adapters.RadioAdapter;
+import com.rrmsense.radiostream.interfaces.OnPreparedCallback;
 import com.rrmsense.radiostream.interfaces.RecyclerViewClickListener;
 import com.rrmsense.radiostream.models.Radio;
-import com.rrmsense.radiostream.models.RadioPlayerSetting;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -38,7 +34,7 @@ import cz.msebera.android.httpclient.Header;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class BanglaRadioFragment extends Fragment implements AdapterCallback,RecyclerViewClickListener {
+public class BanglaRadioFragment extends Fragment implements RecyclerViewClickListener,OnPreparedCallback {
 
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
@@ -73,6 +69,9 @@ public class BanglaRadioFragment extends Fragment implements AdapterCallback,Rec
                     Radio r = null;
                     try {
                         r = gson.fromJson(response.get(i).toString(), Radio.class);
+                        r.setButtonText("PLAY");
+                        r.setImageGif(false);
+                        r.setImageLoading(false);
                         radios.add(r);
                         Log.d("JSON",r.getName());
                     } catch (JSONException e) {
@@ -91,39 +90,41 @@ public class BanglaRadioFragment extends Fragment implements AdapterCallback,Rec
         return view;
     }
     void updateAdapter(){
-        mAdapter = new RadioAdapter(radios,getActivity(),this,this);
+        mAdapter = new RadioAdapter(radios,getActivity(),this);
         mRecyclerView.setAdapter(mAdapter);
     }
-    @Override
-    public void onMethodCallback() {
-        View child;
-        for (int i = 0; i < mRecyclerView.getChildCount(); i++) {
-            child = mRecyclerView.getChildAt(i);
-            ((TextView) child.findViewById(R.id.text_title)).setText("t");
-        }
-    }
+
 
     @Override
     public void recyclerViewListClicked(View v, int position) {
         //Log.d("ITEM",mRecyclerView.getChildAt(position).toString());
-        resetRadioStation();
-        radioStations.push(position);
 
-        ((MainActivity)getActivity()).playRadio(radios.get(position).getStreamURL());
+        mAdapter.notifyItemChanged(position);
 
+        if(radios.get(position).getButtonText()=="STOP"){
+            resetRadioStation();
+            radioStations.push(position);
+            ((MainActivity)getActivity()).playRadio(radios.get(position).getStreamURL(),position,this);
+        }
+        else if(radios.get(position).getButtonText()=="PLAY"){
+            ((MainActivity)getActivity()).stopRadio();
+        }
         //Log.d("Interface",position+" "+v.getId()+" "+((TextView) child.findViewById(R.id.text_title)).getText().toString());
-
     }
     public void resetRadioStation(){
         while (!radioStations.isEmpty()){
-            /*
-            View child = radioStations.peek();
-            ((ProgressBar) child.findViewById(R.id.progressBar)).setVisibility(ProgressBar.INVISIBLE);
-            ((ImageView) child.findViewById(R.id.image_gif)).setVisibility(ProgressBar.INVISIBLE);
-            ((Button) child.findViewById(R.id.button_play_stop)).setText("PLAY");
-            */
-            //mAdapter.notifyItemChanged(radioStations.peek());
+            radios.get(radioStations.peek()).setButtonText("PLAY");
+            radios.get(radioStations.peek()).setImageGif(false);
+            radios.get(radioStations.peek()).setImageLoading(false);
+            mAdapter.notifyItemChanged(radioStations.peek());
             radioStations.pop();
         }
+    }
+
+    @Override
+    public void OnPreparedCallback(int position) {
+        radios.get(position).setImageLoading(false);
+        radios.get(position).setImageGif(true);
+        mAdapter.notifyItemChanged(position);
     }
 }

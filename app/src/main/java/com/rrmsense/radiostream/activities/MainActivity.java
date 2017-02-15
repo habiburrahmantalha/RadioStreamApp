@@ -24,6 +24,7 @@ import android.widget.ProgressBar;
 
 import com.rrmsense.radiostream.R;
 import com.rrmsense.radiostream.fragments.BanglaRadioFragment;
+import com.rrmsense.radiostream.interfaces.OnPreparedCallback;
 import com.rrmsense.radiostream.models.RadioPlayerSetting;
 
 import java.util.ArrayDeque;
@@ -35,7 +36,9 @@ public class MainActivity extends AppCompatActivity
 
     private static final int FRAGMENT_BANGLA_RADIO = 1;
     public MediaPlayer mediaPlayer;
-    public View radioView;
+    OnPreparedCallback onPreparedCallback;
+    int position;
+
 
 
     @Override
@@ -147,12 +150,10 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    public void playRadio(String url){
+    public void playRadio(String url, int position, OnPreparedCallback onPreparedCallback){
+        this.position = position;
+        this.onPreparedCallback = onPreparedCallback;
         stopRadio();
-        //radioView = v;
-        //((ProgressBar) radioView.findViewById(R.id.progressBar)).setVisibility(ProgressBar.VISIBLE);
-        //((Button) radioView.findViewById(R.id.button_play_stop)).setText("STOP");
-
         Uri uri = Uri.parse(url);
         mediaPlayer = new MediaPlayer();
         mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
@@ -172,8 +173,7 @@ public class MainActivity extends AppCompatActivity
                 mediaPlayer.stop();
                 mediaPlayer.release();
                 mediaPlayer = null;
-                //((ImageView) radioView.findViewById(R.id.image_gif)).setVisibility(ProgressBar.INVISIBLE);
-                //((Button) radioView.findViewById(R.id.button_play_stop)).setText("PLAY");
+
             }
         } catch(Exception e){
 
@@ -184,6 +184,7 @@ public class MainActivity extends AppCompatActivity
         //((ImageView) radioView.findViewById(R.id.image_gif)).setVisibility(ProgressBar.VISIBLE);
         //((ProgressBar) radioView.findViewById(R.id.progressBar)).setVisibility(ProgressBar.INVISIBLE);
         mediaPlayer.start();
+        onPreparedCallback.OnPreparedCallback(position);
     }
 
     @Override

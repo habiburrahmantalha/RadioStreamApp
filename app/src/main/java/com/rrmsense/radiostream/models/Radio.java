@@ -8,8 +8,12 @@ public class Radio {
     String imageURL;
     String streamURL;
     String name;
+    String buttonText;
+    boolean imageGif;
+    boolean imageLoading;
 
-    public Radio(String imageURL, String streamURL, String name) {
+
+    public Radio(String imageURL, String streamURL,String name) {
         this.imageURL = imageURL;
         this.streamURL = streamURL;
         this.name = name;
@@ -37,5 +41,29 @@ public class Radio {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getButtonText() {
+        return buttonText;
+    }
+
+    public void setButtonText(String buttonText) {
+        this.buttonText = buttonText;
+    }
+
+    public boolean isImageGif() {
+        return imageGif;
+    }
+
+    public void setImageGif(boolean imageGif) {
+        this.imageGif = imageGif;
+    }
+
+    public boolean isImageLoading() {
+        return imageLoading;
+    }
+
+    public void setImageLoading(boolean imageLoading) {
+        this.imageLoading = imageLoading;
     }
 }
