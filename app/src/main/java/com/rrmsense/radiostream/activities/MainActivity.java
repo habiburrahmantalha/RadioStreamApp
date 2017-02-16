@@ -7,9 +7,13 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -23,9 +27,12 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 
 import com.rrmsense.radiostream.R;
+import com.rrmsense.radiostream.adapters.ViewPagerAdapter;
 import com.rrmsense.radiostream.fragments.BanglaRadioFragment;
+import com.rrmsense.radiostream.fragments.ViewPagerFragment;
 import com.rrmsense.radiostream.interfaces.OnPreparedCallback;
 import com.rrmsense.radiostream.models.RadioPlayerSetting;
+import com.rrmsense.radiostream.models.SelectFragment;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
@@ -34,10 +41,13 @@ public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, MediaPlayer.OnBufferingUpdateListener, MediaPlayer.OnPreparedListener {
 
 
-    private static final int FRAGMENT_BANGLA_RADIO = 1;
+
     public MediaPlayer mediaPlayer;
     OnPreparedCallback onPreparedCallback;
     int position;
+    ViewPager viewPager;
+    ViewPagerAdapter viewPagerAdapter;
+    TabLayout tabLayout;
 
 
 
@@ -68,7 +78,34 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
 
-        openFragment(FRAGMENT_BANGLA_RADIO);
+        //openFragment(SelectFragment.FRAGMENT_VIEW_PAGER);
+        tabLayout = (TabLayout) findViewById(R.id.tab_layout);
+        tabLayout.addTab(tabLayout.newTab().setText("Bangla Radio Station"));
+        tabLayout.addTab(tabLayout.newTab().setText("Recent Activity"));
+        tabLayout.addTab(tabLayout.newTab().setText("Favourites"));
+
+        tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
+
+        viewPager = (ViewPager) findViewById(R.id.view_pager);
+        viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
+        viewPager.setAdapter(viewPagerAdapter);
+        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                viewPager.setCurrentItem(tab.getPosition());
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
 
     }
 
@@ -131,23 +168,18 @@ public class MainActivity extends AppCompatActivity
 
     public void openFragment(int fragmentID){
         FragmentManager fragmentManager = getSupportFragmentManager();
-
         Fragment fragment = null;
-        Bundle bundle = new Bundle();
-
         switch (fragmentID){
-            case FRAGMENT_BANGLA_RADIO:
-
-                fragment = new BanglaRadioFragment();
-
+            case SelectFragment.FRAGMENT_VIEW_PAGER:
+                fragment = new ViewPagerFragment();
                 break;
-
-
+            case SelectFragment.FRAGMENT_BANGLA_RADIO:
+                fragment = new BanglaRadioFragment();
+                break;
         }
         fragmentManager.beginTransaction()
                 .replace(R.id.fragment_holder,fragment)
                 .commit();
-
     }
 
     public void playRadio(String url, int position, OnPreparedCallback onPreparedCallback){

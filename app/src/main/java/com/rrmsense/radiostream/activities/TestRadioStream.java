@@ -35,9 +35,6 @@ public class TestRadioStream extends AppCompatActivity implements View.OnClickLi
         play.setOnClickListener(this);
         pause.setOnClickListener(this);
         pause.setEnabled(false);
-
-
-
     }
 
     @Override

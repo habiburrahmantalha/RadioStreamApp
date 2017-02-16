@@ -8,9 +8,10 @@ public class Radio {
     String imageURL;
     String streamURL;
     String name;
-    String buttonText;
+    boolean buttonPlaying;
     boolean imageGif;
     boolean imageLoading;
+    boolean buttonFavourite;
 
 
     public Radio(String imageURL, String streamURL,String name) {
@@ -43,12 +44,12 @@ public class Radio {
         this.name = name;
     }
 
-    public String getButtonText() {
-        return buttonText;
+    public boolean isButtonPlaying() {
+        return buttonPlaying;
     }
 
-    public void setButtonText(String buttonText) {
-        this.buttonText = buttonText;
+    public void setButtonPlaying(boolean buttonPlaying) {
+        this.buttonPlaying = buttonPlaying;
     }
 
     public boolean isImageGif() {
@@ -65,5 +66,13 @@ public class Radio {
 
     public void setImageLoading(boolean imageLoading) {
         this.imageLoading = imageLoading;
+    }
+
+    public boolean isButtonFavourite() {
+        return buttonFavourite;
+    }
+
+    public void setButtonFavourite(boolean buttonFavourite) {
+        this.buttonFavourite = buttonFavourite;
     }
 }

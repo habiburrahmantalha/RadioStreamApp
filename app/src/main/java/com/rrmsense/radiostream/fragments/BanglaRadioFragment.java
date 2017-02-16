@@ -10,7 +10,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.loopj.android.http.AsyncHttpClient;
@@ -69,10 +68,12 @@ public class BanglaRadioFragment extends Fragment implements RecyclerViewClickLi
                     Radio r = null;
                     try {
                         r = gson.fromJson(response.get(i).toString(), Radio.class);
-                        r.setButtonText("PLAY");
+                        r.setButtonPlaying(false);
                         r.setImageGif(false);
                         r.setImageLoading(false);
+                        r.setButtonFavourite(false);
                         radios.add(r);
+                        Log.d("IMAGE_URL", response.get(i).toString());
                         Log.d("JSON",r.getName());
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -101,19 +102,19 @@ public class BanglaRadioFragment extends Fragment implements RecyclerViewClickLi
 
         mAdapter.notifyItemChanged(position);
 
-        if(radios.get(position).getButtonText()=="STOP"){
+        if(radios.get(position).isButtonPlaying()){
             resetRadioStation();
             radioStations.push(position);
             ((MainActivity)getActivity()).playRadio(radios.get(position).getStreamURL(),position,this);
         }
-        else if(radios.get(position).getButtonText()=="PLAY"){
+        else if(!radios.get(position).isButtonPlaying()){
             ((MainActivity)getActivity()).stopRadio();
         }
         //Log.d("Interface",position+" "+v.getId()+" "+((TextView) child.findViewById(R.id.text_title)).getText().toString());
     }
     public void resetRadioStation(){
         while (!radioStations.isEmpty()){
-            radios.get(radioStations.peek()).setButtonText("PLAY");
+            radios.get(radioStations.peek()).setButtonPlaying(false);
             radios.get(radioStations.peek()).setImageGif(false);
             radios.get(radioStations.peek()).setImageLoading(false);
             mAdapter.notifyItemChanged(radioStations.peek());

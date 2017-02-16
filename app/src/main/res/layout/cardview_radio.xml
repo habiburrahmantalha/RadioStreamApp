@@ -17,14 +17,16 @@
 
         <ImageView
             android:id="@+id/image_radio"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
-            />
+            android:layout_weight="1"/>
+
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:layout_weight="2">
 
             <TextView
                 android:id="@+id/text_title"
@@ -34,33 +36,44 @@
                 android:text="R"
                 android:textSize="22sp"
                 android:textStyle="bold" />
-                <RelativeLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content">
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
                 <Button
                     android:id="@+id/button_play_stop"
+                    style="@style/Widget.AppCompat.Button.Borderless"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    />
+                    android:drawableTint="@color/gray"
+                    android:textSize="0sp" />
+
                 <ProgressBar
+                    android:id="@+id/progressBar"
                     style="?android:attr/progressBarStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:id="@+id/progressBar"
                     android:layout_toRightOf="@id/button_play_stop"
                     android:layout_weight="1" />
 
-                    <ImageView
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
-                        android:id="@+id/image_gif"
-                        android:visibility="invisible"
-                        android:layout_toRightOf="@id/progressBar"/>
-                </RelativeLayout>
+                <ImageView
+                    android:id="@+id/image_gif"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_toRightOf="@id/progressBar"
+                    android:visibility="invisible" />
+
+                <Button
+                    android:id="@+id/button_favourite"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toRightOf="@id/image_gif"
+                    android:foregroundTint="@color/red"
+                    style="@style/Widget.AppCompat.Button.Borderless" />
+            </RelativeLayout>
 
         </LinearLayout>
-
-
 
 
     </LinearLayout>
