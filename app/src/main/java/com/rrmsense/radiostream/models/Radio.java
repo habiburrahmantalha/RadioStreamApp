@@ -8,16 +8,31 @@ public class Radio {
     String imageURL;
     String streamURL;
     String name;
+    String id;
     boolean buttonPlaying;
     boolean imageEqualizer;
     boolean imageLoading;
     boolean buttonFavourite;
 
+    public Radio(){
 
-    public Radio(String imageURL, String streamURL,String name) {
+    }
+    public Radio(String imageURL, String streamURL,String name,String id) {
         this.imageURL = imageURL;
         this.streamURL = streamURL;
         this.name = name;
+        this.id = id;
+    }
+
+    public Radio(String imageURL, String streamURL, String name,String id, boolean buttonPlaying, boolean imageEqualizer, boolean imageLoading, boolean buttonFavourite) {
+        this.imageURL = imageURL;
+        this.streamURL = streamURL;
+        this.name = name;
+        this.id = id;
+        this.buttonPlaying = buttonPlaying;
+        this.imageEqualizer = imageEqualizer;
+        this.imageLoading = imageLoading;
+        this.buttonFavourite = buttonFavourite;
     }
 
     public String getImageURL() {
@@ -74,5 +89,13 @@ public class Radio {
 
     public void setButtonFavourite(boolean buttonFavourite) {
         this.buttonFavourite = buttonFavourite;
+    }
+
+    public String getID() {
+        return id;
+    }
+
+    public void setID(String id) {
+        this.id = id;
     }
 }

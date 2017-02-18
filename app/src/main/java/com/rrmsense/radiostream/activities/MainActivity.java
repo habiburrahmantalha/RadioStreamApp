@@ -10,9 +10,7 @@ import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.GravityCompat;
-import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -22,28 +20,22 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.ProgressBar;
 
 import com.google.gson.Gson;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.rrmsense.radiostream.R;
 import com.rrmsense.radiostream.adapters.ViewPagerAdapter;
-import com.rrmsense.radiostream.fragments.BanglaRadioFragment;
-import com.rrmsense.radiostream.fragments.ViewPagerFragment;
+import com.rrmsense.radiostream.fragments.RadioFragment;
 import com.rrmsense.radiostream.interfaces.OnPreparedCallback;
 import com.rrmsense.radiostream.models.Radio;
-import com.rrmsense.radiostream.models.RadioPlayerSetting;
 import com.rrmsense.radiostream.models.SelectFragment;
+import com.rrmsense.radiostream.models.Storage;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 
-import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Deque;
 
 import cz.msebera.android.httpclient.Header;
 
@@ -59,6 +51,8 @@ public class MainActivity extends AppCompatActivity
     ViewPagerAdapter viewPagerAdapter;
     TabLayout tabLayout;
     public ArrayList<Radio> radios = new ArrayList<>();
+    public ArrayList<Radio> recentRadios = new ArrayList<>();
+    public ArrayList<Radio> favouriteRadios = new ArrayList<>();
 
 
     @Override
@@ -88,9 +82,19 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         loadRadioStation();
-        //openFragment(SelectFragment.FRAGMENT_VIEW_PAGER);
 
 
+
+
+
+    }
+
+    private void loadFavouriteRadioStation() {
+        favouriteRadios = Storage.getFavourite(getApplicationContext());
+    }
+
+    private void loadRecentRadioStation() {
+        recentRadios = Storage.getRecent(getApplicationContext());
     }
 
     @Override
@@ -132,11 +136,11 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_camera) {
-            // Handle the camera action
+            openFragment(SelectFragment.FRAGMENT_FAVOURITE);
         } else if (id == R.id.nav_gallery) {
-
+            openFragment(SelectFragment.FRAGMENT_RECENT);
         } else if (id == R.id.nav_slideshow) {
-
+            openFragment(SelectFragment.FRAGMENT_BANGLA_RADIO);
         } else if (id == R.id.nav_manage) {
 
         } else if (id == R.id.nav_share) {
@@ -152,15 +156,20 @@ public class MainActivity extends AppCompatActivity
 
     public void openFragment(int fragmentID){
         FragmentManager fragmentManager = getSupportFragmentManager();
-        Fragment fragment = null;
+        Fragment fragment = new RadioFragment();
+        Bundle bundle = new Bundle();
         switch (fragmentID){
-            case SelectFragment.FRAGMENT_VIEW_PAGER:
-                fragment = new ViewPagerFragment();
-                break;
             case SelectFragment.FRAGMENT_BANGLA_RADIO:
-                fragment = new BanglaRadioFragment();
+                bundle.putInt("ID", SelectFragment.FRAGMENT_BANGLA_RADIO);
+                break;
+            case SelectFragment.FRAGMENT_FAVOURITE:
+                bundle.putInt("ID", SelectFragment.FRAGMENT_FAVOURITE);
+                break;
+            case SelectFragment.FRAGMENT_RECENT:
+                bundle.putInt("ID", SelectFragment.FRAGMENT_RECENT);
                 break;
         }
+        fragment.setArguments(bundle);
         fragmentManager.beginTransaction()
                 .replace(R.id.fragment_holder,fragment)
                 .commit();
@@ -168,14 +177,14 @@ public class MainActivity extends AppCompatActivity
 
     public void loadViewPager(){
         tabLayout = (TabLayout) findViewById(R.id.tab_layout);
+
         tabLayout.addTab(tabLayout.newTab().setText("Bangla Radio Station"));
         tabLayout.addTab(tabLayout.newTab().setText("Recent Activity"));
         tabLayout.addTab(tabLayout.newTab().setText("Favourites"));
 
-        tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
-
         viewPager = (ViewPager) findViewById(R.id.view_pager);
-        viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
+        viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager(), 3);
+
         viewPager.setAdapter(viewPagerAdapter);
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
@@ -194,6 +203,13 @@ public class MainActivity extends AppCompatActivity
 
             }
         });
+
+
+
+        viewPager.setCurrentItem(2);
+        //viewPager.setCurrentItem(0);
+
+
     }
 
     public void loadRadioStation(){
@@ -215,13 +231,18 @@ public class MainActivity extends AppCompatActivity
                         r.setImageLoading(false);
                         r.setButtonFavourite(false);
                         radios.add(r);
-                        Log.d("IMAGE_URL", response.get(i).toString());
-                        Log.d("JSON",r.getName());
+                        Storage.saveRadioStation(r,getApplicationContext());
+                        //Log.d("IMAGE_URL", response.get(i).toString());
+                        //Log.d("JSON",r.getName());
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
                 }
+                //openFragment(SelectFragment.FRAGMENT_BANGLA_RADIO);
+                loadRecentRadioStation();
+                loadFavouriteRadioStation();
                 loadViewPager();
+
             }
         });
     }

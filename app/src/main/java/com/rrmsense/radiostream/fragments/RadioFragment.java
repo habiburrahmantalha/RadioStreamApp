@@ -2,7 +2,7 @@ package com.rrmsense.radiostream.fragments;
 
 
 import android.os.Bundle;
-import android.os.Parcelable;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -11,60 +11,73 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.google.gson.Gson;
-import com.loopj.android.http.AsyncHttpClient;
-import com.loopj.android.http.JsonHttpResponseHandler;
 import com.rrmsense.radiostream.activities.MainActivity;
 import com.rrmsense.radiostream.R;
 import com.rrmsense.radiostream.adapters.RadioAdapter;
 import com.rrmsense.radiostream.interfaces.OnPreparedCallback;
 import com.rrmsense.radiostream.interfaces.RecyclerViewClickListener;
 import com.rrmsense.radiostream.models.Radio;
-
-import org.json.JSONArray;
-import org.json.JSONException;
+import com.rrmsense.radiostream.models.SelectFragment;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
 
-import cz.msebera.android.httpclient.Header;
-
 /**
  * A simple {@link Fragment} subclass.
  */
-public class BanglaRadioFragment extends Fragment implements RecyclerViewClickListener,OnPreparedCallback {
+public class RadioFragment extends Fragment implements RecyclerViewClickListener,OnPreparedCallback {
 
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
-    private Parcelable recyclerViewState;
-
+    private static int fragmentID;
 
 
     Deque<Integer> radioStations = new ArrayDeque<>();
     ArrayList<Radio> radios = new ArrayList<>();
-    public BanglaRadioFragment() {
+    public RadioFragment() {
 
     }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Bundle bundle = this.getArguments();
+        //if (bundle != null) {
+            fragmentID = bundle.getInt("ID", SelectFragment.FRAGMENT_BANGLA_RADIO);
+        //}
+        Log.d("ID", String.valueOf(fragmentID));
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_bangla_radio, container, false);
+        View view = inflater.inflate(R.layout.fragment_radio, container, false);
         mRecyclerView = (RecyclerView) view.findViewById(R.id.recycler_view_bangla_radio);
         mLayoutManager = new LinearLayoutManager(getActivity());
         mRecyclerView.setLayoutManager(mLayoutManager);
 
-        recyclerViewState = mRecyclerView.getLayoutManager().onSaveInstanceState();
-        mRecyclerView.getLayoutManager().onRestoreInstanceState(recyclerViewState);
-        //radios.add(new Radio("1","2","3"));
-        //mAdapter = new RadioAdapter(radios,getActivity());
-        //mRecyclerView.setAdapter(mAdapter);
         updateAdapter();
         return view;
     }
     void updateAdapter(){
-        radios = ((MainActivity)getContext()).radios;
+        //Log.d("6ID", String.valueOf(fragmentID));
+        switch (fragmentID){
+            case SelectFragment.FRAGMENT_BANGLA_RADIO:
+                radios = ((MainActivity)getContext()).radios;
+                //Log.d("ID", String.valueOf(fragmentID));
+                break;
+            case SelectFragment.FRAGMENT_FAVOURITE:
+                radios = ((MainActivity)getContext()).favouriteRadios;
+                //Log.d("ID", String.valueOf(fragmentID));
+                break;
+            case SelectFragment.FRAGMENT_RECENT:
+                radios = ((MainActivity)getContext()).recentRadios;
+                //Log.d("ID", String.valueOf(fragmentID));
+                break;
+        }
+
         mAdapter = new RadioAdapter(radios,getActivity(),this);
         mRecyclerView.setAdapter(mAdapter);
     }

@@ -5,7 +5,8 @@ package com.rrmsense.radiostream.models;
  */
 
 public class SelectFragment {
-    public static final int FRAGMENT_VIEW_PAGER = 0;
-    public static final int FRAGMENT_BANGLA_RADIO = 1;
+    public static final int FRAGMENT_BANGLA_RADIO = 0;
+    public static final int FRAGMENT_RECENT = 1;
+    public static final int FRAGMENT_FAVOURITE = 2;
 
 }

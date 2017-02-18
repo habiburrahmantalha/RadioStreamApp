@@ -16,6 +16,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.rrmsense.radiostream.R;
 import com.rrmsense.radiostream.interfaces.RecyclerViewClickListener;
 import com.rrmsense.radiostream.models.Radio;
+import com.rrmsense.radiostream.models.Storage;
 
 import java.util.ArrayList;
 
@@ -66,19 +67,12 @@ public class RadioAdapter extends RecyclerView.Adapter<RadioAdapter.ViewHolder>{
                 holder.button_play.setVisibility(Button.VISIBLE);
                 holder.button_stop.setVisibility(Button.INVISIBLE);
             }
-
         }
-
-
 
         if(radios.get(position).isImageEqualizer())
             holder.image_equalizer.setVisibility(ImageView.VISIBLE);
         else
             holder.image_equalizer.setVisibility(ImageView.INVISIBLE);
-
-
-
-
 
         if(radios.get(position).isButtonFavourite())
             holder.button_favourite.setCompoundDrawablesWithIntrinsicBounds(R.drawable.heart,0,0,0);
@@ -88,11 +82,15 @@ public class RadioAdapter extends RecyclerView.Adapter<RadioAdapter.ViewHolder>{
     }
     @Override
     public int getItemCount() {
-        return radios.size();
+
+        if (radios!= null) {
+
+            return radios.size();
+        }
+        else return 0;
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-
 
         private ImageView image_radio;
         private TextView text_title;
@@ -109,7 +107,7 @@ public class RadioAdapter extends RecyclerView.Adapter<RadioAdapter.ViewHolder>{
             text_title = (TextView) view.findViewById(R.id.text_title);
 
             button_play = (Button) view.findViewById(R.id.button_play);
-            button_play.setCompoundDrawablesWithIntrinsicBounds(R.drawable.play_circle,0,0,0);
+            button_play.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_play_arrow_black_24dp,0,0,0);
             button_play.setOnClickListener(this);
 
             button_stop = (Button) view.findViewById(R.id.button_stop);
@@ -123,10 +121,6 @@ public class RadioAdapter extends RecyclerView.Adapter<RadioAdapter.ViewHolder>{
             //Glide.with(mContext).load("http://www.beyzadogan.com/images/animated-sound-waves11.gif").diskCacheStrategy( DiskCacheStrategy.ALL ).into(image_equalizer);
             button_favourite = (Button) view.findViewById(R.id.button_favourite);
             button_favourite.setOnClickListener(this);
-
-
-
-
 
         }
         @Override
@@ -143,6 +137,7 @@ public class RadioAdapter extends RecyclerView.Adapter<RadioAdapter.ViewHolder>{
                     //button_play.setVisibility(Button.INVISIBLE);
                     //button_stop.setVisibility(Button.VISIBLE);
                     //notifyItemChanged(this.getAdapterPosition());
+                    Storage.saveRecent(radios.get(this.getAdapterPosition()).getID(),mContext);
 
                     break;
                 case R.id.button_stop:
@@ -159,7 +154,7 @@ public class RadioAdapter extends RecyclerView.Adapter<RadioAdapter.ViewHolder>{
                     break;
                 case R.id.button_favourite:
                     //Toast.makeText(mContext,"Favourite",Toast.LENGTH_SHORT).show();
-
+                    Storage.saveFavourite(radios.get(this.getAdapterPosition()).getID(),mContext);
                     radios.get(this.getAdapterPosition()).setButtonFavourite(!radios.get(this.getAdapterPosition()).isButtonFavourite());
                     notifyItemChanged(this.getAdapterPosition());
                     break;

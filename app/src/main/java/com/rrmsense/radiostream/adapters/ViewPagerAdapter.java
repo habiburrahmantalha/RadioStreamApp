@@ -1,15 +1,13 @@
 package com.rrmsense.radiostream.adapters;
 
-import android.content.Context;
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.util.Log;
 
-import com.rrmsense.radiostream.fragments.BanglaRadioFragment;
-import com.rrmsense.radiostream.fragments.FavouriteFragment;
-import com.rrmsense.radiostream.fragments.RecentActivityFragment;
-import com.rrmsense.radiostream.fragments.ViewPagerFragment;
+import com.rrmsense.radiostream.fragments.RadioFragment;
+import com.rrmsense.radiostream.models.SelectFragment;
 
 /**
  * Created by Talha on 2/16/2017.
@@ -26,14 +24,40 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public Fragment getItem(int position) {
+
         switch (position) {
             case 0:
-                return new BanglaRadioFragment();
+                Fragment fragmentBangla = new RadioFragment();
+                Bundle bundleBangla = new Bundle();
+                bundleBangla.putInt("ID", SelectFragment.FRAGMENT_BANGLA_RADIO);
+                fragmentBangla.setArguments(bundleBangla);
+                Log.d("F1", String.valueOf(SelectFragment.FRAGMENT_BANGLA_RADIO));
+                return fragmentBangla;
+
             case 1:
-                return new RecentActivityFragment();
+                Fragment fragmentRecent = new RadioFragment();
+                Bundle bundleRecent = new Bundle();
+                bundleRecent.putInt("ID", SelectFragment.FRAGMENT_RECENT);
+                fragmentRecent.setArguments(bundleRecent);
+                Log.d("F2", String.valueOf(SelectFragment.FRAGMENT_RECENT));
+                return fragmentRecent;
             case 2:
-                return new FavouriteFragment();
+                Fragment fragmentFavourite = new RadioFragment();
+                Bundle bundleFavourite = new Bundle();
+                bundleFavourite.putInt("ID", SelectFragment.FRAGMENT_FAVOURITE);
+                fragmentFavourite.setArguments(bundleFavourite);
+                Log.d("F3", String.valueOf(SelectFragment.FRAGMENT_FAVOURITE));
+                return fragmentFavourite;
+
             default:
+                /*
+                Fragment fragmentDef = new RadioFragment();
+                Bundle bundleDef = new Bundle();
+                bundleDef.putInt("ID", SelectFragment.FRAGMENT_BANGLA_RADIO);
+                fragmentDef.setArguments(bundleDef);
+                return fragmentDef;
+                */
+                Log.d("FD", "Default");
                 return null;
         }
     }
