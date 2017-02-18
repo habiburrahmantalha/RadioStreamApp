@@ -2,7 +2,6 @@ package com.rrmsense.radiostream.adapters;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +12,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.rrmsense.radiostream.R;
 import com.rrmsense.radiostream.interfaces.RecyclerViewClickListener;
 import com.rrmsense.radiostream.models.Radio;
@@ -35,7 +35,6 @@ public class RadioAdapter extends RecyclerView.Adapter<RadioAdapter.ViewHolder>{
     public RadioAdapter(ArrayList<Radio> radios, Context mContext,RecyclerViewClickListener itemListener) {
         this.radios = radios;
         this.mContext = mContext;
-
         this.itemListener = itemListener;
 
     }
@@ -48,30 +47,38 @@ public class RadioAdapter extends RecyclerView.Adapter<RadioAdapter.ViewHolder>{
     public void onBindViewHolder(ViewHolder holder, int position) {
 
         holder.text_title.setText(radios.get(position).getName());
-        holder.button_play_stop.setTag(radios.get(position).getStreamURL());
+
         if(radios.get(position).getImageURL()!="")
-            Glide.with(mContext).load(radios.get(position).getImageURL()).override(300,200).fitCenter().into(holder.image_radio);
+            Glide.with(mContext).load(radios.get(position).getImageURL()).override(300,300).fitCenter().diskCacheStrategy( DiskCacheStrategy.SOURCE ).into(holder.image_radio);
 
+        if(radios.get(position).isImageLoading()){
+            holder.progressBar.setVisibility(ProgressBar.VISIBLE);
+            holder.button_play.setVisibility(Button.INVISIBLE);
+            holder.button_stop.setVisibility(Button.INVISIBLE);
+        }
+        else{
+            holder.progressBar.setVisibility(ProgressBar.INVISIBLE);
+            if(radios.get(position).isButtonPlaying()){
+                holder.button_play.setVisibility(Button.INVISIBLE);
+                holder.button_stop.setVisibility(Button.VISIBLE);
 
-        if(!radios.get(position).isButtonPlaying()){
+            }else{
+                holder.button_play.setVisibility(Button.VISIBLE);
+                holder.button_stop.setVisibility(Button.INVISIBLE);
+            }
 
-            holder.button_play_stop.setCompoundDrawablesWithIntrinsicBounds(R.drawable.play_circle,0,0,0);
-        }else{
-
-            holder.button_play_stop.setCompoundDrawablesWithIntrinsicBounds(R.drawable.stop,0,0,0);
         }
 
-        if(radios.get(position).isImageGif())
-            holder.image_gif.setVisibility(ImageView.VISIBLE);
-        else
-            holder.image_gif.setVisibility(ImageView.INVISIBLE);
 
-        Glide.with(mContext).load("http://rs177.pbsrc.com/albums/w220/Tiff_Pond/Eqalizer.gif~c200").into(holder.image_gif);
 
-        if(radios.get(position).isImageLoading())
-            holder.progressBar.setVisibility(ProgressBar.VISIBLE);
+        if(radios.get(position).isImageEqualizer())
+            holder.image_equalizer.setVisibility(ImageView.VISIBLE);
         else
-            holder.progressBar.setVisibility(ProgressBar.INVISIBLE);
+            holder.image_equalizer.setVisibility(ImageView.INVISIBLE);
+
+
+
+
 
         if(radios.get(position).isButtonFavourite())
             holder.button_favourite.setCompoundDrawablesWithIntrinsicBounds(R.drawable.heart,0,0,0);
@@ -89,9 +96,10 @@ public class RadioAdapter extends RecyclerView.Adapter<RadioAdapter.ViewHolder>{
 
         private ImageView image_radio;
         private TextView text_title;
-        private Button button_play_stop;
+        private Button button_play;
+        private Button button_stop;
         private ProgressBar progressBar;
-        private ImageView image_gif;
+        private ImageView image_equalizer;
         protected Button button_favourite;
 
         public ViewHolder(View view) {
@@ -99,12 +107,24 @@ public class RadioAdapter extends RecyclerView.Adapter<RadioAdapter.ViewHolder>{
             view.setOnClickListener(this);
             image_radio = (ImageView) view.findViewById(R.id.image_radio);
             text_title = (TextView) view.findViewById(R.id.text_title);
-            button_play_stop = (Button) view.findViewById(R.id.button_play_stop);
+
+            button_play = (Button) view.findViewById(R.id.button_play);
+            button_play.setCompoundDrawablesWithIntrinsicBounds(R.drawable.play_circle,0,0,0);
+            button_play.setOnClickListener(this);
+
+            button_stop = (Button) view.findViewById(R.id.button_stop);
+            button_stop.setCompoundDrawablesWithIntrinsicBounds(R.drawable.stop,0,0,0);
+            button_stop.setOnClickListener(this);
+
             progressBar = (ProgressBar)view.findViewById(R.id.progressBar);
-            image_gif = (ImageView) view.findViewById(R.id.image_gif);
+
+            image_equalizer = (ImageView) view.findViewById(R.id.image_equalizer);
+            Glide.with(mContext).load("http://soulsearchrecords.com/media/images/levels.gif").diskCacheStrategy( DiskCacheStrategy.RESULT).into(image_equalizer);
+            //Glide.with(mContext).load("http://www.beyzadogan.com/images/animated-sound-waves11.gif").diskCacheStrategy( DiskCacheStrategy.ALL ).into(image_equalizer);
             button_favourite = (Button) view.findViewById(R.id.button_favourite);
-            button_play_stop.setOnClickListener(this);
             button_favourite.setOnClickListener(this);
+
+
 
 
 
@@ -113,27 +133,38 @@ public class RadioAdapter extends RecyclerView.Adapter<RadioAdapter.ViewHolder>{
         public void onClick(View v) {
 
             switch (v.getId()){
-                case R.id.button_play_stop:
-                        if(!radios.get(this.getAdapterPosition()).isButtonPlaying()){
-                            //Log.d("Play Button", String.valueOf(this.getAdapterPosition()));
-                            Toast.makeText(mContext,"PLAY",Toast.LENGTH_SHORT).show();
-                            radios.get(this.getAdapterPosition()).setButtonPlaying(true);
-                            radios.get(this.getAdapterPosition()).setImageLoading(true);
-                            itemListener.recyclerViewListClicked(v, this.getAdapterPosition());
-                        }else {
-                            Toast.makeText(mContext,"STOP",Toast.LENGTH_SHORT).show();
-                            radios.get(this.getAdapterPosition()).setButtonPlaying(false);
-                            radios.get(this.getAdapterPosition()).setImageGif(false);
-                            itemListener.recyclerViewListClicked(v, this.getAdapterPosition());
-                        }
+                case R.id.button_play:
+
+                    //Log.d("Play Button", String.valueOf(this.getAdapterPosition()));
+                    //Toast.makeText(mContext,"PLAY",Toast.LENGTH_SHORT).show();
+                    radios.get(this.getAdapterPosition()).setButtonPlaying(true);
+                    radios.get(this.getAdapterPosition()).setImageLoading(true);
+                    itemListener.recyclerViewListClicked(v, this.getAdapterPosition());
+                    //button_play.setVisibility(Button.INVISIBLE);
+                    //button_stop.setVisibility(Button.VISIBLE);
+                    //notifyItemChanged(this.getAdapterPosition());
+
+                    break;
+                case R.id.button_stop:
+
+                    //Toast.makeText(mContext,"STOP",Toast.LENGTH_SHORT).show();
+                    radios.get(this.getAdapterPosition()).setButtonPlaying(false);
+                    radios.get(this.getAdapterPosition()).setImageEqualizer(false);
+                    radios.get(this.getAdapterPosition()).setImageLoading(false);
+                    itemListener.recyclerViewListClicked(v, this.getAdapterPosition());
+                    //button_play.setVisibility(Button.VISIBLE);
+                   // button_stop.setVisibility(Button.INVISIBLE);
+
+
                     break;
                 case R.id.button_favourite:
-                    Toast.makeText(mContext,"Favourite",Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(mContext,"Favourite",Toast.LENGTH_SHORT).show();
 
                     radios.get(this.getAdapterPosition()).setButtonFavourite(!radios.get(this.getAdapterPosition()).isButtonFavourite());
                     notifyItemChanged(this.getAdapterPosition());
                     break;
             }
+
         }
     }
 }

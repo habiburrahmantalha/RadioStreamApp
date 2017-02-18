@@ -26,16 +26,26 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 
+import com.google.gson.Gson;
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.JsonHttpResponseHandler;
 import com.rrmsense.radiostream.R;
 import com.rrmsense.radiostream.adapters.ViewPagerAdapter;
 import com.rrmsense.radiostream.fragments.BanglaRadioFragment;
 import com.rrmsense.radiostream.fragments.ViewPagerFragment;
 import com.rrmsense.radiostream.interfaces.OnPreparedCallback;
+import com.rrmsense.radiostream.models.Radio;
 import com.rrmsense.radiostream.models.RadioPlayerSetting;
 import com.rrmsense.radiostream.models.SelectFragment;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Deque;
+
+import cz.msebera.android.httpclient.Header;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, MediaPlayer.OnBufferingUpdateListener, MediaPlayer.OnPreparedListener {
@@ -48,7 +58,7 @@ public class MainActivity extends AppCompatActivity
     ViewPager viewPager;
     ViewPagerAdapter viewPagerAdapter;
     TabLayout tabLayout;
-
+    public ArrayList<Radio> radios = new ArrayList<>();
 
 
     @Override
@@ -77,35 +87,9 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-
+        loadRadioStation();
         //openFragment(SelectFragment.FRAGMENT_VIEW_PAGER);
-        tabLayout = (TabLayout) findViewById(R.id.tab_layout);
-        tabLayout.addTab(tabLayout.newTab().setText("Bangla Radio Station"));
-        tabLayout.addTab(tabLayout.newTab().setText("Recent Activity"));
-        tabLayout.addTab(tabLayout.newTab().setText("Favourites"));
 
-        tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
-
-        viewPager = (ViewPager) findViewById(R.id.view_pager);
-        viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
-        viewPager.setAdapter(viewPagerAdapter);
-        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
-        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-                viewPager.setCurrentItem(tab.getPosition());
-            }
-
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab) {
-
-            }
-
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) {
-
-            }
-        });
 
     }
 
@@ -180,6 +164,66 @@ public class MainActivity extends AppCompatActivity
         fragmentManager.beginTransaction()
                 .replace(R.id.fragment_holder,fragment)
                 .commit();
+    }
+
+    public void loadViewPager(){
+        tabLayout = (TabLayout) findViewById(R.id.tab_layout);
+        tabLayout.addTab(tabLayout.newTab().setText("Bangla Radio Station"));
+        tabLayout.addTab(tabLayout.newTab().setText("Recent Activity"));
+        tabLayout.addTab(tabLayout.newTab().setText("Favourites"));
+
+        tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
+
+        viewPager = (ViewPager) findViewById(R.id.view_pager);
+        viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
+        viewPager.setAdapter(viewPagerAdapter);
+        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                viewPager.setCurrentItem(tab.getPosition());
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
+    }
+
+    public void loadRadioStation(){
+        AsyncHttpClient client = new AsyncHttpClient();
+
+        client.get("http://www.rrmelectronics.com/appserver/RadioStreamLink.php", null, new JsonHttpResponseHandler() {
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
+                //Log.d("JSON",response.toString());
+                for(int i=0;i < response.length();i++){
+                    //Log.d("JSON",response.get(i).toString());
+                    Gson gson = new Gson();
+                    Radio r = null;
+                    try {
+                        r = gson.fromJson(response.get(i).toString(), Radio.class);
+                        r.setButtonPlaying(false);
+                        r.setImageEqualizer(false);
+                        r.setImageLoading(false);
+                        r.setButtonFavourite(false);
+                        radios.add(r);
+                        Log.d("IMAGE_URL", response.get(i).toString());
+                        Log.d("JSON",r.getName());
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+                loadViewPager();
+            }
+        });
     }
 
     public void playRadio(String url, int position, OnPreparedCallback onPreparedCallback){

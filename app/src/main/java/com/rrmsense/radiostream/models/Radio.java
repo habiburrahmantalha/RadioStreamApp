@@ -9,7 +9,7 @@ public class Radio {
     String streamURL;
     String name;
     boolean buttonPlaying;
-    boolean imageGif;
+    boolean imageEqualizer;
     boolean imageLoading;
     boolean buttonFavourite;
 
@@ -52,12 +52,12 @@ public class Radio {
         this.buttonPlaying = buttonPlaying;
     }
 
-    public boolean isImageGif() {
-        return imageGif;
+    public boolean isImageEqualizer() {
+        return imageEqualizer;
     }
 
-    public void setImageGif(boolean imageGif) {
-        this.imageGif = imageGif;
+    public void setImageEqualizer(boolean imageEqualizer) {
+        this.imageEqualizer = imageEqualizer;
     }
 
     public boolean isImageLoading() {
