@@ -135,6 +135,7 @@ public class RadioAdapter extends RecyclerView.Adapter<RadioAdapter.ViewHolder>{
 
                     //Log.d("Play Button", String.valueOf(this.getAdapterPosition()));
                     //Toast.makeText(mContext,"PLAY",Toast.LENGTH_SHORT).show();
+                    Storage.saveStack(id,mContext);
                     Storage.setRadioSationSingleValue(id,"playing",true,mContext);
                     Storage.setRadioSationSingleValue(id,"loading",true,mContext);
                     //notifyItemChanged(this.getAdapterPosition());

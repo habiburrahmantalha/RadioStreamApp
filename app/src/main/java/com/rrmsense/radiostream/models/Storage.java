@@ -52,7 +52,7 @@ public class Storage {
         String recent = sharedPreferences.getString("recent", "");
         if(recent.contains(s))
             return;
-        recent = recent.replace(s+",","");
+        //recent = recent.replace(s+",","");
         recent = s + "," + recent;
         int i;
         if (sharedPreferences.getInt("recentCount", 0) > 10) {
@@ -141,6 +141,22 @@ public class Storage {
     public static String getRadioSationSingleValueString(String s,String k,Context context){
         SharedPreferences sharedPreferences = context.getSharedPreferences("SharedPreferences", Context.MODE_PRIVATE);
         return sharedPreferences.getString(s + "_" + k, "");
+
+    }
+    public static void saveStack(String s,Context context){
+        SharedPreferences sharedPreferences = context.getSharedPreferences("SharedPreferences", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        String stack = sharedPreferences.getString("stack", "");
+        String[] stacks = stack.split(",");
+        for (String f : stacks) {
+            if(f.length()>0){
+                editor.putBoolean(f + "_playing", false);
+                editor.putBoolean(f + "_equalizer", false);
+                editor.putBoolean(f + "_loading", false);
+            }
+        }
+        editor.putString("stack",s);
+        editor.apply();
 
     }
 }
