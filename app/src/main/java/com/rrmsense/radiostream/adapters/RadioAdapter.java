@@ -2,6 +2,7 @@ package com.rrmsense.radiostream.adapters;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +20,7 @@ import com.rrmsense.radiostream.models.Radio;
 import com.rrmsense.radiostream.models.Storage;
 
 import java.util.ArrayList;
+import java.util.StringTokenizer;
 
 /**
  * Created by Talha on 2/12/2017.
@@ -26,14 +28,14 @@ import java.util.ArrayList;
 
 public class RadioAdapter extends RecyclerView.Adapter<RadioAdapter.ViewHolder>{
 
-    private ArrayList<Radio> radios;
+    private ArrayList<String> radios;
     private Context mContext;
     //private String streamURL;
 
 
     private static RecyclerViewClickListener itemListener;
 
-    public RadioAdapter(ArrayList<Radio> radios, Context mContext,RecyclerViewClickListener itemListener) {
+    public RadioAdapter(ArrayList<String> radios, Context mContext,RecyclerViewClickListener itemListener) {
         this.radios = radios;
         this.mContext = mContext;
         this.itemListener = itemListener;
@@ -46,20 +48,22 @@ public class RadioAdapter extends RecyclerView.Adapter<RadioAdapter.ViewHolder>{
     }
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
+        Radio radio = Storage.getRadioStation(radios.get(position),mContext);
+        //Toast.makeText(mContext,radio.isButtonFavourite()+""+radio.isButtonPlaying()+""+radio.isImageLoading()+"",Toast.LENGTH_SHORT).show();
+        //Log.d("Bool",radio.isButtonFavourite()+""+radio.isButtonPlaying()+""+radio.isImageLoading()+"");
+        holder.text_title.setText(radio.getName());
 
-        holder.text_title.setText(radios.get(position).getName());
+        if(radio.getImageURL()!="")
+            Glide.with(mContext).load(radio.getImageURL()).override(300,300).fitCenter().diskCacheStrategy( DiskCacheStrategy.SOURCE ).into(holder.image_radio);
 
-        if(radios.get(position).getImageURL()!="")
-            Glide.with(mContext).load(radios.get(position).getImageURL()).override(300,300).fitCenter().diskCacheStrategy( DiskCacheStrategy.SOURCE ).into(holder.image_radio);
-
-        if(radios.get(position).isImageLoading()){
+        if(radio.isImageLoading()){
             holder.progressBar.setVisibility(ProgressBar.VISIBLE);
             holder.button_play.setVisibility(Button.INVISIBLE);
             holder.button_stop.setVisibility(Button.INVISIBLE);
         }
         else{
             holder.progressBar.setVisibility(ProgressBar.INVISIBLE);
-            if(radios.get(position).isButtonPlaying()){
+            if(radio.isButtonPlaying()){
                 holder.button_play.setVisibility(Button.INVISIBLE);
                 holder.button_stop.setVisibility(Button.VISIBLE);
 
@@ -69,12 +73,12 @@ public class RadioAdapter extends RecyclerView.Adapter<RadioAdapter.ViewHolder>{
             }
         }
 
-        if(radios.get(position).isImageEqualizer())
+        if(radio.isImageEqualizer())
             holder.image_equalizer.setVisibility(ImageView.VISIBLE);
         else
             holder.image_equalizer.setVisibility(ImageView.INVISIBLE);
 
-        if(radios.get(position).isButtonFavourite())
+        if(radio.isButtonFavourite())
             holder.button_favourite.setCompoundDrawablesWithIntrinsicBounds(R.drawable.heart,0,0,0);
         else
             holder.button_favourite.setCompoundDrawablesWithIntrinsicBounds(R.drawable.heart_outline,0,0,0);
@@ -125,38 +129,44 @@ public class RadioAdapter extends RecyclerView.Adapter<RadioAdapter.ViewHolder>{
         }
         @Override
         public void onClick(View v) {
-
+            String id = radios.get(this.getAdapterPosition());
             switch (v.getId()){
                 case R.id.button_play:
 
                     //Log.d("Play Button", String.valueOf(this.getAdapterPosition()));
                     //Toast.makeText(mContext,"PLAY",Toast.LENGTH_SHORT).show();
-                    radios.get(this.getAdapterPosition()).setButtonPlaying(true);
-                    radios.get(this.getAdapterPosition()).setImageLoading(true);
-                    itemListener.recyclerViewListClicked(v, this.getAdapterPosition());
-                    //button_play.setVisibility(Button.INVISIBLE);
-                    //button_stop.setVisibility(Button.VISIBLE);
+                    Storage.setRadioSationSingleValue(id,"playing",true,mContext);
+                    Storage.setRadioSationSingleValue(id,"loading",true,mContext);
                     //notifyItemChanged(this.getAdapterPosition());
-                    Storage.saveRecent(radios.get(this.getAdapterPosition()).getID(),mContext);
+                    notifyItemRangeChanged(0,getItemCount());
+                    itemListener.recyclerViewListClicked(v, this.getAdapterPosition());
+                    Storage.saveRecent(id,mContext);
 
                     break;
                 case R.id.button_stop:
-
                     //Toast.makeText(mContext,"STOP",Toast.LENGTH_SHORT).show();
-                    radios.get(this.getAdapterPosition()).setButtonPlaying(false);
-                    radios.get(this.getAdapterPosition()).setImageEqualizer(false);
-                    radios.get(this.getAdapterPosition()).setImageLoading(false);
+                    Storage.setRadioSationSingleValue(id,"playing",false,mContext);
+                    Storage.setRadioSationSingleValue(id,"loading",false,mContext);
+                    Storage.setRadioSationSingleValue(id,"equalizer",false,mContext);
+                    //notifyItemChanged(this.getAdapterPosition());
+                    notifyItemRangeChanged(0,getItemCount());
                     itemListener.recyclerViewListClicked(v, this.getAdapterPosition());
-                    //button_play.setVisibility(Button.VISIBLE);
-                   // button_stop.setVisibility(Button.INVISIBLE);
-
-
                     break;
                 case R.id.button_favourite:
                     //Toast.makeText(mContext,"Favourite",Toast.LENGTH_SHORT).show();
-                    Storage.saveFavourite(radios.get(this.getAdapterPosition()).getID(),mContext);
-                    radios.get(this.getAdapterPosition()).setButtonFavourite(!radios.get(this.getAdapterPosition()).isButtonFavourite());
-                    notifyItemChanged(this.getAdapterPosition());
+
+
+                    boolean f = Storage.getRadioSationSingleValueBoolean(id,"favourite",mContext);
+                    if(f){
+                        Storage.removeFavourite(id,mContext);
+                        notifyItemRemoved(this.getAdapterPosition());
+                    }else{
+                        Storage.saveFavourite(id,mContext);
+                        notifyItemChanged(this.getAdapterPosition());
+                    }
+                    Storage.setRadioSationSingleValue(id,"favourite",!f,mContext);
+
+
                     break;
             }
 

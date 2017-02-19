@@ -9,30 +9,35 @@ public class Radio {
     String streamURL;
     String name;
     String id;
+    String category;
     boolean buttonPlaying;
     boolean imageEqualizer;
     boolean imageLoading;
     boolean buttonFavourite;
+    boolean buttonRecent;
 
     public Radio(){
 
     }
-    public Radio(String imageURL, String streamURL,String name,String id) {
+    public Radio(String imageURL, String streamURL,String name,String id,String category) {
         this.imageURL = imageURL;
         this.streamURL = streamURL;
         this.name = name;
         this.id = id;
+        this.category = category;
     }
 
-    public Radio(String imageURL, String streamURL, String name,String id, boolean buttonPlaying, boolean imageEqualizer, boolean imageLoading, boolean buttonFavourite) {
+    public Radio(String imageURL, String streamURL, String name,String id,String category, boolean buttonPlaying, boolean imageEqualizer, boolean imageLoading, boolean buttonFavourite,boolean buttonRecent ) {
         this.imageURL = imageURL;
         this.streamURL = streamURL;
         this.name = name;
         this.id = id;
+        this.category = category;
         this.buttonPlaying = buttonPlaying;
         this.imageEqualizer = imageEqualizer;
         this.imageLoading = imageLoading;
         this.buttonFavourite = buttonFavourite;
+        this.buttonRecent = buttonRecent;
     }
 
     public String getImageURL() {
@@ -57,6 +62,22 @@ public class Radio {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
     }
 
     public boolean isButtonPlaying() {
@@ -91,11 +112,11 @@ public class Radio {
         this.buttonFavourite = buttonFavourite;
     }
 
-    public String getID() {
-        return id;
+    public boolean isButtonRecent() {
+        return buttonRecent;
     }
 
-    public void setID(String id) {
-        this.id = id;
+    public void setButtonRecent(boolean buttonRecent) {
+        this.buttonRecent = buttonRecent;
     }
 }

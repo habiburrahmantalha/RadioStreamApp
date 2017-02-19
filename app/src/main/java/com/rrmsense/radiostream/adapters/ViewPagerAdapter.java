@@ -3,6 +3,7 @@ package com.rrmsense.radiostream.adapters;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.util.Log;
 
@@ -13,7 +14,7 @@ import com.rrmsense.radiostream.models.SelectFragment;
  * Created by Talha on 2/16/2017.
  */
 
-public class ViewPagerAdapter extends FragmentStatePagerAdapter {
+public class ViewPagerAdapter extends FragmentPagerAdapter {
 
     int numberOffTabs;
 
@@ -27,20 +28,22 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
 
         switch (position) {
             case 0:
-                Fragment fragmentBangla = new RadioFragment();
-                Bundle bundleBangla = new Bundle();
-                bundleBangla.putInt("ID", SelectFragment.FRAGMENT_BANGLA_RADIO);
-                fragmentBangla.setArguments(bundleBangla);
-                Log.d("F1", String.valueOf(SelectFragment.FRAGMENT_BANGLA_RADIO));
-                return fragmentBangla;
+//               Fragment fragmentBangla = new RadioFragment();
+//                Bundle bundleBangla = new Bundle();
+//                bundleBangla.putInt("ID", SelectFragment.FRAGMENT_BANGLA_RADIO);
+//                fragmentBangla.setArguments(bundleBangla);
+//                Log.d("F1", String.valueOf(SelectFragment.FRAGMENT_BANGLA_RADIO));
+//                return fragmentBangla;
+                return RadioFragment.newInstance(SelectFragment.FRAGMENT_BANGLA_RADIO);
 
             case 1:
-                Fragment fragmentRecent = new RadioFragment();
+               Fragment fragmentRecent = new RadioFragment();
                 Bundle bundleRecent = new Bundle();
                 bundleRecent.putInt("ID", SelectFragment.FRAGMENT_RECENT);
                 fragmentRecent.setArguments(bundleRecent);
                 Log.d("F2", String.valueOf(SelectFragment.FRAGMENT_RECENT));
                 return fragmentRecent;
+                //return RadioFragment.newInstance(SelectFragment.FRAGMENT_RECENT);
             case 2:
                 Fragment fragmentFavourite = new RadioFragment();
                 Bundle bundleFavourite = new Bundle();
@@ -48,6 +51,7 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
                 fragmentFavourite.setArguments(bundleFavourite);
                 Log.d("F3", String.valueOf(SelectFragment.FRAGMENT_FAVOURITE));
                 return fragmentFavourite;
+                //return RadioFragment.newInstance(SelectFragment.FRAGMENT_FAVOURITE);
 
             default:
                 /*
@@ -66,7 +70,6 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
     public int getCount() {
         return numberOffTabs;
     }
-
     @Override
     public CharSequence getPageTitle(int position) {
         return "Page " + position;

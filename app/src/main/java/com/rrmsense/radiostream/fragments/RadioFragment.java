@@ -18,6 +18,7 @@ import com.rrmsense.radiostream.interfaces.OnPreparedCallback;
 import com.rrmsense.radiostream.interfaces.RecyclerViewClickListener;
 import com.rrmsense.radiostream.models.Radio;
 import com.rrmsense.radiostream.models.SelectFragment;
+import com.rrmsense.radiostream.models.Storage;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -33,19 +34,27 @@ public class RadioFragment extends Fragment implements RecyclerViewClickListener
     private RecyclerView.LayoutManager mLayoutManager;
     private static int fragmentID;
 
-
-    Deque<Integer> radioStations = new ArrayDeque<>();
-    ArrayList<Radio> radios = new ArrayList<>();
+    ArrayList<String> radios = new ArrayList<>();
+    Deque<Integer> history = new ArrayDeque<>();
     public RadioFragment() {
 
+    }
+    public static RadioFragment newInstance(int id) {
+        Bundle args = new Bundle();
+        args.putInt("ID", id);
+        RadioFragment fragment = new RadioFragment();
+        fragment.setArguments(args);
+        return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         Bundle bundle = this.getArguments();
         //if (bundle != null) {
-            fragmentID = bundle.getInt("ID", SelectFragment.FRAGMENT_BANGLA_RADIO);
+        fragmentID = bundle.getInt("ID", SelectFragment.FRAGMENT_BANGLA_RADIO);
+
         //}
         Log.d("ID", String.valueOf(fragmentID));
     }
@@ -86,37 +95,35 @@ public class RadioFragment extends Fragment implements RecyclerViewClickListener
     @Override
     public void recyclerViewListClicked(View v, int position) {
         //Log.d("ITEM",mRecyclerView.getChildAt(position).toString());
-        Log.d("PLAYING STATE", String.valueOf(radios.get(position).isButtonPlaying()));
-        mAdapter.notifyItemChanged(position);
-
-
-
-        if(radios.get(position).isButtonPlaying()){
-            resetRadioStation();
-            radioStations.push(position);
-            ((MainActivity)getActivity()).playRadio(radios.get(position).getStreamURL(),position,this);
+        //Log.d("PLAYING STATE", String.valueOf(radios.get(position).isButtonPlaying()));
+       // mAdapter.notifyItemChanged(position);
+        resetRadio();
+        if(Storage.getRadioSationSingleValueBoolean(radios.get(position),"playing",getActivity())){
+            history.push(position);
+            ((MainActivity)getActivity()).playRadio(radios.get(position),Storage.getRadioSationSingleValueString(radios.get(position),"stream",getActivity()),position,this);
         }
-        else if(!radios.get(position).isButtonPlaying()){
-            resetRadioStation();
+        else{
+
+            resetRadio();
             ((MainActivity)getActivity()).stopRadio();
         }
         //Log.d("Interface",position+" "+v.getId()+" "+((TextView) child.findViewById(R.id.text_title)).getText().toString());
     }
-    public void resetRadioStation(){
-        while (!radioStations.isEmpty()){
-            radios.get(radioStations.peek()).setButtonPlaying(false);
-            radios.get(radioStations.peek()).setImageEqualizer(false);
-            radios.get(radioStations.peek()).setImageLoading(false);
-            mAdapter.notifyItemChanged(radioStations.peek());
-            radioStations.pop();
+    private void resetRadio() {
+        while (!history.isEmpty()){
+            Storage.setRadioSationSingleValue(radios.get(history.peek()),"playing",false,getActivity());
+            Storage.setRadioSationSingleValue(radios.get(history.peek()),"loading",false,getActivity());
+            Storage.setRadioSationSingleValue(radios.get(history.peek()),"equalizer",false,getActivity());
+            mAdapter.notifyItemChanged(history.peek());
+            history.pop();
         }
     }
 
     @Override
     public void OnPreparedCallback(int position) {
-        radios.get(position).setImageLoading(false);
-        radios.get(position).setImageEqualizer(true);
-        radios.get(position).setButtonPlaying(true);
+        Storage.setRadioSationSingleValue(radios.get(position),"playing",true,getActivity());
+        Storage.setRadioSationSingleValue(radios.get(position),"loading",false,getActivity());
+        Storage.setRadioSationSingleValue(radios.get(position),"equalizer",true,getActivity());
         mAdapter.notifyItemChanged(position);
     }
 }

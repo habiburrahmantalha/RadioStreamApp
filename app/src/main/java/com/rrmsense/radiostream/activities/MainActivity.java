@@ -35,7 +35,9 @@ import com.rrmsense.radiostream.models.Storage;
 import org.json.JSONArray;
 import org.json.JSONException;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 
 import cz.msebera.android.httpclient.Header;
 
@@ -50,9 +52,10 @@ public class MainActivity extends AppCompatActivity
     ViewPager viewPager;
     ViewPagerAdapter viewPagerAdapter;
     TabLayout tabLayout;
-    public ArrayList<Radio> radios = new ArrayList<>();
-    public ArrayList<Radio> recentRadios = new ArrayList<>();
-    public ArrayList<Radio> favouriteRadios = new ArrayList<>();
+    public ArrayList<String> radios = new ArrayList<>();
+    public ArrayList<String> recentRadios = new ArrayList<>();
+    public ArrayList<String> favouriteRadios = new ArrayList<>();
+    Deque<String> history = new ArrayDeque<>();
 
 
     @Override
@@ -141,8 +144,6 @@ public class MainActivity extends AppCompatActivity
             openFragment(SelectFragment.FRAGMENT_RECENT);
         } else if (id == R.id.nav_slideshow) {
             openFragment(SelectFragment.FRAGMENT_BANGLA_RADIO);
-        } else if (id == R.id.nav_manage) {
-
         } else if (id == R.id.nav_share) {
 
         } else if (id == R.id.nav_send) {
@@ -160,13 +161,16 @@ public class MainActivity extends AppCompatActivity
         Bundle bundle = new Bundle();
         switch (fragmentID){
             case SelectFragment.FRAGMENT_BANGLA_RADIO:
+                getSupportActionBar().setTitle("Bangla Online Radio");
                 bundle.putInt("ID", SelectFragment.FRAGMENT_BANGLA_RADIO);
                 break;
             case SelectFragment.FRAGMENT_FAVOURITE:
                 bundle.putInt("ID", SelectFragment.FRAGMENT_FAVOURITE);
+                getSupportActionBar().setTitle("Favourites");
                 break;
             case SelectFragment.FRAGMENT_RECENT:
                 bundle.putInt("ID", SelectFragment.FRAGMENT_RECENT);
+                getSupportActionBar().setTitle("Recently Played");
                 break;
         }
         fragment.setArguments(bundle);
@@ -176,37 +180,37 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void loadViewPager(){
-        tabLayout = (TabLayout) findViewById(R.id.tab_layout);
+//        tabLayout = (TabLayout) findViewById(R.id.tab_layout);
+//
+//        tabLayout.addTab(tabLayout.newTab().setText("Bangla Radio Station"));
+//        tabLayout.addTab(tabLayout.newTab().setText("Recent Activity"));
+//        tabLayout.addTab(tabLayout.newTab().setText("Favourites"));
 
-        tabLayout.addTab(tabLayout.newTab().setText("Bangla Radio Station"));
-        tabLayout.addTab(tabLayout.newTab().setText("Recent Activity"));
-        tabLayout.addTab(tabLayout.newTab().setText("Favourites"));
+//        viewPager = (ViewPager) findViewById(R.id.view_pager);
+//        viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager(), 3);
+//        //viewPager.setOffscreenPageLimit(0);
+//        viewPager.setAdapter(viewPagerAdapter);
 
-        viewPager = (ViewPager) findViewById(R.id.view_pager);
-        viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager(), 3);
+//        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+//        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+//            @Override
+//            public void onTabSelected(TabLayout.Tab tab) {
+//                viewPager.setCurrentItem(tab.getPosition());
+//            }
+//
+//            @Override
+//            public void onTabUnselected(TabLayout.Tab tab) {
+//
+//            }
+//
+//            @Override
+//            public void onTabReselected(TabLayout.Tab tab) {
+//
+//            }
+//        });
+//
+//        viewPager.setCurrentItem(0);
 
-        viewPager.setAdapter(viewPagerAdapter);
-        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
-        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-                viewPager.setCurrentItem(tab.getPosition());
-            }
-
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab) {
-
-            }
-
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) {
-
-            }
-        });
-
-
-
-        viewPager.setCurrentItem(2);
         //viewPager.setCurrentItem(0);
 
 
@@ -230,24 +234,37 @@ public class MainActivity extends AppCompatActivity
                         r.setImageEqualizer(false);
                         r.setImageLoading(false);
                         r.setButtonFavourite(false);
-                        radios.add(r);
-                        Storage.saveRadioStation(r,getApplicationContext());
-                        //Log.d("IMAGE_URL", response.get(i).toString());
+                        r.setButtonRecent(false);
+                        if(!Storage.isRadioStationSaved(r.getId(),getApplication())){
+                            Storage.saveRadioStation(r,getApplicationContext());
+                            Log.d("NO",r.getId());
+                        }else{
+                            Log.d("YES",r.getId());
+                            Storage.setRadioSationSingleValue(r.getId(),"playing",false,getApplication());
+                            Storage.setRadioSationSingleValue(r.getId(),"loading",false,getApplication());
+                            Storage.setRadioSationSingleValue(r.getId(),"equalizer",false,getApplication());
+                        }
+                        radios.add(r.getId());
                         //Log.d("JSON",r.getName());
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
                 }
                 //openFragment(SelectFragment.FRAGMENT_BANGLA_RADIO);
+
                 loadRecentRadioStation();
                 loadFavouriteRadioStation();
-                loadViewPager();
+                //loadViewPager();
+                openFragment(SelectFragment.FRAGMENT_BANGLA_RADIO);
 
             }
         });
     }
 
-    public void playRadio(String url, int position, OnPreparedCallback onPreparedCallback){
+    public void playRadio(String id, String url, int position, OnPreparedCallback onPreparedCallback){
+        resetRadio();
+        history.push(id);
+
         this.position = position;
         this.onPreparedCallback = onPreparedCallback;
         stopRadio();
@@ -264,7 +281,18 @@ public class MainActivity extends AppCompatActivity
         }catch(Exception e){
         }
     }
+
+    private void resetRadio() {
+        while (!history.isEmpty()){
+            Storage.setRadioSationSingleValue(history.peek(),"playing",false,getApplication());
+            //Storage.setRadioSationSingleValue(history.peek(),"loading",false,getApplication());
+            Storage.setRadioSationSingleValue(history.peek(),"equalizer",false,getApplication());
+            history.pop();
+        }
+    }
+
     public  void stopRadio(){
+        resetRadio();
         try {
             if(mediaPlayer!=null) {
                 mediaPlayer.stop();
