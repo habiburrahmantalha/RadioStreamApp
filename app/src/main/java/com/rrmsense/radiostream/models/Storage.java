@@ -59,8 +59,7 @@ public class Storage {
         SharedPreferences sharedPreferences = context.getSharedPreferences("SharedPreferences", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         String recent = sharedPreferences.getString("recent", "");
-        if(recent.contains(s))
-            return;
+        recent =  recent.replace(s+",","");
         recent = s + "," + recent;
         editor.putBoolean(s+"_recent",true);
         editor.putString("recent", recent);

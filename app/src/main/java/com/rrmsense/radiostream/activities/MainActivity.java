@@ -291,12 +291,12 @@ public class MainActivity extends AppCompatActivity
         try {
             if(mediaPlayer!=null) {
                 mediaPlayer.stop();
+                mediaPlayer.reset();
                 mediaPlayer.release();
                 mediaPlayer = null;
 
             }
         } catch(Exception e){
-
         }
     }
     @Override
