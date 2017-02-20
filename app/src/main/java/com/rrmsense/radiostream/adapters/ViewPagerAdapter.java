@@ -7,7 +7,9 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.util.Log;
 
+import com.rrmsense.radiostream.fragments.FavouriteFragment;
 import com.rrmsense.radiostream.fragments.RadioFragment;
+import com.rrmsense.radiostream.fragments.RecentFragment;
 import com.rrmsense.radiostream.models.SelectFragment;
 
 /**
@@ -28,16 +30,16 @@ public class ViewPagerAdapter extends FragmentPagerAdapter {
 
         switch (position) {
             case 0:
-//               Fragment fragmentBangla = new RadioFragment();
-//                Bundle bundleBangla = new Bundle();
-//                bundleBangla.putInt("ID", SelectFragment.FRAGMENT_BANGLA_RADIO);
-//                fragmentBangla.setArguments(bundleBangla);
-//                Log.d("F1", String.valueOf(SelectFragment.FRAGMENT_BANGLA_RADIO));
-//                return fragmentBangla;
-                return RadioFragment.newInstance(SelectFragment.FRAGMENT_BANGLA_RADIO);
+                Fragment fragmentBangla = new RadioFragment();
+                Bundle bundleBangla = new Bundle();
+                bundleBangla.putInt("ID", SelectFragment.FRAGMENT_BANGLA_RADIO);
+                fragmentBangla.setArguments(bundleBangla);
+                Log.d("F1", String.valueOf(SelectFragment.FRAGMENT_BANGLA_RADIO));
+                return fragmentBangla;
+                //return RadioFragment.newInstance(SelectFragment.FRAGMENT_BANGLA_RADIO);
 
             case 1:
-               Fragment fragmentRecent = new RadioFragment();
+                Fragment fragmentRecent = new RecentFragment();
                 Bundle bundleRecent = new Bundle();
                 bundleRecent.putInt("ID", SelectFragment.FRAGMENT_RECENT);
                 fragmentRecent.setArguments(bundleRecent);
@@ -45,7 +47,7 @@ public class ViewPagerAdapter extends FragmentPagerAdapter {
                 return fragmentRecent;
                 //return RadioFragment.newInstance(SelectFragment.FRAGMENT_RECENT);
             case 2:
-                Fragment fragmentFavourite = new RadioFragment();
+                Fragment fragmentFavourite = new FavouriteFragment();
                 Bundle bundleFavourite = new Bundle();
                 bundleFavourite.putInt("ID", SelectFragment.FRAGMENT_FAVOURITE);
                 fragmentFavourite.setArguments(bundleFavourite);

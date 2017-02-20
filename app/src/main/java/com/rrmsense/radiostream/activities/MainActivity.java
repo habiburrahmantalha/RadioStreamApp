@@ -138,15 +138,18 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
-            openFragment(SelectFragment.FRAGMENT_FAVOURITE);
-        } else if (id == R.id.nav_gallery) {
-            openFragment(SelectFragment.FRAGMENT_RECENT);
-        } else if (id == R.id.nav_slideshow) {
-            openFragment(SelectFragment.FRAGMENT_BANGLA_RADIO);
+        if (id == R.id.nav_music) {
+            //openFragment(SelectFragment.FRAGMENT_FAVOURITE);
+            viewPager.setCurrentItem(0);
+        } else if (id == R.id.nav_news) {
+            //openFragment(SelectFragment.FRAGMENT_RECENT);
+        } else if (id == R.id.nav_international) {
+            //openFragment(SelectFragment.FRAGMENT_BANGLA_RADIO);
+        } else if (id == R.id.nav_bangla) {
+
         } else if (id == R.id.nav_share) {
 
-        } else if (id == R.id.nav_send) {
+        } else if (id == R.id.nav_about) {
 
         }
 
@@ -180,40 +183,34 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void loadViewPager(){
-//        tabLayout = (TabLayout) findViewById(R.id.tab_layout);
-//
-//        tabLayout.addTab(tabLayout.newTab().setText("Bangla Radio Station"));
-//        tabLayout.addTab(tabLayout.newTab().setText("Recent Activity"));
-//        tabLayout.addTab(tabLayout.newTab().setText("Favourites"));
 
-//        viewPager = (ViewPager) findViewById(R.id.view_pager);
-//        viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager(), 3);
-//        //viewPager.setOffscreenPageLimit(0);
-//        viewPager.setAdapter(viewPagerAdapter);
+        tabLayout = (TabLayout) findViewById(R.id.tab_layout);
+        tabLayout.addTab(tabLayout.newTab().setText("বাংলা FM").setIcon(R.drawable.ic_radio_black_24dp)); //  রেডিও
+        tabLayout.addTab(tabLayout.newTab().setText("Recent").setIcon(R.drawable.ic_history_black_24dp));
+        tabLayout.addTab(tabLayout.newTab().setText("Favourites").setIcon(R.drawable.heart));
 
-//        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
-//        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-//            @Override
-//            public void onTabSelected(TabLayout.Tab tab) {
-//                viewPager.setCurrentItem(tab.getPosition());
-//            }
-//
-//            @Override
-//            public void onTabUnselected(TabLayout.Tab tab) {
-//
-//            }
-//
-//            @Override
-//            public void onTabReselected(TabLayout.Tab tab) {
-//
-//            }
-//        });
-//
-//        viewPager.setCurrentItem(0);
+        tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
-        //viewPager.setCurrentItem(0);
+        viewPager = (ViewPager) findViewById(R.id.view_pager);
+        viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
+        viewPager.setAdapter(viewPagerAdapter);
+        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                viewPager.setCurrentItem(tab.getPosition());
+            }
 
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
 
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
     }
 
     public void loadRadioStation(){
@@ -254,8 +251,8 @@ public class MainActivity extends AppCompatActivity
 
                 loadRecentRadioStation();
                 loadFavouriteRadioStation();
-                //loadViewPager();
-                openFragment(SelectFragment.FRAGMENT_BANGLA_RADIO);
+                loadViewPager();
+                //openFragment(SelectFragment.FRAGMENT_BANGLA_RADIO);
 
             }
         });

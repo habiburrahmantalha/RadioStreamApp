@@ -2,7 +2,6 @@ package com.rrmsense.radiostream.fragments;
 
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -11,12 +10,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.rrmsense.radiostream.activities.MainActivity;
 import com.rrmsense.radiostream.R;
+import com.rrmsense.radiostream.activities.MainActivity;
 import com.rrmsense.radiostream.adapters.RadioAdapter;
 import com.rrmsense.radiostream.interfaces.OnPreparedCallback;
 import com.rrmsense.radiostream.interfaces.RecyclerViewClickListener;
-import com.rrmsense.radiostream.models.Radio;
 import com.rrmsense.radiostream.models.SelectFragment;
 import com.rrmsense.radiostream.models.Storage;
 
@@ -27,7 +25,7 @@ import java.util.Deque;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class RadioFragment extends Fragment implements RecyclerViewClickListener,OnPreparedCallback {
+public class FavouriteFragment extends Fragment implements RecyclerViewClickListener,OnPreparedCallback {
 
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
@@ -36,13 +34,13 @@ public class RadioFragment extends Fragment implements RecyclerViewClickListener
 
     ArrayList<String> radios = new ArrayList<>();
     Deque<Integer> history = new ArrayDeque<>();
-    public RadioFragment() {
+    public FavouriteFragment() {
 
     }
-    public static RadioFragment newInstance(int id) {
+    public static FavouriteFragment newInstance(int id) {
         Bundle args = new Bundle();
         args.putInt("ID", id);
-        RadioFragment fragment = new RadioFragment();
+        FavouriteFragment fragment = new FavouriteFragment();
         fragment.setArguments(args);
         return fragment;
     }
@@ -129,5 +127,11 @@ public class RadioFragment extends Fragment implements RecyclerViewClickListener
         Storage.setRadioSationSingleValue(radios.get(position),"loading",false,getActivity());
         Storage.setRadioSationSingleValue(radios.get(position),"equalizer",true,getActivity());
         mAdapter.notifyItemChanged(position);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mAdapter.notifyItemInserted(mAdapter.getItemCount()-1);
     }
 }

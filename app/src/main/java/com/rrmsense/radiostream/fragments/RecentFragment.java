@@ -2,7 +2,6 @@ package com.rrmsense.radiostream.fragments;
 
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -11,12 +10,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.rrmsense.radiostream.activities.MainActivity;
 import com.rrmsense.radiostream.R;
+import com.rrmsense.radiostream.activities.MainActivity;
 import com.rrmsense.radiostream.adapters.RadioAdapter;
 import com.rrmsense.radiostream.interfaces.OnPreparedCallback;
 import com.rrmsense.radiostream.interfaces.RecyclerViewClickListener;
-import com.rrmsense.radiostream.models.Radio;
 import com.rrmsense.radiostream.models.SelectFragment;
 import com.rrmsense.radiostream.models.Storage;
 
@@ -27,7 +25,7 @@ import java.util.Deque;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class RadioFragment extends Fragment implements RecyclerViewClickListener,OnPreparedCallback {
+public class RecentFragment extends Fragment implements RecyclerViewClickListener,OnPreparedCallback {
 
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
@@ -36,13 +34,13 @@ public class RadioFragment extends Fragment implements RecyclerViewClickListener
 
     ArrayList<String> radios = new ArrayList<>();
     Deque<Integer> history = new ArrayDeque<>();
-    public RadioFragment() {
+    public RecentFragment() {
 
     }
-    public static RadioFragment newInstance(int id) {
+    public static RecentFragment newInstance(int id) {
         Bundle args = new Bundle();
         args.putInt("ID", id);
-        RadioFragment fragment = new RadioFragment();
+        RecentFragment fragment = new RecentFragment();
         fragment.setArguments(args);
         return fragment;
     }
@@ -89,8 +87,6 @@ public class RadioFragment extends Fragment implements RecyclerViewClickListener
                 //Log.d("ID", String.valueOf(fragmentID));
                 break;
         }
-
-
         mRecyclerView.setAdapter(mAdapter);
     }
 
@@ -99,7 +95,8 @@ public class RadioFragment extends Fragment implements RecyclerViewClickListener
     public void recyclerViewListClicked(View v, int position) {
         //Log.d("ITEM",mRecyclerView.getChildAt(position).toString());
         //Log.d("PLAYING STATE", String.valueOf(radios.get(position).isButtonPlaying()));
-       // mAdapter.notifyItemChanged(position);
+        mAdapter.notifyItemChanged(position);
+        mAdapter.notifyItemInserted(mAdapter.getItemCount()-1);
         resetRadio();
         if(position<mAdapter.getItemCount())
         if(Storage.getRadioSationSingleValueBoolean(radios.get(position),"playing",getActivity())){
@@ -129,5 +126,12 @@ public class RadioFragment extends Fragment implements RecyclerViewClickListener
         Storage.setRadioSationSingleValue(radios.get(position),"loading",false,getActivity());
         Storage.setRadioSationSingleValue(radios.get(position),"equalizer",true,getActivity());
         mAdapter.notifyItemChanged(position);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mAdapter.notifyItemChanged(0,mAdapter.getItemCount());
+        mAdapter.notifyItemInserted(mAdapter.getItemCount()-1);
     }
 }

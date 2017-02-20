@@ -18,13 +18,16 @@ public class Storage {
     public static ArrayList getRecent(Context context) {
         ArrayList<String> radios = new ArrayList<>();
         SharedPreferences sharedPreferences = context.getSharedPreferences("SharedPreferences", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
         String recent = sharedPreferences.getString("recent", "");
         String[] recents = recent.split(",");
         for (String f : recents) {
-            if(f.length()>0)
+            if(f.length()>0){
                 radios.add(f);
+                editor.putBoolean(f + "_recent", true);
+            }
         }
-
+        editor.apply();
         return radios;
     }
 
@@ -36,7 +39,6 @@ public class Storage {
         String[] favourites = favourite.split(",");
         for (String f : favourites) {
             if(f.length()>0){
-
                 radios.add(f);
                 Log.d("FAV",f + "_favourite");
                 editor.putBoolean(f + "_favourite", true);
@@ -52,18 +54,21 @@ public class Storage {
         String recent = sharedPreferences.getString("recent", "");
         if(recent.contains(s))
             return;
-        //recent = recent.replace(s+",","");
         recent = s + "," + recent;
-        int i;
-        if (sharedPreferences.getInt("recentCount", 0) > 10) {
-            i = recent.lastIndexOf(',');
-            recent = recent.substring(0, i);
-        } else {
-            editor.putInt("recentCount", sharedPreferences.getInt("recentCount", 0) + 1);
-        }
-        editor.putBoolean(s+"_recent",true).apply();
-        editor.putString("recent", recent).apply();
+        editor.putBoolean(s+"_recent",true);
+        editor.putString("recent", recent);
+        editor.apply();
         ((MainActivity) context).recentRadios.add(s);
+        //recent = recent.replace(s+",","");
+
+        //int i;
+//        if (sharedPreferences.getInt("recentCount", 0) > 10) {
+//            i = recent.lastIndexOf(',');
+//            recent = recent.substring(0, i);
+//        } else {
+//            editor.putInt("recentCount", sharedPreferences.getInt("recentCount", 0) + 1);
+//        }
+
 
     }
 

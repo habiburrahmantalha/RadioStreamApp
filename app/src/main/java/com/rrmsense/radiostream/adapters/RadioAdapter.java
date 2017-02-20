@@ -17,6 +17,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.rrmsense.radiostream.R;
 import com.rrmsense.radiostream.interfaces.RecyclerViewClickListener;
 import com.rrmsense.radiostream.models.Radio;
+import com.rrmsense.radiostream.models.SelectFragment;
 import com.rrmsense.radiostream.models.Storage;
 
 import java.util.ArrayList;
@@ -30,15 +31,17 @@ public class RadioAdapter extends RecyclerView.Adapter<RadioAdapter.ViewHolder>{
 
     private ArrayList<String> radios;
     private Context mContext;
+    private int CURRENT_FRAGMENT;
     //private String streamURL;
 
 
     private static RecyclerViewClickListener itemListener;
 
-    public RadioAdapter(ArrayList<String> radios, Context mContext,RecyclerViewClickListener itemListener) {
+    public RadioAdapter(ArrayList<String> radios, Context mContext,RecyclerViewClickListener itemListener,int CURRENT_FRAGMENT) {
         this.radios = radios;
         this.mContext = mContext;
         this.itemListener = itemListener;
+        this.CURRENT_FRAGMENT = CURRENT_FRAGMENT;
 
     }
     @Override
@@ -160,7 +163,10 @@ public class RadioAdapter extends RecyclerView.Adapter<RadioAdapter.ViewHolder>{
                     boolean f = Storage.getRadioSationSingleValueBoolean(id,"favourite",mContext);
                     if(f){
                         Storage.removeFavourite(id,mContext);
-                        notifyItemRemoved(this.getAdapterPosition());
+                        if(CURRENT_FRAGMENT== SelectFragment.FRAGMENT_FAVOURITE)
+                            notifyItemRemoved(this.getAdapterPosition());
+                        else
+                            notifyItemChanged(this.getAdapterPosition());
                     }else{
                         Storage.saveFavourite(id,mContext);
                         notifyItemChanged(this.getAdapterPosition());
