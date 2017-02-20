@@ -48,12 +48,8 @@ public class RecentFragment extends Fragment implements RecyclerViewClickListene
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         Bundle bundle = this.getArguments();
-        //if (bundle != null) {
         fragmentID = bundle.getInt("ID", SelectFragment.FRAGMENT_BANGLA_RADIO);
-
-        //}
         Log.d("ID", String.valueOf(fragmentID));
     }
 
@@ -62,14 +58,14 @@ public class RecentFragment extends Fragment implements RecyclerViewClickListene
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_radio, container, false);
         mRecyclerView = (RecyclerView) view.findViewById(R.id.recycler_view_bangla_radio);
-        mLayoutManager = new LinearLayoutManager(getActivity());
-        mRecyclerView.setLayoutManager(mLayoutManager);
+
 
         updateAdapter();
         return view;
     }
     void updateAdapter(){
-        //Log.d("6ID", String.valueOf(fragmentID));
+        mLayoutManager = new LinearLayoutManager(getActivity());
+        mRecyclerView.setLayoutManager(mLayoutManager);
         switch (fragmentID){
             case SelectFragment.FRAGMENT_BANGLA_RADIO:
                 radios = ((MainActivity)getContext()).radios;
@@ -77,14 +73,12 @@ public class RecentFragment extends Fragment implements RecyclerViewClickListene
                 //Log.d("ID", String.valueOf(fragmentID));
                 break;
             case SelectFragment.FRAGMENT_FAVOURITE:
-                radios = ((MainActivity)getContext()).favouriteRadios;
+                radios = Storage.getFavourite(getActivity());
                 mAdapter = new RadioAdapter(radios,getActivity(),this,SelectFragment.FRAGMENT_FAVOURITE);
-                //Log.d("ID", String.valueOf(fragmentID));
                 break;
             case SelectFragment.FRAGMENT_RECENT:
-                radios = ((MainActivity)getContext()).recentRadios;
+                radios = Storage.getRecent(getActivity());
                 mAdapter = new RadioAdapter(radios,getActivity(),this,SelectFragment.FRAGMENT_RECENT);
-                //Log.d("ID", String.valueOf(fragmentID));
                 break;
         }
         mRecyclerView.setAdapter(mAdapter);
@@ -95,8 +89,7 @@ public class RecentFragment extends Fragment implements RecyclerViewClickListene
     public void recyclerViewListClicked(View v, int position) {
         //Log.d("ITEM",mRecyclerView.getChildAt(position).toString());
         //Log.d("PLAYING STATE", String.valueOf(radios.get(position).isButtonPlaying()));
-        mAdapter.notifyItemChanged(position);
-        mAdapter.notifyItemInserted(mAdapter.getItemCount()-1);
+
         resetRadio();
         if(position<mAdapter.getItemCount())
         if(Storage.getRadioSationSingleValueBoolean(radios.get(position),"playing",getActivity())){
@@ -129,9 +122,13 @@ public class RecentFragment extends Fragment implements RecyclerViewClickListene
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        mAdapter.notifyItemChanged(0,mAdapter.getItemCount());
-        mAdapter.notifyItemInserted(mAdapter.getItemCount()-1);
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+
+        super.setUserVisibleHint(isVisibleToUser);
+        if (isVisibleToUser) {
+            updateAdapter();
+        } else {
+
+        }
     }
 }

@@ -21,11 +21,18 @@ public class Storage {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         String recent = sharedPreferences.getString("recent", "");
         String[] recents = recent.split(",");
+        int i=0;
         for (String f : recents) {
             if(f.length()>0){
+                if(i<15){
                 radios.add(f);
-                editor.putBoolean(f + "_recent", true);
+                    editor.putBoolean(f + "_recent", true);
+                }
+                else{
+                    editor.putBoolean(f + "_recent", false);
+                }
             }
+            i++;
         }
         editor.apply();
         return radios;

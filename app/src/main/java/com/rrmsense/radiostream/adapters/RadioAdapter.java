@@ -158,8 +158,6 @@ public class RadioAdapter extends RecyclerView.Adapter<RadioAdapter.ViewHolder>{
                     break;
                 case R.id.button_favourite:
                     //Toast.makeText(mContext,"Favourite",Toast.LENGTH_SHORT).show();
-
-
                     boolean f = Storage.getRadioSationSingleValueBoolean(id,"favourite",mContext);
                     if(f){
                         Storage.removeFavourite(id,mContext);

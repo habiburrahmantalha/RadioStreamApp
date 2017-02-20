@@ -248,12 +248,10 @@ public class MainActivity extends AppCompatActivity
                     }
                 }
                 //openFragment(SelectFragment.FRAGMENT_BANGLA_RADIO);
-
-                loadRecentRadioStation();
+                //loadRecentRadioStation();
                 loadFavouriteRadioStation();
                 loadViewPager();
                 //openFragment(SelectFragment.FRAGMENT_BANGLA_RADIO);
-
             }
         });
     }

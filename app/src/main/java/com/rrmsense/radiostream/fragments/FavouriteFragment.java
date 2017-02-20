@@ -62,14 +62,12 @@ public class FavouriteFragment extends Fragment implements RecyclerViewClickList
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_radio, container, false);
         mRecyclerView = (RecyclerView) view.findViewById(R.id.recycler_view_bangla_radio);
-        mLayoutManager = new LinearLayoutManager(getActivity());
-        mRecyclerView.setLayoutManager(mLayoutManager);
-
         updateAdapter();
         return view;
     }
     void updateAdapter(){
-        //Log.d("6ID", String.valueOf(fragmentID));
+        mLayoutManager = new LinearLayoutManager(getActivity());
+        mRecyclerView.setLayoutManager(mLayoutManager);
         switch (fragmentID){
             case SelectFragment.FRAGMENT_BANGLA_RADIO:
                 radios = ((MainActivity)getContext()).radios;
@@ -79,16 +77,12 @@ public class FavouriteFragment extends Fragment implements RecyclerViewClickList
             case SelectFragment.FRAGMENT_FAVOURITE:
                 radios = ((MainActivity)getContext()).favouriteRadios;
                 mAdapter = new RadioAdapter(radios,getActivity(),this,SelectFragment.FRAGMENT_FAVOURITE);
-                //Log.d("ID", String.valueOf(fragmentID));
                 break;
             case SelectFragment.FRAGMENT_RECENT:
-                radios = ((MainActivity)getContext()).recentRadios;
+                radios = Storage.getRecent(getActivity());
                 mAdapter = new RadioAdapter(radios,getActivity(),this,SelectFragment.FRAGMENT_RECENT);
-                //Log.d("ID", String.valueOf(fragmentID));
                 break;
         }
-
-
         mRecyclerView.setAdapter(mAdapter);
     }
 
@@ -130,8 +124,12 @@ public class FavouriteFragment extends Fragment implements RecyclerViewClickList
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        mAdapter.notifyItemInserted(mAdapter.getItemCount()-1);
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if (isVisibleToUser) {
+            updateAdapter();
+        } else {
+            // Do your Work
+        }
     }
 }
