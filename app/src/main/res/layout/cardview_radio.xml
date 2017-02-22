@@ -82,6 +82,16 @@
                     style="@style/Widget.AppCompat.Button.Borderless" />
             </RelativeLayout>
 
+            <TextView
+                android:id="@+id/text_type"
+                android:text="type"
+                android:paddingLeft="5dp"
+                android:paddingRight="5dp"
+                android:textStyle="italic"
+                android:background="@color/lightgrey"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
         </LinearLayout>
 
 

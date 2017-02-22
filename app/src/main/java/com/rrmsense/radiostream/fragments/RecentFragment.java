@@ -68,7 +68,7 @@ public class RecentFragment extends Fragment implements RecyclerViewClickListene
         mRecyclerView.setLayoutManager(mLayoutManager);
         switch (fragmentID){
             case SelectFragment.FRAGMENT_BANGLA_RADIO:
-                radios = ((MainActivity)getContext()).radios;
+                radios = ((MainActivity)getContext()).banglaRadios;
                 mAdapter = new RadioAdapter(radios,getActivity(),this,SelectFragment.FRAGMENT_BANGLA_RADIO);
                 //Log.d("ID", String.valueOf(fragmentID));
                 break;
@@ -88,7 +88,7 @@ public class RecentFragment extends Fragment implements RecyclerViewClickListene
     @Override
     public void recyclerViewListClicked(View v, int position) {
         //Log.d("ITEM",mRecyclerView.getChildAt(position).toString());
-        //Log.d("PLAYING STATE", String.valueOf(radios.get(position).isButtonPlaying()));
+        //Log.d("PLAYING STATE", String.valueOf(banglaRadios.get(position).isButtonPlaying()));
 
         resetRadio();
         if(position<mAdapter.getItemCount())

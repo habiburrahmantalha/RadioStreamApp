@@ -5,16 +5,16 @@ package com.rrmsense.radiostream.models;
  */
 
 public class Radio {
-    String imageURL;
-    String streamURL;
-    String name;
-    String id;
-    String category;
-    boolean buttonPlaying;
-    boolean imageEqualizer;
-    boolean imageLoading;
-    boolean buttonFavourite;
-    boolean buttonRecent;
+    private String imageURL;
+    private String streamURL;
+    private String name;
+    private String id;
+    private String category;
+    private boolean buttonPlaying;
+    private boolean imageEqualizer;
+    private boolean imageLoading;
+    private boolean buttonFavourite;
+    private boolean buttonRecent;
 
     public Radio(){
 
@@ -119,4 +119,5 @@ public class Radio {
     public void setButtonRecent(boolean buttonRecent) {
         this.buttonRecent = buttonRecent;
     }
+
 }

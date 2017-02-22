@@ -55,7 +55,7 @@ public class RadioAdapter extends RecyclerView.Adapter<RadioAdapter.ViewHolder>{
         //Toast.makeText(mContext,radio.isButtonFavourite()+""+radio.isButtonPlaying()+""+radio.isImageLoading()+"",Toast.LENGTH_SHORT).show();
         //Log.d("Bool",radio.isButtonFavourite()+""+radio.isButtonPlaying()+""+radio.isImageLoading()+"");
         holder.text_title.setText(radio.getName());
-
+        holder.text_type.setText(radio.getCategory());
         if(radio.getImageURL()!="")
             Glide.with(mContext).load(radio.getImageURL()).override(300,300).fitCenter().diskCacheStrategy( DiskCacheStrategy.SOURCE ).into(holder.image_radio);
 
@@ -101,6 +101,7 @@ public class RadioAdapter extends RecyclerView.Adapter<RadioAdapter.ViewHolder>{
 
         private ImageView image_radio;
         private TextView text_title;
+        private TextView text_type;
         private Button button_play;
         private Button button_stop;
         private ProgressBar progressBar;
@@ -112,7 +113,7 @@ public class RadioAdapter extends RecyclerView.Adapter<RadioAdapter.ViewHolder>{
             view.setOnClickListener(this);
             image_radio = (ImageView) view.findViewById(R.id.image_radio);
             text_title = (TextView) view.findViewById(R.id.text_title);
-
+            text_type= (TextView) view.findViewById(R.id.text_type);
             button_play = (Button) view.findViewById(R.id.button_play);
             button_play.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_play_arrow_black_24dp,0,0,0);
             button_play.setOnClickListener(this);

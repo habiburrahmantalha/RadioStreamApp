@@ -31,6 +31,7 @@ public class FavouriteFragment extends Fragment implements RecyclerViewClickList
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
     private static int fragmentID;
+    private boolean viewCreated = false;
 
     ArrayList<String> radios = new ArrayList<>();
     Deque<Integer> history = new ArrayDeque<>();
@@ -62,7 +63,9 @@ public class FavouriteFragment extends Fragment implements RecyclerViewClickList
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_radio, container, false);
         mRecyclerView = (RecyclerView) view.findViewById(R.id.recycler_view_bangla_radio);
+
         updateAdapter();
+        viewCreated = true;
         return view;
     }
     void updateAdapter(){
@@ -70,12 +73,13 @@ public class FavouriteFragment extends Fragment implements RecyclerViewClickList
         mRecyclerView.setLayoutManager(mLayoutManager);
         switch (fragmentID){
             case SelectFragment.FRAGMENT_BANGLA_RADIO:
-                radios = ((MainActivity)getContext()).radios;
+                radios = ((MainActivity)getContext()).banglaRadios;
                 mAdapter = new RadioAdapter(radios,getActivity(),this,SelectFragment.FRAGMENT_BANGLA_RADIO);
                 //Log.d("ID", String.valueOf(fragmentID));
                 break;
             case SelectFragment.FRAGMENT_FAVOURITE:
                 radios = ((MainActivity)getContext()).favouriteRadios;
+                //radios = Storage.getFavourite(getActivity());
                 mAdapter = new RadioAdapter(radios,getActivity(),this,SelectFragment.FRAGMENT_FAVOURITE);
                 break;
             case SelectFragment.FRAGMENT_RECENT:
@@ -90,7 +94,7 @@ public class FavouriteFragment extends Fragment implements RecyclerViewClickList
     @Override
     public void recyclerViewListClicked(View v, int position) {
         //Log.d("ITEM",mRecyclerView.getChildAt(position).toString());
-        //Log.d("PLAYING STATE", String.valueOf(radios.get(position).isButtonPlaying()));
+        //Log.d("PLAYING STATE", String.valueOf(banglaRadios.get(position).isButtonPlaying()));
        // mAdapter.notifyItemChanged(position);
         resetRadio();
         if(position<mAdapter.getItemCount())
@@ -126,6 +130,8 @@ public class FavouriteFragment extends Fragment implements RecyclerViewClickList
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
+        if(!viewCreated)
+            return;
         if (isVisibleToUser) {
             updateAdapter();
         } else {

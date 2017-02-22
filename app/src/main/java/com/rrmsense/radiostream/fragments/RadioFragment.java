@@ -2,7 +2,6 @@ package com.rrmsense.radiostream.fragments;
 
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -16,7 +15,6 @@ import com.rrmsense.radiostream.R;
 import com.rrmsense.radiostream.adapters.RadioAdapter;
 import com.rrmsense.radiostream.interfaces.OnPreparedCallback;
 import com.rrmsense.radiostream.interfaces.RecyclerViewClickListener;
-import com.rrmsense.radiostream.models.Radio;
 import com.rrmsense.radiostream.models.SelectFragment;
 import com.rrmsense.radiostream.models.Storage;
 
@@ -33,7 +31,7 @@ public class RadioFragment extends Fragment implements RecyclerViewClickListener
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
     private static int fragmentID;
-private boolean viewCreated = false;
+    private boolean viewCreated = false;
     ArrayList<String> radios = new ArrayList<>();
     Deque<Integer> history = new ArrayDeque<>();
     public RadioFragment() {
@@ -69,8 +67,23 @@ private boolean viewCreated = false;
         mRecyclerView.setLayoutManager(mLayoutManager);
         switch (fragmentID){
             case SelectFragment.FRAGMENT_BANGLA_RADIO:
-                radios = ((MainActivity)getContext()).radios;
+                radios = ((MainActivity)getContext()).banglaRadios;
                 mAdapter = new RadioAdapter(radios,getActivity(),this,SelectFragment.FRAGMENT_BANGLA_RADIO);
+                //Log.d("ID", String.valueOf(fragmentID));
+                break;
+            case SelectFragment.FRAGMENT_INTERNATIONAL_RADIO:
+                radios = ((MainActivity)getContext()).internationalRadios;
+                mAdapter = new RadioAdapter(radios,getActivity(),this,SelectFragment.FRAGMENT_INTERNATIONAL_RADIO);
+                //Log.d("ID", String.valueOf(fragmentID));
+                break;
+            case SelectFragment.FRAGMENT_MUSIC_RADIO:
+                radios = ((MainActivity)getContext()).musicRadios;
+                mAdapter = new RadioAdapter(radios,getActivity(),this,SelectFragment.FRAGMENT_MUSIC_RADIO);
+                //Log.d("ID", String.valueOf(fragmentID));
+                break;
+            case SelectFragment.FRAGMENT_NEWS_RADIO:
+                radios = ((MainActivity)getContext()).newsRadios;
+                mAdapter = new RadioAdapter(radios,getActivity(),this,SelectFragment.FRAGMENT_NEWS_RADIO);
                 //Log.d("ID", String.valueOf(fragmentID));
                 break;
             case SelectFragment.FRAGMENT_FAVOURITE:
@@ -119,6 +132,7 @@ private boolean viewCreated = false;
         if(!viewCreated)
             return;
         if (isVisibleToUser) {
+            fragmentID = ((MainActivity)getContext()).FRAGMENT;
             updateAdapter();
         } else {
 

@@ -37,6 +37,21 @@ public class Storage {
         editor.apply();
         return radios;
     }
+    public static void RemoveAllRecent(Context context) {
+
+        SharedPreferences sharedPreferences = context.getSharedPreferences("SharedPreferences", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        String recent = sharedPreferences.getString("recent", "");
+        String[] recents = recent.split(",");
+        int i=0;
+        for (String f : recents) {
+            if(f.length()>0){
+                editor.putBoolean(f + "_recent", false);
+            }
+        }
+        editor.apply();
+
+    }
 
     public static ArrayList getFavourite(Context context) {
         ArrayList<String> radios = new ArrayList<>();
@@ -54,6 +69,26 @@ public class Storage {
         editor.apply();
         return radios;
     }
+    public static void removeAllFavourite(Context context) {
+
+        SharedPreferences sharedPreferences = context.getSharedPreferences("SharedPreferences", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        String favourite = sharedPreferences.getString("favourite", "");
+        String[] favourites = favourite.split(",");
+        for (String f : favourites) {
+            if(f.length()>0){
+                editor.putBoolean(f + "_favourite", false);
+            }
+        }
+        editor.apply();
+    }
+    public static void removeAll(Context context) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences("SharedPreferences", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.clear();
+        editor.apply();
+    }
+
 
     public static void saveRecent(String s, Context context) {
         SharedPreferences sharedPreferences = context.getSharedPreferences("SharedPreferences", Context.MODE_PRIVATE);
@@ -106,7 +141,7 @@ public class Storage {
         editor.putString(r.getId() + "_stream", r.getStreamURL());
         editor.putString(r.getId() + "_image", r.getImageURL());
         editor.putString(r.getId() + "_id", r.getId());
-        editor.putString(r.getId() + "_category", r.getId());
+        editor.putString(r.getId() + "_category", r.getCategory());
         editor.putBoolean(r.getId() + "_playing", r.isButtonPlaying());
         editor.putBoolean(r.getId() + "_equalizer", r.isImageEqualizer());
         editor.putBoolean(r.getId() + "_loading", r.isImageLoading());

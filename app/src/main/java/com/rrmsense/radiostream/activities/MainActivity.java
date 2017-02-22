@@ -1,9 +1,11 @@
 package com.rrmsense.radiostream.activities;
 
+import android.content.Intent;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
@@ -45,18 +47,20 @@ public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, MediaPlayer.OnBufferingUpdateListener, MediaPlayer.OnPreparedListener {
 
 
-
     public MediaPlayer mediaPlayer;
+    public ArrayList<String> banglaRadios = new ArrayList<>();
+    public ArrayList<String> internationalRadios = new ArrayList<>();
+    public ArrayList<String> newsRadios = new ArrayList<>();
+    public ArrayList<String> musicRadios = new ArrayList<>();
+    public ArrayList<String> recentRadios = new ArrayList<>();
+    public ArrayList<String> favouriteRadios = new ArrayList<>();
+    public int FRAGMENT = SelectFragment.FRAGMENT_BANGLA_RADIO;
     OnPreparedCallback onPreparedCallback;
     int position;
     ViewPager viewPager;
     ViewPagerAdapter viewPagerAdapter;
     TabLayout tabLayout;
-    public ArrayList<String> radios = new ArrayList<>();
-    public ArrayList<String> recentRadios = new ArrayList<>();
-    public ArrayList<String> favouriteRadios = new ArrayList<>();
     Deque<String> history = new ArrayDeque<>();
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,9 +89,6 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         loadRadioStation();
-
-
-
 
 
     }
@@ -126,6 +127,7 @@ public class MainActivity extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            startActivity(new Intent(MainActivity.this,SettingsActivity.class));
             return true;
         }
 
@@ -137,20 +139,53 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
+        boolean newTab = true;
 
         if (id == R.id.nav_music) {
             //openFragment(SelectFragment.FRAGMENT_FAVOURITE);
-            viewPager.setCurrentItem(0);
+            if(FRAGMENT == SelectFragment.FRAGMENT_MUSIC_RADIO)
+                newTab = false;
+            FRAGMENT = SelectFragment.FRAGMENT_MUSIC_RADIO;
+            tabLayout.getTabAt(0).setText("Music");
+
         } else if (id == R.id.nav_news) {
+            if(FRAGMENT == SelectFragment.FRAGMENT_NEWS_RADIO)
+                newTab = false;
+
+            FRAGMENT = SelectFragment.FRAGMENT_NEWS_RADIO;
+            tabLayout.getTabAt(0).setText("News");
             //openFragment(SelectFragment.FRAGMENT_RECENT);
         } else if (id == R.id.nav_international) {
+            if(FRAGMENT == SelectFragment.FRAGMENT_INTERNATIONAL_RADIO)
+                newTab = false;
+
+            FRAGMENT = SelectFragment.FRAGMENT_INTERNATIONAL_RADIO;
+            tabLayout.getTabAt(0).setText("International");
+            //viewPager.setCurrentItem(0);
             //openFragment(SelectFragment.FRAGMENT_BANGLA_RADIO);
         } else if (id == R.id.nav_bangla) {
+
+            if(FRAGMENT == SelectFragment.FRAGMENT_BANGLA_RADIO)
+                newTab = false;
+
+            tabLayout.getTabAt(0).setText("বাংলা");
+            FRAGMENT = SelectFragment.FRAGMENT_BANGLA_RADIO;
 
         } else if (id == R.id.nav_share) {
 
         } else if (id == R.id.nav_about) {
 
+            startActivity(new Intent(this,AboutActivity.class));
+
+        }
+        if (viewPager.getCurrentItem() == 0 && newTab) {
+            viewPager.setCurrentItem(1, false);
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    viewPager.setCurrentItem(0);
+                }
+            }, 350);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -158,11 +193,11 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    public void openFragment(int fragmentID){
+    public void openFragment(int fragmentID) {
         FragmentManager fragmentManager = getSupportFragmentManager();
         Fragment fragment = new RadioFragment();
         Bundle bundle = new Bundle();
-        switch (fragmentID){
+        switch (fragmentID) {
             case SelectFragment.FRAGMENT_BANGLA_RADIO:
                 getSupportActionBar().setTitle("Bangla Online Radio");
                 bundle.putInt("ID", SelectFragment.FRAGMENT_BANGLA_RADIO);
@@ -178,11 +213,11 @@ public class MainActivity extends AppCompatActivity
         }
         fragment.setArguments(bundle);
         fragmentManager.beginTransaction()
-                .replace(R.id.fragment_holder,fragment)
+                .replace(R.id.fragment_holder, fragment)
                 .commit();
     }
 
-    public void loadViewPager(){
+    public void loadViewPager() {
 
         tabLayout = (TabLayout) findViewById(R.id.tab_layout);
         tabLayout.addTab(tabLayout.newTab().setText("বাংলা FM").setIcon(R.drawable.ic_radio_black_24dp)); //  রেডিও
@@ -213,7 +248,7 @@ public class MainActivity extends AppCompatActivity
         });
     }
 
-    public void loadRadioStation(){
+    public void loadRadioStation() {
         AsyncHttpClient client = new AsyncHttpClient();
 
         client.get("http://www.rrmelectronics.com/appserver/RadioStreamLink.php", null, new JsonHttpResponseHandler() {
@@ -221,7 +256,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
                 //Log.d("JSON",response.toString());
-                for(int i=0;i < response.length();i++){
+                for (int i = 0; i < response.length(); i++) {
                     //Log.d("JSON",response.get(i).toString());
                     Gson gson = new Gson();
                     Radio r = null;
@@ -232,16 +267,31 @@ public class MainActivity extends AppCompatActivity
                         r.setImageLoading(false);
                         r.setButtonFavourite(false);
                         r.setButtonRecent(false);
-                        if(!Storage.isRadioStationSaved(r.getId(),getApplication())){
-                            Storage.saveRadioStation(r,getApplicationContext());
-                            Log.d("NO",r.getId());
-                        }else{
-                            Log.d("YES",r.getId());
-                            Storage.setRadioSationSingleValue(r.getId(),"playing",false,getApplication());
-                            Storage.setRadioSationSingleValue(r.getId(),"loading",false,getApplication());
-                            Storage.setRadioSationSingleValue(r.getId(),"equalizer",false,getApplication());
+                        if (!Storage.isRadioStationSaved(r.getId(), getApplication())) {
+                            Storage.saveRadioStation(r, getApplicationContext());
+                            //Log.d("NO",r.getId());
+                        } else {
+                            //Log.d("YES",r.getId());
+                            Storage.setRadioSationSingleValue(r.getId(), "playing", false, getApplication());
+                            Storage.setRadioSationSingleValue(r.getId(), "loading", false, getApplication());
+                            Storage.setRadioSationSingleValue(r.getId(), "equalizer", false, getApplication());
                         }
-                        radios.add(r.getId());
+                        switch (r.getCategory()) {
+                            case "bangla":
+                                banglaRadios.add(r.getId());
+                                break;
+                            case "news":
+                                newsRadios.add(r.getId());
+                                break;
+                            case "music":
+                                musicRadios.add(r.getId());
+                                break;
+
+                            case "international":
+                                internationalRadios.add(r.getId());
+                                break;
+                        }
+
                         //Log.d("JSON",r.getName());
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -256,7 +306,7 @@ public class MainActivity extends AppCompatActivity
         });
     }
 
-    public void playRadio(String id, String url, int position, OnPreparedCallback onPreparedCallback){
+    public void playRadio(String id, String url, int position, OnPreparedCallback onPreparedCallback) {
         resetRadio();
         history.push(id);
 
@@ -268,37 +318,38 @@ public class MainActivity extends AppCompatActivity
         mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
         mediaPlayer.reset();
 
-        try{
+        try {
             mediaPlayer.setDataSource(this, uri);
             mediaPlayer.setOnPreparedListener(this);
             mediaPlayer.setOnBufferingUpdateListener(this);
             mediaPlayer.prepareAsync();
-        }catch(Exception e){
+        } catch (Exception e) {
         }
     }
 
     private void resetRadio() {
-        while (!history.isEmpty()){
-            Storage.setRadioSationSingleValue(history.peek(),"playing",false,getApplication());
+        while (!history.isEmpty()) {
+            Storage.setRadioSationSingleValue(history.peek(), "playing", false, getApplication());
             //Storage.setRadioSationSingleValue(history.peek(),"loading",false,getApplication());
-            Storage.setRadioSationSingleValue(history.peek(),"equalizer",false,getApplication());
+            Storage.setRadioSationSingleValue(history.peek(), "equalizer", false, getApplication());
             history.pop();
         }
     }
 
-    public  void stopRadio(){
+    public void stopRadio() {
         resetRadio();
         try {
-            if(mediaPlayer!=null) {
+            if (mediaPlayer != null) {
                 mediaPlayer.stop();
                 mediaPlayer.reset();
                 mediaPlayer.release();
                 mediaPlayer = null;
 
             }
-        } catch(Exception e){
+        } catch (Exception e) {
         }
     }
+
     @Override
     public void onPrepared(MediaPlayer mediaPlayer) {
         //((ImageView) radioView.findViewById(R.id.image_gif)).setVisibility(ProgressBar.VISIBLE);
