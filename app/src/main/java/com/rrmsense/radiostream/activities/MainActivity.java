@@ -1,5 +1,6 @@
 package com.rrmsense.radiostream.activities;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -249,6 +250,10 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void loadRadioStation() {
+        ProgressDialog pd = new ProgressDialog(this);
+        pd.setMessage("loading");
+        pd.setCancelable(false);
+        pd.show();
         AsyncHttpClient client = new AsyncHttpClient();
 
         client.get("http://www.rrmelectronics.com/appserver/RadioStreamLink.php", null, new JsonHttpResponseHandler() {
@@ -304,6 +309,7 @@ public class MainActivity extends AppCompatActivity
                 //openFragment(SelectFragment.FRAGMENT_BANGLA_RADIO);
             }
         });
+        pd.hide();
     }
 
     public void playRadio(String id, String url, int position, OnPreparedCallback onPreparedCallback) {
