@@ -313,6 +313,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void playRadio(String id, String url, int position, OnPreparedCallback onPreparedCallback) {
+
         resetRadio();
         history.push(id);
 
