@@ -7,6 +7,7 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
@@ -23,6 +24,9 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.AccelerateInterpolator;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.loopj.android.http.AsyncHttpClient;
@@ -34,6 +38,7 @@ import com.rrmsense.radiostream.interfaces.OnPreparedCallback;
 import com.rrmsense.radiostream.models.Radio;
 import com.rrmsense.radiostream.models.SelectFragment;
 import com.rrmsense.radiostream.models.Storage;
+import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -62,6 +67,7 @@ public class MainActivity extends AppCompatActivity
     ViewPagerAdapter viewPagerAdapter;
     TabLayout tabLayout;
     Deque<String> history = new ArrayDeque<>();
+    private SlidingUpPanelLayout slidingUpPanelLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,6 +75,9 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+       final AppBarLayout appBarLayout = (AppBarLayout)findViewById(R.id.appBar);
+
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -89,7 +98,37 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        slidingUpPanelLayout = (SlidingUpPanelLayout) findViewById(R.id.sliding_layout);
+
+
+        slidingUpPanelLayout.addPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
+            @Override
+            public void onPanelSlide(View panel, float slideOffset) {
+                //Toast.makeText(MainActivity.this,"CLick",Toast.LENGTH_LONG).show();
+
+            }
+            @Override
+            public void onPanelStateChanged(View panel, SlidingUpPanelLayout.PanelState previousState, SlidingUpPanelLayout.PanelState newState) {
+                Toast.makeText(MainActivity.this,previousState.toString()+" "+newState.toString(),Toast.LENGTH_SHORT).show();
+                if(newState== SlidingUpPanelLayout.PanelState.EXPANDED){
+                    //toolbar.animate().translationY(-toolbar.getHeight()).setInterpolator(new AccelerateInterpolator(2)).start();
+                    //toolbar.setVisibility(Toolbar.GONE);
+                    //slidingUpPanelLayout.setTouchEnabled(false);
+                    //appBarLayout.setExpanded(false, true);
+                    //getSupportActionBar().hide();
+                }
+                if(newState== SlidingUpPanelLayout.PanelState.COLLAPSED){
+                    //toolbar.setVisibility(Toolbar.VISIBLE);
+                    //appBarLayout.setExpanded(true, true);
+                    //getSupportActionBar().show();
+                }
+
+            }
+        });
+
         loadRadioStation();
+
+
 
 
     }

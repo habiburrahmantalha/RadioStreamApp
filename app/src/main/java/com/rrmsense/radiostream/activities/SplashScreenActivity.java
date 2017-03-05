@@ -17,7 +17,7 @@ import static com.rrmsense.radiostream.R.id.imageView;
 import static com.rrmsense.radiostream.R.id.progressBar;
 
 public class SplashScreenActivity extends AppCompatActivity {
-    private static int SPLASH_TIME_OUT = 3000;
+    private static int SPLASH_TIME_OUT = 0;
     ImageView image;
 
     @Override
