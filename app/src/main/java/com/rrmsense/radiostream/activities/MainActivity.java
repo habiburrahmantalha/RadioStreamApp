@@ -21,11 +21,12 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
-import android.view.animation.AccelerateInterpolator;
-import android.widget.TextView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
@@ -74,9 +75,10 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setTitle("");
         setSupportActionBar(toolbar);
 
-       final AppBarLayout appBarLayout = (AppBarLayout)findViewById(R.id.appBar);
+        final AppBarLayout appBarLayout = (AppBarLayout) findViewById(R.id.appBar);
 
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -98,194 +100,65 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+
+        LayoutInflater li = LayoutInflater.from(this);
+        final View layout_collapsed = li.inflate(R.layout.cardview_radio_main_collapsed, null, false);
+        final View layout_expanded = li.inflate(R.layout.cardview_radio_main_expanded, null, false);
+        final LinearLayout cardView_holder = (LinearLayout) findViewById(R.id.cardView_holder);
+        cardView_holder.addView(layout_collapsed);
+
         slidingUpPanelLayout = (SlidingUpPanelLayout) findViewById(R.id.sliding_layout);
 
 
         slidingUpPanelLayout.addPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
             @Override
             public void onPanelSlide(View panel, float slideOffset) {
-                //Toast.makeText(MainActivity.this,"CLick",Toast.LENGTH_LONG).show();
-
+                //Toast.makeText(MainActivity.this, "" +slideOffset,Toast.LENGTH_LONG).show();
             }
+
             @Override
             public void onPanelStateChanged(View panel, SlidingUpPanelLayout.PanelState previousState, SlidingUpPanelLayout.PanelState newState) {
-                Toast.makeText(MainActivity.this,previousState.toString()+" "+newState.toString(),Toast.LENGTH_SHORT).show();
-                if(newState== SlidingUpPanelLayout.PanelState.EXPANDED){
-                    //toolbar.animate().translationY(-toolbar.getHeight()).setInterpolator(new AccelerateInterpolator(2)).start();
-                    //toolbar.setVisibility(Toolbar.GONE);
-                    //slidingUpPanelLayout.setTouchEnabled(false);
-                    //appBarLayout.setExpanded(false, true);
-                    //getSupportActionBar().hide();
-                }
-                if(newState== SlidingUpPanelLayout.PanelState.COLLAPSED){
-                    //toolbar.setVisibility(Toolbar.VISIBLE);
-                    //appBarLayout.setExpanded(true, true);
-                    //getSupportActionBar().show();
-                }
+                Toast.makeText(MainActivity.this, previousState.toString() + " " + newState.toString(), Toast.LENGTH_SHORT).show();
 
+                if (previousState == SlidingUpPanelLayout.PanelState.DRAGGING) {
+
+                    if (newState == SlidingUpPanelLayout.PanelState.COLLAPSED) {
+                        cardView_holder.addView(layout_collapsed);
+                        slidingUpPanelLayout.setTouchEnabled(true);
+                    } else if (newState == SlidingUpPanelLayout.PanelState.EXPANDED) {
+                        cardView_holder.addView(layout_expanded);
+                        slidingUpPanelLayout.setTouchEnabled(false);
+                    }
+                } else if (previousState == SlidingUpPanelLayout.PanelState.EXPANDED && newState == SlidingUpPanelLayout.PanelState.DRAGGING) {
+                    cardView_holder.removeView(layout_expanded);
+
+                } else if (previousState == SlidingUpPanelLayout.PanelState.COLLAPSED && newState == SlidingUpPanelLayout.PanelState.DRAGGING) {
+                    cardView_holder.removeView(layout_collapsed);
+                }
+            }
+
+
+        });
+        slidingUpPanelLayout.setOnTouchListener(new SlidingUpPanelLayout.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_MOVE:
+                    case MotionEvent.ACTION_UP:
+                        //Toast.makeText(getApplicationContext(),"Cancel",Toast.LENGTH_SHORT).show();
+
+
+                        //slidingUpPanelLayout.addPanelSlideListener(panelSlideListener);
+                        //cardView_holder.removeView(layout_collapsed);
+                        //cardView_holder.addView(layout_expanded);
+                        break;
+                }
+                return false;
             }
         });
+
 
         loadRadioStation();
-
-
-
-
-    }
-
-    private void loadFavouriteRadioStation() {
-        favouriteRadios = Storage.getFavourite(getApplicationContext());
-    }
-
-    private void loadRecentRadioStation() {
-        recentRadios = Storage.getRecent(getApplicationContext());
-    }
-
-    @Override
-    public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
-        }
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            startActivity(new Intent(MainActivity.this,SettingsActivity.class));
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    @SuppressWarnings("StatementWithEmptyBody")
-    @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
-        int id = item.getItemId();
-        boolean newTab = true;
-
-        if (id == R.id.nav_music) {
-            //openFragment(SelectFragment.FRAGMENT_FAVOURITE);
-            if(FRAGMENT == SelectFragment.FRAGMENT_MUSIC_RADIO)
-                newTab = false;
-            FRAGMENT = SelectFragment.FRAGMENT_MUSIC_RADIO;
-            tabLayout.getTabAt(0).setText("Music");
-
-        } else if (id == R.id.nav_news) {
-            if(FRAGMENT == SelectFragment.FRAGMENT_NEWS_RADIO)
-                newTab = false;
-
-            FRAGMENT = SelectFragment.FRAGMENT_NEWS_RADIO;
-            tabLayout.getTabAt(0).setText("News");
-            //openFragment(SelectFragment.FRAGMENT_RECENT);
-        } else if (id == R.id.nav_international) {
-            if(FRAGMENT == SelectFragment.FRAGMENT_INTERNATIONAL_RADIO)
-                newTab = false;
-
-            FRAGMENT = SelectFragment.FRAGMENT_INTERNATIONAL_RADIO;
-            tabLayout.getTabAt(0).setText("International");
-            //viewPager.setCurrentItem(0);
-            //openFragment(SelectFragment.FRAGMENT_BANGLA_RADIO);
-        } else if (id == R.id.nav_bangla) {
-
-            if(FRAGMENT == SelectFragment.FRAGMENT_BANGLA_RADIO)
-                newTab = false;
-
-            tabLayout.getTabAt(0).setText("বাংলা");
-            FRAGMENT = SelectFragment.FRAGMENT_BANGLA_RADIO;
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_about) {
-
-            startActivity(new Intent(this,AboutActivity.class));
-
-        }
-        if (viewPager.getCurrentItem() == 0 && newTab) {
-            viewPager.setCurrentItem(1, false);
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    viewPager.setCurrentItem(0);
-                }
-            }, 350);
-        }
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
-        return true;
-    }
-
-    public void openFragment(int fragmentID) {
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        Fragment fragment = new RadioFragment();
-        Bundle bundle = new Bundle();
-        switch (fragmentID) {
-            case SelectFragment.FRAGMENT_BANGLA_RADIO:
-                getSupportActionBar().setTitle("Bangla Online Radio");
-                bundle.putInt("ID", SelectFragment.FRAGMENT_BANGLA_RADIO);
-                break;
-            case SelectFragment.FRAGMENT_FAVOURITE:
-                bundle.putInt("ID", SelectFragment.FRAGMENT_FAVOURITE);
-                getSupportActionBar().setTitle("Favourites");
-                break;
-            case SelectFragment.FRAGMENT_RECENT:
-                bundle.putInt("ID", SelectFragment.FRAGMENT_RECENT);
-                getSupportActionBar().setTitle("Recently Played");
-                break;
-        }
-        fragment.setArguments(bundle);
-        fragmentManager.beginTransaction()
-                .replace(R.id.fragment_holder, fragment)
-                .commit();
-    }
-
-    public void loadViewPager() {
-
-        tabLayout = (TabLayout) findViewById(R.id.tab_layout);
-        tabLayout.addTab(tabLayout.newTab().setText("বাংলা FM").setIcon(R.drawable.ic_radio_black_24dp)); //  রেডিও
-        tabLayout.addTab(tabLayout.newTab().setText("Recent").setIcon(R.drawable.ic_history_black_24dp));
-        tabLayout.addTab(tabLayout.newTab().setText("Favourites").setIcon(R.drawable.heart));
-
-        tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
-
-        viewPager = (ViewPager) findViewById(R.id.view_pager);
-        viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
-        viewPager.setAdapter(viewPagerAdapter);
-        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
-        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-                viewPager.setCurrentItem(tab.getPosition());
-            }
-
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab) {
-
-            }
-
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) {
-
-            }
-        });
     }
 
     public void loadRadioStation() {
@@ -349,6 +222,166 @@ public class MainActivity extends AppCompatActivity
             }
         });
         pd.hide();
+    }
+
+    private void loadFavouriteRadioStation() {
+        favouriteRadios = Storage.getFavourite(getApplicationContext());
+    }
+
+    public void loadViewPager() {
+
+        tabLayout = (TabLayout) findViewById(R.id.tab_layout);
+        tabLayout.addTab(tabLayout.newTab().setText("বাংলা FM").setIcon(R.drawable.ic_radio_black_24dp)); //  রেডিও
+        tabLayout.addTab(tabLayout.newTab().setText("Recent").setIcon(R.drawable.ic_history_black_24dp));
+        tabLayout.addTab(tabLayout.newTab().setText("Favourites").setIcon(R.drawable.heart));
+
+        tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
+
+        viewPager = (ViewPager) findViewById(R.id.view_pager);
+        viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
+        viewPager.setAdapter(viewPagerAdapter);
+        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                viewPager.setCurrentItem(tab.getPosition());
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
+    }
+
+    @Override
+    public void onBackPressed() {
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        } else if (slidingUpPanelLayout.getPanelState() == SlidingUpPanelLayout.PanelState.EXPANDED) {
+            slidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+            //slidingUpPanelLayout.setTouchEnabled(true);
+
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+            startActivity(new Intent(MainActivity.this, SettingsActivity.class));
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void loadRecentRadioStation() {
+        recentRadios = Storage.getRecent(getApplicationContext());
+    }
+
+
+    @SuppressWarnings("StatementWithEmptyBody")
+    @Override
+    public boolean onNavigationItemSelected(MenuItem item) {
+        // Handle navigation view item clicks here.
+        int id = item.getItemId();
+        boolean newTab = true;
+
+        if (id == R.id.nav_music) {
+            //openFragment(SelectFragment.FRAGMENT_FAVOURITE);
+            if (FRAGMENT == SelectFragment.FRAGMENT_MUSIC_RADIO)
+                newTab = false;
+            FRAGMENT = SelectFragment.FRAGMENT_MUSIC_RADIO;
+            tabLayout.getTabAt(0).setText("Music");
+
+        } else if (id == R.id.nav_news) {
+            if (FRAGMENT == SelectFragment.FRAGMENT_NEWS_RADIO)
+                newTab = false;
+
+            FRAGMENT = SelectFragment.FRAGMENT_NEWS_RADIO;
+            tabLayout.getTabAt(0).setText("News");
+            //openFragment(SelectFragment.FRAGMENT_RECENT);
+        } else if (id == R.id.nav_international) {
+            if (FRAGMENT == SelectFragment.FRAGMENT_INTERNATIONAL_RADIO)
+                newTab = false;
+
+            FRAGMENT = SelectFragment.FRAGMENT_INTERNATIONAL_RADIO;
+            tabLayout.getTabAt(0).setText("International");
+            //viewPager.setCurrentItem(0);
+            //openFragment(SelectFragment.FRAGMENT_BANGLA_RADIO);
+        } else if (id == R.id.nav_bangla) {
+
+            if (FRAGMENT == SelectFragment.FRAGMENT_BANGLA_RADIO)
+                newTab = false;
+
+            tabLayout.getTabAt(0).setText("বাংলা");
+            FRAGMENT = SelectFragment.FRAGMENT_BANGLA_RADIO;
+
+        } else if (id == R.id.nav_share) {
+
+        } else if (id == R.id.nav_about) {
+
+            startActivity(new Intent(this, AboutActivity.class));
+
+        }
+        if (viewPager.getCurrentItem() == 0 && newTab) {
+            viewPager.setCurrentItem(1, false);
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    viewPager.setCurrentItem(0);
+                }
+            }, 350);
+        }
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
+    }
+
+    public void openFragment(int fragmentID) {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        Fragment fragment = new RadioFragment();
+        Bundle bundle = new Bundle();
+        switch (fragmentID) {
+            case SelectFragment.FRAGMENT_BANGLA_RADIO:
+                getSupportActionBar().setTitle("Bangla Online Radio");
+                bundle.putInt("ID", SelectFragment.FRAGMENT_BANGLA_RADIO);
+                break;
+            case SelectFragment.FRAGMENT_FAVOURITE:
+                bundle.putInt("ID", SelectFragment.FRAGMENT_FAVOURITE);
+                getSupportActionBar().setTitle("Favourites");
+                break;
+            case SelectFragment.FRAGMENT_RECENT:
+                bundle.putInt("ID", SelectFragment.FRAGMENT_RECENT);
+                getSupportActionBar().setTitle("Recently Played");
+                break;
+        }
+        fragment.setArguments(bundle);
+        fragmentManager.beginTransaction()
+                .replace(R.id.fragment_holder, fragment)
+                .commit();
     }
 
     public void playRadio(String id, String url, int position, OnPreparedCallback onPreparedCallback) {

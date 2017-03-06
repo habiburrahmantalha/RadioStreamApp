@@ -6,7 +6,7 @@
     <color name="white">#FFFFFF</color>
     <color name="ivory">#FFFFF0</color>
     <color name="lightyellow">#FFFFE0</color>
-    <color name="yellow">#FFFF00</color>
+    <color name="yellow">#F8B902</color>
     <color name="snow">#FFFAFA</color>
     <color name="floralwhite">#FFFAF0</color>
     <color name="lemonchiffon">#FFFACD</color>
@@ -143,4 +143,7 @@
     <color name="darkblue">#00008B</color>
     <color name="navy">#000080</color>
     <color name="black">#000000</color>
+
+    <color name="icon">#F5F5F5</color>
+    <color name="line">#EBF0F3</color>
 </resources>
