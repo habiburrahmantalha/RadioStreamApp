@@ -11,8 +11,10 @@
     tools:context="com.rrmsense.radiostream.activities.SplashScreenActivity">
 
     <ImageView
+        android:padding="150dp"
         android:id="@+id/image"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"/>
 
 </RelativeLayout>

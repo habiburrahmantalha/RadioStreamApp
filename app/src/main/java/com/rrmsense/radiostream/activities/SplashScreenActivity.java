@@ -1,23 +1,16 @@
 package com.rrmsense.radiostream.activities;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
+import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.animation.GlideAnimation;
-import com.bumptech.glide.request.target.BitmapImageViewTarget;
-import com.bumptech.glide.request.target.GlideDrawableImageViewTarget;
 import com.rrmsense.radiostream.R;
 
-import static com.rrmsense.radiostream.R.id.imageView;
-import static com.rrmsense.radiostream.R.id.progressBar;
-
 public class SplashScreenActivity extends AppCompatActivity {
-    private static int SPLASH_TIME_OUT = 0;
+    private static int SPLASH_TIME_OUT = 1000;
     ImageView image;
 
     @Override
@@ -28,8 +21,7 @@ public class SplashScreenActivity extends AppCompatActivity {
         image = (ImageView) findViewById(R.id.image);
 
         Glide.with(SplashScreenActivity.this)
-                .load(R.drawable.musical)
-                .asGif()
+                .load(R.drawable.app_icon)
                 .crossFade()
                 .into(image);
 

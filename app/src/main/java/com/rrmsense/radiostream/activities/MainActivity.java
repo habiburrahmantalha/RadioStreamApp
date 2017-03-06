@@ -6,16 +6,10 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
-import android.support.design.widget.AppBarLayout;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
-import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
-import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -24,18 +18,20 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.rrmsense.radiostream.R;
-import com.rrmsense.radiostream.adapters.ViewPagerAdapter;
 import com.rrmsense.radiostream.fragments.RadioFragment;
 import com.rrmsense.radiostream.interfaces.OnPreparedCallback;
+import com.rrmsense.radiostream.models.CardViewCollapsed;
 import com.rrmsense.radiostream.models.Radio;
 import com.rrmsense.radiostream.models.SelectFragment;
 import com.rrmsense.radiostream.models.Storage;
@@ -53,7 +49,6 @@ import cz.msebera.android.httpclient.Header;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, MediaPlayer.OnBufferingUpdateListener, MediaPlayer.OnPreparedListener {
 
-
     public MediaPlayer mediaPlayer;
     public ArrayList<String> banglaRadios = new ArrayList<>();
     public ArrayList<String> internationalRadios = new ArrayList<>();
@@ -64,11 +59,12 @@ public class MainActivity extends AppCompatActivity
     public int FRAGMENT = SelectFragment.FRAGMENT_BANGLA_RADIO;
     OnPreparedCallback onPreparedCallback;
     int position;
-    ViewPager viewPager;
-    ViewPagerAdapter viewPagerAdapter;
-    TabLayout tabLayout;
     Deque<String> history = new ArrayDeque<>();
+    View layout_collapsed;
+    View layout_expanded;
+    LinearLayout cardView_holder;
     private SlidingUpPanelLayout slidingUpPanelLayout;
+    CardViewCollapsed cardViewCollapsed;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,19 +74,6 @@ public class MainActivity extends AppCompatActivity
         toolbar.setTitle("");
         setSupportActionBar(toolbar);
 
-        final AppBarLayout appBarLayout = (AppBarLayout) findViewById(R.id.appBar);
-
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
-
-        fab.hide();
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -102,13 +85,12 @@ public class MainActivity extends AppCompatActivity
 
 
         LayoutInflater li = LayoutInflater.from(this);
-        final View layout_collapsed = li.inflate(R.layout.cardview_radio_main_collapsed, null, false);
-        final View layout_expanded = li.inflate(R.layout.cardview_radio_main_expanded, null, false);
-        final LinearLayout cardView_holder = (LinearLayout) findViewById(R.id.cardView_holder);
+        layout_collapsed = li.inflate(R.layout.cardview_radio_main_collapsed, null, false);
+        layout_expanded = li.inflate(R.layout.cardview_radio_main_expanded, null, false);
+        cardView_holder = (LinearLayout) findViewById(R.id.cardView_holder);
         cardView_holder.addView(layout_collapsed);
 
         slidingUpPanelLayout = (SlidingUpPanelLayout) findViewById(R.id.sliding_layout);
-
 
         slidingUpPanelLayout.addPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
             @Override
@@ -139,25 +121,8 @@ public class MainActivity extends AppCompatActivity
 
 
         });
-        slidingUpPanelLayout.setOnTouchListener(new SlidingUpPanelLayout.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                switch (event.getAction()) {
-                    case MotionEvent.ACTION_MOVE:
-                    case MotionEvent.ACTION_UP:
-                        //Toast.makeText(getApplicationContext(),"Cancel",Toast.LENGTH_SHORT).show();
 
-
-                        //slidingUpPanelLayout.addPanelSlideListener(panelSlideListener);
-                        //cardView_holder.removeView(layout_collapsed);
-                        //cardView_holder.addView(layout_expanded);
-                        break;
-                }
-                return false;
-            }
-        });
-
-
+        cardViewCollapsed = new CardViewCollapsed((Button) layout_collapsed.findViewById(R.id.previous),(Button) layout_collapsed.findViewById(R.id.next),(Button) layout_collapsed.findViewById(R.id.play),(Button) layout_collapsed.findViewById(R.id.stop),(Button) layout_collapsed.findViewById(R.id.favourite),(ProgressBar) layout_collapsed.findViewById(R.id.progressBar),(ImageView) layout_collapsed.findViewById(R.id.image_radio) );
         loadRadioStation();
     }
 
@@ -217,8 +182,8 @@ public class MainActivity extends AppCompatActivity
                 //openFragment(SelectFragment.FRAGMENT_BANGLA_RADIO);
                 //loadRecentRadioStation();
                 loadFavouriteRadioStation();
-                loadViewPager();
-                //openFragment(SelectFragment.FRAGMENT_BANGLA_RADIO);
+                //loadViewPager();
+                openFragment(SelectFragment.FRAGMENT_BANGLA_RADIO);
             }
         });
         pd.hide();
@@ -228,35 +193,40 @@ public class MainActivity extends AppCompatActivity
         favouriteRadios = Storage.getFavourite(getApplicationContext());
     }
 
-    public void loadViewPager() {
-
-        tabLayout = (TabLayout) findViewById(R.id.tab_layout);
-        tabLayout.addTab(tabLayout.newTab().setText("বাংলা FM").setIcon(R.drawable.ic_radio_black_24dp)); //  রেডিও
-        tabLayout.addTab(tabLayout.newTab().setText("Recent").setIcon(R.drawable.ic_history_black_24dp));
-        tabLayout.addTab(tabLayout.newTab().setText("Favourites").setIcon(R.drawable.heart));
-
-        tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
-
-        viewPager = (ViewPager) findViewById(R.id.view_pager);
-        viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
-        viewPager.setAdapter(viewPagerAdapter);
-        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
-        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-                viewPager.setCurrentItem(tab.getPosition());
-            }
-
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab) {
-
-            }
-
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) {
-
-            }
-        });
+    public void openFragment(int fragmentID) {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        Fragment fragment = new RadioFragment();
+        Bundle bundle = new Bundle();
+        switch (fragmentID) {
+            case SelectFragment.FRAGMENT_BANGLA_RADIO:
+                //getSupportActionBar().setTitle("Bangla Online Radio");
+                bundle.putInt("ID", SelectFragment.FRAGMENT_BANGLA_RADIO);
+                break;
+            case SelectFragment.FRAGMENT_FAVOURITE:
+                bundle.putInt("ID", SelectFragment.FRAGMENT_FAVOURITE);
+                //getSupportActionBar().setTitle("Favourites");
+                break;
+            case SelectFragment.FRAGMENT_RECENT:
+                bundle.putInt("ID", SelectFragment.FRAGMENT_RECENT);
+                //getSupportActionBar().setTitle("Recently Played");
+                break;
+            case SelectFragment.FRAGMENT_NEWS_RADIO:
+                bundle.putInt("ID", SelectFragment.FRAGMENT_NEWS_RADIO);
+                //getSupportActionBar().setTitle("Recently Played");
+                break;
+            case SelectFragment.FRAGMENT_MUSIC_RADIO:
+                bundle.putInt("ID", SelectFragment.FRAGMENT_MUSIC_RADIO);
+                //getSupportActionBar().setTitle("Recently Played");
+                break;
+            case SelectFragment.FRAGMENT_INTERNATIONAL_RADIO:
+                bundle.putInt("ID", SelectFragment.FRAGMENT_INTERNATIONAL_RADIO);
+                //getSupportActionBar().setTitle("Recently Played");
+                break;
+        }
+        fragment.setArguments(bundle);
+        fragmentManager.beginTransaction()
+                .replace(R.id.fragment_holder, fragment)
+                .commit();
     }
 
     @Override
@@ -266,7 +236,6 @@ public class MainActivity extends AppCompatActivity
             drawer.closeDrawer(GravityCompat.START);
         } else if (slidingUpPanelLayout.getPanelState() == SlidingUpPanelLayout.PanelState.EXPANDED) {
             slidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
-            //slidingUpPanelLayout.setTouchEnabled(true);
 
         } else {
             super.onBackPressed();
@@ -300,43 +269,33 @@ public class MainActivity extends AppCompatActivity
         recentRadios = Storage.getRecent(getApplicationContext());
     }
 
-
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
-        boolean newTab = true;
 
         if (id == R.id.nav_music) {
-            //openFragment(SelectFragment.FRAGMENT_FAVOURITE);
-            if (FRAGMENT == SelectFragment.FRAGMENT_MUSIC_RADIO)
-                newTab = false;
+            openFragment(SelectFragment.FRAGMENT_MUSIC_RADIO);
+
             FRAGMENT = SelectFragment.FRAGMENT_MUSIC_RADIO;
-            tabLayout.getTabAt(0).setText("Music");
+
 
         } else if (id == R.id.nav_news) {
-            if (FRAGMENT == SelectFragment.FRAGMENT_NEWS_RADIO)
-                newTab = false;
+
 
             FRAGMENT = SelectFragment.FRAGMENT_NEWS_RADIO;
-            tabLayout.getTabAt(0).setText("News");
-            //openFragment(SelectFragment.FRAGMENT_RECENT);
+
+            openFragment(SelectFragment.FRAGMENT_NEWS_RADIO);
         } else if (id == R.id.nav_international) {
-            if (FRAGMENT == SelectFragment.FRAGMENT_INTERNATIONAL_RADIO)
-                newTab = false;
 
             FRAGMENT = SelectFragment.FRAGMENT_INTERNATIONAL_RADIO;
-            tabLayout.getTabAt(0).setText("International");
-            //viewPager.setCurrentItem(0);
-            //openFragment(SelectFragment.FRAGMENT_BANGLA_RADIO);
+
+            openFragment(SelectFragment.FRAGMENT_INTERNATIONAL_RADIO);
         } else if (id == R.id.nav_bangla) {
 
-            if (FRAGMENT == SelectFragment.FRAGMENT_BANGLA_RADIO)
-                newTab = false;
-
-            tabLayout.getTabAt(0).setText("বাংলা");
             FRAGMENT = SelectFragment.FRAGMENT_BANGLA_RADIO;
+            openFragment(SelectFragment.FRAGMENT_BANGLA_RADIO);
 
         } else if (id == R.id.nav_share) {
 
@@ -345,50 +304,15 @@ public class MainActivity extends AppCompatActivity
             startActivity(new Intent(this, AboutActivity.class));
 
         }
-        if (viewPager.getCurrentItem() == 0 && newTab) {
-            viewPager.setCurrentItem(1, false);
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    viewPager.setCurrentItem(0);
-                }
-            }, 350);
-        }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
 
-    public void openFragment(int fragmentID) {
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        Fragment fragment = new RadioFragment();
-        Bundle bundle = new Bundle();
-        switch (fragmentID) {
-            case SelectFragment.FRAGMENT_BANGLA_RADIO:
-                getSupportActionBar().setTitle("Bangla Online Radio");
-                bundle.putInt("ID", SelectFragment.FRAGMENT_BANGLA_RADIO);
-                break;
-            case SelectFragment.FRAGMENT_FAVOURITE:
-                bundle.putInt("ID", SelectFragment.FRAGMENT_FAVOURITE);
-                getSupportActionBar().setTitle("Favourites");
-                break;
-            case SelectFragment.FRAGMENT_RECENT:
-                bundle.putInt("ID", SelectFragment.FRAGMENT_RECENT);
-                getSupportActionBar().setTitle("Recently Played");
-                break;
-        }
-        fragment.setArguments(bundle);
-        fragmentManager.beginTransaction()
-                .replace(R.id.fragment_holder, fragment)
-                .commit();
-    }
-
     public void playRadio(String id, String url, int position, OnPreparedCallback onPreparedCallback) {
-
         resetRadio();
         history.push(id);
-
         this.position = position;
         this.onPreparedCallback = onPreparedCallback;
         stopRadio();
@@ -396,7 +320,6 @@ public class MainActivity extends AppCompatActivity
         mediaPlayer = new MediaPlayer();
         mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
         mediaPlayer.reset();
-
         try {
             mediaPlayer.setDataSource(this, uri);
             mediaPlayer.setOnPreparedListener(this);
@@ -423,7 +346,6 @@ public class MainActivity extends AppCompatActivity
                 mediaPlayer.reset();
                 mediaPlayer.release();
                 mediaPlayer = null;
-
             }
         } catch (Exception e) {
         }
