@@ -1,8 +1,8 @@
 package com.rrmsense.radiostream.models;
-
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.rrmsense.radiostream.activities.MainActivity;
 
@@ -13,8 +13,6 @@ import java.util.ArrayList;
  */
 
 public class Storage {
-
-
     public static ArrayList getRecent(Context context) {
         ArrayList<String> radios = new ArrayList<>();
         SharedPreferences sharedPreferences = context.getSharedPreferences("SharedPreferences", Context.MODE_PRIVATE);
@@ -43,7 +41,6 @@ public class Storage {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         String recent = sharedPreferences.getString("recent", "");
         String[] recents = recent.split(",");
-        int i=0;
         for (String f : recents) {
             if(f.length()>0){
                 editor.putBoolean(f + "_recent", false);
@@ -52,7 +49,6 @@ public class Storage {
         editor.apply();
 
     }
-
     public static ArrayList getFavourite(Context context) {
         ArrayList<String> radios = new ArrayList<>();
         SharedPreferences sharedPreferences = context.getSharedPreferences("SharedPreferences", Context.MODE_PRIVATE);
@@ -88,8 +84,6 @@ public class Storage {
         editor.clear();
         editor.apply();
     }
-
-
     public static void saveRecent(String s, Context context) {
         SharedPreferences sharedPreferences = context.getSharedPreferences("SharedPreferences", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -112,7 +106,6 @@ public class Storage {
 
 
     }
-
     public static void saveFavourite(String s, Context context) {
         SharedPreferences sharedPreferences = context.getSharedPreferences("SharedPreferences", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -124,7 +117,6 @@ public class Storage {
         editor.putString("favourite", favourite).apply();
         ((MainActivity) context).favouriteRadios.add(s);
     }
-
     public static void removeFavourite(String s, Context context) {
         SharedPreferences sharedPreferences = context.getSharedPreferences("SharedPreferences", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -133,7 +125,6 @@ public class Storage {
         editor.putString("favourite", favourite).apply();
         ((MainActivity)context).favouriteRadios.remove(s);
     }
-
     public static void saveRadioStation(Radio r, Context context) {
         SharedPreferences sharedPreferences = context.getSharedPreferences("SharedPreferences", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -142,14 +133,13 @@ public class Storage {
         editor.putString(r.getId() + "_image", r.getImageURL());
         editor.putString(r.getId() + "_id", r.getId());
         editor.putString(r.getId() + "_category", r.getCategory());
-        editor.putBoolean(r.getId() + "_playing", r.isButtonPlaying());
-        editor.putBoolean(r.getId() + "_equalizer", r.isImageEqualizer());
-        editor.putBoolean(r.getId() + "_loading", r.isImageLoading());
-        editor.putBoolean(r.getId() + "_recent", r.isButtonRecent());
-        editor.putBoolean(r.getId() + "_favourite", r.isButtonFavourite());
+        editor.putBoolean(r.getId() + "_playing", r.isPlaying());
+        editor.putBoolean(r.getId() + "_equalizer", r.isEqualizer());
+        editor.putBoolean(r.getId() + "_loading", r.isLoading());
+        editor.putBoolean(r.getId() + "_recent", r.isRecent());
+        editor.putBoolean(r.getId() + "_favourite", r.isFavourite());
         editor.apply();
     }
-
     public static Radio getRadioStation(String s, Context context) {
         SharedPreferences sharedPreferences = context.getSharedPreferences("SharedPreferences", Context.MODE_PRIVATE);
         String name = sharedPreferences.getString(s + "_name", "");
@@ -165,29 +155,28 @@ public class Storage {
         return new Radio(imageURL, streamURL, name, id, category, playing, equalizer, loading, favourite,recent);
 
     }
-
     public static boolean isRadioStationSaved(String s,Context context){
         SharedPreferences sharedPreferences = context.getSharedPreferences("SharedPreferences", Context.MODE_PRIVATE);
-        if(sharedPreferences.contains(s+"_id")){
-            return true;
-        }
-        return false;
+        return sharedPreferences.contains(s + "_id");
     }
-    public static void setRadioSationSingleValue(String s,String k,Boolean b, Context context){
+    public static void setRadioStationSingleValueBoolean(String s, String k, Boolean b, Context context){
         SharedPreferences sharedPreferences = context.getSharedPreferences("SharedPreferences", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putBoolean(s + "_" + k, b).apply();
     }
-
-    public static boolean getRadioSationSingleValueBoolean(String s,String k,Context context){
+    public static void setRadioStationSingleValueString(String s, String k, String b, Context context){
+        SharedPreferences sharedPreferences = context.getSharedPreferences("SharedPreferences", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(s + "_" + k, b).apply();
+    }
+    public static boolean getRadioStationSingleValueBoolean(String s, String k, Context context){
         SharedPreferences sharedPreferences = context.getSharedPreferences("SharedPreferences", Context.MODE_PRIVATE);
         return sharedPreferences.getBoolean(s + "_" + k, false);
 
     }
-    public static String getRadioSationSingleValueString(String s,String k,Context context){
+    public static String getRadioStationSingleValueString(String s, String k, Context context){
         SharedPreferences sharedPreferences = context.getSharedPreferences("SharedPreferences", Context.MODE_PRIVATE);
         return sharedPreferences.getString(s + "_" + k, "");
-
     }
     public static void saveStack(String s,Context context){
         SharedPreferences sharedPreferences = context.getSharedPreferences("SharedPreferences", Context.MODE_PRIVATE);
@@ -204,5 +193,12 @@ public class Storage {
         editor.putString("stack",s);
         editor.apply();
 
+    }
+    public static void T(Context context, String string){
+        Toast.makeText(context, string,Toast.LENGTH_SHORT).show();
+    }
+    public static String getValue(String key, Context context){
+        SharedPreferences sharedPreferences = context.getSharedPreferences("SharedPreferences", Context.MODE_PRIVATE);
+        return sharedPreferences.getString(key,"");
     }
 }

@@ -1,8 +1,14 @@
 package com.rrmsense.radiostream.models;
 
+import android.content.Context;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.rrmsense.radiostream.R;
 
 /**
  * Created by Talha on 3/6/2017.
@@ -10,15 +16,15 @@ import android.widget.ProgressBar;
 
 public class CardViewCollapsed {
 
-    Button previous;
-    Button next;
-    Button play;
-    Button stop;
-    Button favourite;
-    ProgressBar progressBar;
-    ImageView image_radio;
+    public ImageButton previous;
+    public ImageButton next;
+    public ImageButton play;
+    public ImageButton stop;
+    public ImageButton favourite;
+    public ProgressBar progressBar;
+    public ImageView image_radio;
 
-    public CardViewCollapsed(Button previous, Button next, Button play, Button stop, Button favourite, ProgressBar progressBar, ImageView image_radio) {
+    public CardViewCollapsed(ImageButton previous, ImageButton next, ImageButton play, ImageButton stop, ImageButton favourite, ProgressBar progressBar, ImageView image_radio) {
         this.previous = previous;
         this.next = next;
         this.play = play;
@@ -26,65 +32,52 @@ public class CardViewCollapsed {
         this.favourite = favourite;
         this.progressBar = progressBar;
         this.image_radio = image_radio;
+
+        this.previous.setVisibility(Button.INVISIBLE);
+        this.next.setVisibility(Button.INVISIBLE);
+        this.play.setVisibility(Button.INVISIBLE);
+        this.stop.setVisibility(Button.INVISIBLE);
+        this.favourite.setVisibility(Button.INVISIBLE);
+
+        this.previous.setVisibility(ImageView.INVISIBLE);
+        this.previous.setVisibility(ImageView.INVISIBLE);
+        this.progressBar.setVisibility(ProgressBar.INVISIBLE);
     }
 
-    public Button getPrevious() {
-        return previous;
+
+
+    public void setValue(Radio r, Context context){
+
+        Glide.with(context).load(r.getImageURL()).override(200,200).fitCenter().diskCacheStrategy( DiskCacheStrategy.RESULT ).into(image_radio);
+        this.play.setVisibility(Button.VISIBLE);
+        this.previous.setVisibility(Button.VISIBLE);
+        this.next.setVisibility(Button.VISIBLE);
+        this.favourite.setVisibility(Button.VISIBLE);
+
     }
 
-    public void setPrevious(Button previous) {
-        this.previous = previous;
-    }
 
-    public Button getNext() {
-        return next;
-    }
+    public void loading(){
+        this.play.setVisibility(Button.INVISIBLE);
+        this.stop.setVisibility(Button.VISIBLE);
+        this.progressBar.setVisibility(Button.VISIBLE);
 
-    public void setNext(Button next) {
-        this.next = next;
     }
+    public void play(){
+        this.progressBar.setVisibility(Button.INVISIBLE);
 
-    public Button getPlay() {
-        return play;
     }
-
-    public void setPlay(Button play) {
-        this.play = play;
+    public void stop(){
+        this.play.setVisibility(Button.VISIBLE);
+        this.stop.setVisibility(Button.INVISIBLE);
     }
-
-    public Button getStop() {
-        return stop;
-    }
-
-    public void setStop(Button stop) {
-        this.stop = stop;
-    }
-
-    public Button getFavourite() {
-        return favourite;
-    }
-
-    public void setFavourite(Button favourite) {
-        this.favourite = favourite;
-    }
-
-    public ProgressBar getProgressBar() {
-        return progressBar;
-    }
-
-    public void setProgressBar(ProgressBar progressBar) {
-        this.progressBar = progressBar;
-    }
-
-    public ImageView getImage_radio() {
-        return image_radio;
-    }
-
-    public void setImage_radio(ImageView image_radio) {
-        this.image_radio = image_radio;
-    }
-
-    public void setValue(String id){
+    public void favourite(boolean favourite){
+        if(favourite){
+            this.favourite.setImageResource(R.drawable.favourite_select);
+        }
+        else{
+            this.favourite.setImageResource(R.drawable.favourite_unselect);
+        }
 
     }
 }

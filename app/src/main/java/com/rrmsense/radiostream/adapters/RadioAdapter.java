@@ -2,7 +2,6 @@ package com.rrmsense.radiostream.adapters;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,7 +9,6 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -21,7 +19,6 @@ import com.rrmsense.radiostream.models.SelectFragment;
 import com.rrmsense.radiostream.models.Storage;
 
 import java.util.ArrayList;
-import java.util.StringTokenizer;
 
 /**
  * Created by Talha on 2/12/2017.
@@ -52,21 +49,21 @@ public class RadioAdapter extends RecyclerView.Adapter<RadioAdapter.ViewHolder>{
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         Radio radio = Storage.getRadioStation(radios.get(position),mContext);
-        //Toast.makeText(mContext,radio.isButtonFavourite()+""+radio.isButtonPlaying()+""+radio.isImageLoading()+"",Toast.LENGTH_SHORT).show();
-        //Log.d("Bool",radio.isButtonFavourite()+""+radio.isButtonPlaying()+""+radio.isImageLoading()+"");
+        //Toast.makeText(mContext,radio.isFavourite()+""+radio.isPlaying()+""+radio.isLoading()+"",Toast.LENGTH_SHORT).show();
+        //Log.d("Bool",radio.isFavourite()+""+radio.isPlaying()+""+radio.isLoading()+"");
         holder.text_title.setText(radio.getName());
         holder.text_type.setText(radio.getCategory());
         if(radio.getImageURL()!="")
             Glide.with(mContext).load(radio.getImageURL()).override(300,300).fitCenter().diskCacheStrategy( DiskCacheStrategy.SOURCE ).into(holder.image_radio);
 
-        if(radio.isImageLoading()){
+        if(radio.isLoading()){
             holder.progressBar.setVisibility(ProgressBar.VISIBLE);
             holder.button_play.setVisibility(Button.INVISIBLE);
             holder.button_stop.setVisibility(Button.INVISIBLE);
         }
         else{
             holder.progressBar.setVisibility(ProgressBar.INVISIBLE);
-            if(radio.isButtonPlaying()){
+            if(radio.isPlaying()){
                 holder.button_play.setVisibility(Button.INVISIBLE);
                 holder.button_stop.setVisibility(Button.VISIBLE);
 
@@ -76,12 +73,12 @@ public class RadioAdapter extends RecyclerView.Adapter<RadioAdapter.ViewHolder>{
             }
         }
 
-        if(radio.isImageEqualizer())
+        if(radio.isEqualizer())
             holder.image_equalizer.setVisibility(ImageView.VISIBLE);
         else
             holder.image_equalizer.setVisibility(ImageView.INVISIBLE);
 
-        if(radio.isButtonFavourite())
+        if(radio.isFavourite())
             holder.button_favourite.setCompoundDrawablesWithIntrinsicBounds(R.drawable.heart,0,0,0);
         else
             holder.button_favourite.setCompoundDrawablesWithIntrinsicBounds(R.drawable.heart_outline,0,0,0);
@@ -119,7 +116,7 @@ public class RadioAdapter extends RecyclerView.Adapter<RadioAdapter.ViewHolder>{
             button_play.setOnClickListener(this);
 
             button_stop = (Button) view.findViewById(R.id.button_stop);
-            button_stop.setCompoundDrawablesWithIntrinsicBounds(R.drawable.stop,0,0,0);
+            button_stop.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_stop,0,0,0);
             button_stop.setOnClickListener(this);
 
             progressBar = (ProgressBar)view.findViewById(R.id.progressBar);
@@ -140,8 +137,9 @@ public class RadioAdapter extends RecyclerView.Adapter<RadioAdapter.ViewHolder>{
                     //Log.d("Play Button", String.valueOf(this.getAdapterPosition()));
                     //Toast.makeText(mContext,"PLAY",Toast.LENGTH_SHORT).show();
                     Storage.saveStack(id,mContext);
-                    Storage.setRadioSationSingleValue(id,"playing",true,mContext);
-                    Storage.setRadioSationSingleValue(id,"loading",true,mContext);
+                    Storage.setRadioStationSingleValueString("playing","id",id,mContext);
+                    Storage.setRadioStationSingleValueBoolean(id,"playing",true,mContext);
+                    Storage.setRadioStationSingleValueBoolean(id,"loading",true,mContext);
                     //notifyItemChanged(this.getAdapterPosition());
                     notifyItemRangeChanged(0,getItemCount());
                     itemListener.recyclerViewListClicked(v, this.getAdapterPosition());
@@ -150,16 +148,16 @@ public class RadioAdapter extends RecyclerView.Adapter<RadioAdapter.ViewHolder>{
                     break;
                 case R.id.button_stop:
                     //Toast.makeText(mContext,"STOP",Toast.LENGTH_SHORT).show();
-                    Storage.setRadioSationSingleValue(id,"playing",false,mContext);
-                    Storage.setRadioSationSingleValue(id,"loading",false,mContext);
-                    Storage.setRadioSationSingleValue(id,"equalizer",false,mContext);
+                    Storage.setRadioStationSingleValueBoolean(id,"playing",false,mContext);
+                    Storage.setRadioStationSingleValueBoolean(id,"loading",false,mContext);
+                    Storage.setRadioStationSingleValueBoolean(id,"equalizer",false,mContext);
                     //notifyItemChanged(this.getAdapterPosition());
                     notifyItemRangeChanged(0,getItemCount());
                     itemListener.recyclerViewListClicked(v, this.getAdapterPosition());
                     break;
                 case R.id.button_favourite:
                     //Toast.makeText(mContext,"Favourite",Toast.LENGTH_SHORT).show();
-                    boolean f = Storage.getRadioSationSingleValueBoolean(id,"favourite",mContext);
+                    boolean f = Storage.getRadioStationSingleValueBoolean(id,"favourite",mContext);
                     if(f){
                         Storage.removeFavourite(id,mContext);
                         if(CURRENT_FRAGMENT== SelectFragment.FRAGMENT_FAVOURITE)
@@ -170,7 +168,7 @@ public class RadioAdapter extends RecyclerView.Adapter<RadioAdapter.ViewHolder>{
                         Storage.saveFavourite(id,mContext);
                         notifyItemChanged(this.getAdapterPosition());
                     }
-                    Storage.setRadioSationSingleValue(id,"favourite",!f,mContext);
+                    Storage.setRadioStationSingleValueBoolean(id,"favourite",!f,mContext);
 
 
                     break;

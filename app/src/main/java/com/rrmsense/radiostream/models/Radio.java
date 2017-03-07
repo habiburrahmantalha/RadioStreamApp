@@ -10,11 +10,11 @@ public class Radio {
     private String name;
     private String id;
     private String category;
-    private boolean buttonPlaying;
-    private boolean imageEqualizer;
-    private boolean imageLoading;
-    private boolean buttonFavourite;
-    private boolean buttonRecent;
+    private boolean playing;
+    private boolean equalizer;
+    private boolean loading;
+    private boolean favourite;
+    private boolean recent;
 
     public Radio(){
 
@@ -27,17 +27,17 @@ public class Radio {
         this.category = category;
     }
 
-    public Radio(String imageURL, String streamURL, String name,String id,String category, boolean buttonPlaying, boolean imageEqualizer, boolean imageLoading, boolean buttonFavourite,boolean buttonRecent ) {
+    public Radio(String imageURL, String streamURL, String name, String id, String category, boolean playing, boolean equalizer, boolean loading, boolean favourite, boolean recent) {
         this.imageURL = imageURL;
         this.streamURL = streamURL;
         this.name = name;
         this.id = id;
         this.category = category;
-        this.buttonPlaying = buttonPlaying;
-        this.imageEqualizer = imageEqualizer;
-        this.imageLoading = imageLoading;
-        this.buttonFavourite = buttonFavourite;
-        this.buttonRecent = buttonRecent;
+        this.playing = playing;
+        this.equalizer = equalizer;
+        this.loading = loading;
+        this.favourite = favourite;
+        this.recent = recent;
     }
 
     public String getImageURL() {
@@ -80,44 +80,44 @@ public class Radio {
         this.category = category;
     }
 
-    public boolean isButtonPlaying() {
-        return buttonPlaying;
+    public boolean isPlaying() {
+        return playing;
     }
 
-    public void setButtonPlaying(boolean buttonPlaying) {
-        this.buttonPlaying = buttonPlaying;
+    public void setPlaying(boolean playing) {
+        this.playing = playing;
     }
 
-    public boolean isImageEqualizer() {
-        return imageEqualizer;
+    public boolean isEqualizer() {
+        return equalizer;
     }
 
-    public void setImageEqualizer(boolean imageEqualizer) {
-        this.imageEqualizer = imageEqualizer;
+    public void setEqualizer(boolean equalizer) {
+        this.equalizer = equalizer;
     }
 
-    public boolean isImageLoading() {
-        return imageLoading;
+    public boolean isLoading() {
+        return loading;
     }
 
-    public void setImageLoading(boolean imageLoading) {
-        this.imageLoading = imageLoading;
+    public void setLoading(boolean loading) {
+        this.loading = loading;
     }
 
-    public boolean isButtonFavourite() {
-        return buttonFavourite;
+    public boolean isFavourite() {
+        return favourite;
     }
 
-    public void setButtonFavourite(boolean buttonFavourite) {
-        this.buttonFavourite = buttonFavourite;
+    public void setFavourite(boolean favourite) {
+        this.favourite = favourite;
     }
 
-    public boolean isButtonRecent() {
-        return buttonRecent;
+    public boolean isRecent() {
+        return recent;
     }
 
-    public void setButtonRecent(boolean buttonRecent) {
-        this.buttonRecent = buttonRecent;
+    public void setRecent(boolean recent) {
+        this.recent = recent;
     }
 
 }

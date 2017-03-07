@@ -88,13 +88,13 @@ public class RecentFragment extends Fragment implements RecyclerViewClickListene
     @Override
     public void recyclerViewListClicked(View v, int position) {
         //Log.d("ITEM",mRecyclerView.getChildAt(position).toString());
-        //Log.d("PLAYING STATE", String.valueOf(banglaRadios.get(position).isButtonPlaying()));
+        //Log.d("PLAYING STATE", String.valueOf(banglaRadios.get(position).isPlaying()));
 
         resetRadio();
         if(position<mAdapter.getItemCount())
-        if(Storage.getRadioSationSingleValueBoolean(radios.get(position),"playing",getActivity())){
+        if(Storage.getRadioStationSingleValueBoolean(radios.get(position),"playing",getActivity())){
             history.push(position);
-            ((MainActivity)getActivity()).playRadio(radios.get(position),Storage.getRadioSationSingleValueString(radios.get(position),"stream",getActivity()),position,this);
+            ((MainActivity)getActivity()).playRadio(radios.get(position),Storage.getRadioStationSingleValueString(radios.get(position),"stream",getActivity()),position,this);
         }
         else{
 
@@ -105,9 +105,9 @@ public class RecentFragment extends Fragment implements RecyclerViewClickListene
     }
     private void resetRadio() {
         while (!history.isEmpty()){
-            Storage.setRadioSationSingleValue(radios.get(history.peek()),"playing",false,getActivity());
-            Storage.setRadioSationSingleValue(radios.get(history.peek()),"loading",false,getActivity());
-            Storage.setRadioSationSingleValue(radios.get(history.peek()),"equalizer",false,getActivity());
+            Storage.setRadioStationSingleValueBoolean(radios.get(history.peek()),"playing",false,getActivity());
+            Storage.setRadioStationSingleValueBoolean(radios.get(history.peek()),"loading",false,getActivity());
+            Storage.setRadioStationSingleValueBoolean(radios.get(history.peek()),"equalizer",false,getActivity());
             mAdapter.notifyItemChanged(history.peek());
             history.pop();
         }
@@ -115,9 +115,9 @@ public class RecentFragment extends Fragment implements RecyclerViewClickListene
 
     @Override
     public void OnPreparedCallback(int position) {
-        Storage.setRadioSationSingleValue(radios.get(position),"playing",true,getActivity());
-        Storage.setRadioSationSingleValue(radios.get(position),"loading",false,getActivity());
-        Storage.setRadioSationSingleValue(radios.get(position),"equalizer",true,getActivity());
+        Storage.setRadioStationSingleValueBoolean(radios.get(position),"playing",true,getActivity());
+        Storage.setRadioStationSingleValueBoolean(radios.get(position),"loading",false,getActivity());
+        Storage.setRadioStationSingleValueBoolean(radios.get(position),"equalizer",true,getActivity());
         mAdapter.notifyItemChanged(position);
     }
 

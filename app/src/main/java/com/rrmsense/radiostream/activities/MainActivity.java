@@ -1,7 +1,9 @@
 package com.rrmsense.radiostream.activities;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -13,13 +15,16 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -47,7 +52,7 @@ import java.util.Deque;
 import cz.msebera.android.httpclient.Header;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, MediaPlayer.OnBufferingUpdateListener, MediaPlayer.OnPreparedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, MediaPlayer.OnBufferingUpdateListener, MediaPlayer.OnPreparedListener, SharedPreferences.OnSharedPreferenceChangeListener, MediaPlayer.OnErrorListener, View.OnClickListener {
 
     public MediaPlayer mediaPlayer;
     public ArrayList<String> banglaRadios = new ArrayList<>();
@@ -63,13 +68,20 @@ public class MainActivity extends AppCompatActivity
     View layout_collapsed;
     View layout_expanded;
     LinearLayout cardView_holder;
-    private SlidingUpPanelLayout slidingUpPanelLayout;
     CardViewCollapsed cardViewCollapsed;
+    Radio playingNow;
+    private SlidingUpPanelLayout slidingUpPanelLayout;
+
+    public static int dipToPixels(Context context, int dipValue) {
+        DisplayMetrics metrics = context.getResources().getDisplayMetrics();
+        return Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dipValue, metrics));
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle("");
         setSupportActionBar(toolbar);
@@ -89,8 +101,10 @@ public class MainActivity extends AppCompatActivity
         layout_expanded = li.inflate(R.layout.cardview_radio_main_expanded, null, false);
         cardView_holder = (LinearLayout) findViewById(R.id.cardView_holder);
         cardView_holder.addView(layout_collapsed);
+        CardView cardview_collapsed = (CardView) findViewById(R.id.cardview_collapsed);
 
         slidingUpPanelLayout = (SlidingUpPanelLayout) findViewById(R.id.sliding_layout);
+        // slidingUpPanelLayout.setPanelHeight(dipToPixels(getApplicationContext(), cardview_collapsed.getHeight()));
 
         slidingUpPanelLayout.addPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
             @Override
@@ -112,6 +126,7 @@ public class MainActivity extends AppCompatActivity
                         slidingUpPanelLayout.setTouchEnabled(false);
                     }
                 } else if (previousState == SlidingUpPanelLayout.PanelState.EXPANDED && newState == SlidingUpPanelLayout.PanelState.DRAGGING) {
+
                     cardView_holder.removeView(layout_expanded);
 
                 } else if (previousState == SlidingUpPanelLayout.PanelState.COLLAPSED && newState == SlidingUpPanelLayout.PanelState.DRAGGING) {
@@ -122,8 +137,20 @@ public class MainActivity extends AppCompatActivity
 
         });
 
-        cardViewCollapsed = new CardViewCollapsed((Button) layout_collapsed.findViewById(R.id.previous),(Button) layout_collapsed.findViewById(R.id.next),(Button) layout_collapsed.findViewById(R.id.play),(Button) layout_collapsed.findViewById(R.id.stop),(Button) layout_collapsed.findViewById(R.id.favourite),(ProgressBar) layout_collapsed.findViewById(R.id.progressBar),(ImageView) layout_collapsed.findViewById(R.id.image_radio) );
+        cardViewCollapsed = new CardViewCollapsed((ImageButton) layout_collapsed.findViewById(R.id.previous), (ImageButton) layout_collapsed.findViewById(R.id.next), (ImageButton) layout_collapsed.findViewById(R.id.play), (ImageButton) layout_collapsed.findViewById(R.id.stop), (ImageButton) layout_collapsed.findViewById(R.id.favourite), (ProgressBar) layout_collapsed.findViewById(R.id.progressBar), (ImageView) layout_collapsed.findViewById(R.id.image_radio));
+        cardViewCollapsed.previous.setOnClickListener(this);
+        cardViewCollapsed.next.setOnClickListener(this);
+        cardViewCollapsed.play.setOnClickListener(this);
+        cardViewCollapsed.stop.setOnClickListener(this);
+        cardViewCollapsed.favourite.setOnClickListener(this);
         loadRadioStation();
+
+        String id = Storage.getRadioStationSingleValueString("playing","id",getApplicationContext());
+        if(id!=""){
+            playingNow = Storage.getRadioStation(id,getApplicationContext());
+            cardViewCollapsed.setValue(playingNow,getApplicationContext());
+            cardViewCollapsed.favourite(playingNow.isFavourite());
+        }
     }
 
     public void loadRadioStation() {
@@ -144,19 +171,19 @@ public class MainActivity extends AppCompatActivity
                     Radio r = null;
                     try {
                         r = gson.fromJson(response.get(i).toString(), Radio.class);
-                        r.setButtonPlaying(false);
-                        r.setImageEqualizer(false);
-                        r.setImageLoading(false);
-                        r.setButtonFavourite(false);
-                        r.setButtonRecent(false);
+                        r.setPlaying(false);
+                        r.setEqualizer(false);
+                        r.setLoading(false);
+                        r.setFavourite(false);
+                        r.setRecent(false);
                         if (!Storage.isRadioStationSaved(r.getId(), getApplication())) {
                             Storage.saveRadioStation(r, getApplicationContext());
                             //Log.d("NO",r.getId());
                         } else {
                             //Log.d("YES",r.getId());
-                            Storage.setRadioSationSingleValue(r.getId(), "playing", false, getApplication());
-                            Storage.setRadioSationSingleValue(r.getId(), "loading", false, getApplication());
-                            Storage.setRadioSationSingleValue(r.getId(), "equalizer", false, getApplication());
+                            Storage.setRadioStationSingleValueBoolean(r.getId(), "playing", false, getApplication());
+                            Storage.setRadioStationSingleValueBoolean(r.getId(), "loading", false, getApplication());
+                            Storage.setRadioStationSingleValueBoolean(r.getId(), "equalizer", false, getApplication());
                         }
                         switch (r.getCategory()) {
                             case "bangla":
@@ -243,6 +270,18 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
+    protected void onPause() {
+        super.onPause();
+        this.getSharedPreferences("SharedPreferences", Context.MODE_PRIVATE).unregisterOnSharedPreferenceChangeListener(this);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        this.getSharedPreferences("SharedPreferences", Context.MODE_PRIVATE).registerOnSharedPreferenceChangeListener(this);
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
@@ -310,7 +349,88 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        switch (key) {
+            case "playing_id":
+                playingNow = Storage.getRadioStation(Storage.getValue(key, getApplicationContext()), getApplicationContext());
+                cardViewCollapsed.setValue(playingNow, getApplicationContext());
+                cardViewCollapsed.loading();
+                cardViewCollapsed.favourite(playingNow.isFavourite());
+                playRadio();
+                break;
+            case "playing_favourite":
+
+                boolean f = Storage.getRadioStationSingleValueBoolean("playing","favourite",getApplicationContext());
+                cardViewCollapsed.favourite(f);
+
+                break;
+        }
+    }
+
+    public void playRadio() {
+        stopRadio();
+        Uri uri = Uri.parse(playingNow.getStreamURL());
+        mediaPlayer = new MediaPlayer();
+        mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+        mediaPlayer.reset();
+        try {
+            mediaPlayer.setDataSource(this, uri);
+            mediaPlayer.setOnPreparedListener(this);
+            mediaPlayer.setOnBufferingUpdateListener(this);
+            mediaPlayer.setOnErrorListener(this);
+            mediaPlayer.prepareAsync();
+        } catch (Exception e) {
+        }
+
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.next:
+
+                break;
+            case R.id.stop:
+                cardViewCollapsed.stop();
+                stopRadio();
+                break;
+
+            case R.id.previous:
+
+                break;
+
+            case R.id.play:
+                cardViewCollapsed.loading();
+                playRadio();
+
+                break;
+
+            case R.id.favourite:
+                boolean f = Storage.getRadioStationSingleValueBoolean("playing","favourite",getApplicationContext());
+                Storage.setRadioStationSingleValueBoolean("playing","favourite",!f,getApplicationContext());
+                cardViewCollapsed.favourite(!f);
+
+                break;
+        }
+    }
+
+    public void stopRadio() {
+
+        //resetRadio();
+        try {
+            if (mediaPlayer != null) {
+                mediaPlayer.stop();
+                mediaPlayer.reset();
+                mediaPlayer.release();
+                mediaPlayer = null;
+            }
+        } catch (Exception e) {
+        }
+    }
+
     public void playRadio(String id, String url, int position, OnPreparedCallback onPreparedCallback) {
+
         resetRadio();
         history.push(id);
         this.position = position;
@@ -324,30 +444,19 @@ public class MainActivity extends AppCompatActivity
             mediaPlayer.setDataSource(this, uri);
             mediaPlayer.setOnPreparedListener(this);
             mediaPlayer.setOnBufferingUpdateListener(this);
+            mediaPlayer.setOnErrorListener(this);
             mediaPlayer.prepareAsync();
         } catch (Exception e) {
         }
+
     }
 
-    private void resetRadio() {
+    public void resetRadio() {
         while (!history.isEmpty()) {
-            Storage.setRadioSationSingleValue(history.peek(), "playing", false, getApplication());
-            //Storage.setRadioSationSingleValue(history.peek(),"loading",false,getApplication());
-            Storage.setRadioSationSingleValue(history.peek(), "equalizer", false, getApplication());
+            Storage.setRadioStationSingleValueBoolean(history.peek(), "playing", false, getApplication());
+            //Storage.setRadioStationSingleValueBoolean(history.peek(),"loading",false,getApplication());
+            Storage.setRadioStationSingleValueBoolean(history.peek(), "equalizer", false, getApplication());
             history.pop();
-        }
-    }
-
-    public void stopRadio() {
-        resetRadio();
-        try {
-            if (mediaPlayer != null) {
-                mediaPlayer.stop();
-                mediaPlayer.reset();
-                mediaPlayer.release();
-                mediaPlayer = null;
-            }
-        } catch (Exception e) {
         }
     }
 
@@ -355,14 +464,21 @@ public class MainActivity extends AppCompatActivity
     public void onPrepared(MediaPlayer mediaPlayer) {
         //((ImageView) radioView.findViewById(R.id.image_gif)).setVisibility(ProgressBar.VISIBLE);
         //((ProgressBar) radioView.findViewById(R.id.progressBar)).setVisibility(ProgressBar.INVISIBLE);
+        cardViewCollapsed.play();
         mediaPlayer.start();
-        onPreparedCallback.OnPreparedCallback(position);
+        //onPreparedCallback.OnPreparedCallback(position);
     }
 
     @Override
     public void onBufferingUpdate(MediaPlayer mp, int percent) {
         Log.d("Progress", String.valueOf(percent));
+        Storage.T(getApplicationContext(), String.valueOf(percent));
     }
 
+    @Override
+    public boolean onError(MediaPlayer mp, int what, int extra) {
+        //Storage.si
+        return false;
+    }
 }
 
