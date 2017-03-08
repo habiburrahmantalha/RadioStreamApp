@@ -18,20 +18,33 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:padding="10dp">
+        <TextView
+            android:id="@+id/item"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
 
         <ProgressBar
             android:id="@+id/progressBar"
             style="@android:style/Widget.Holo.ProgressBar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
+        <View
+            android:layout_marginStart="5dp"
+            android:layout_marginEnd="5dp"
+            android:layout_centerHorizontal="true"
+            android:id="@+id/border"
+            android:layout_toEndOf="@id/item"
+            android:background="@color/lightgrey"
+            android:layout_width="1dp"
+            android:layout_height="45dp"/>
 
 
         <ImageView
             android:id="@+id/image_radio"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="50dp"
             android:layout_margin="5dp"
-            android:layout_alignParentStart="true"
+            android:layout_toEndOf="@id/border"
             />
         <ImageView
             android:id="@+id/equalizer"

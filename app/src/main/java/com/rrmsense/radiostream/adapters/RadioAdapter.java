@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -48,6 +49,8 @@ public class RadioAdapter extends RecyclerView.Adapter<RadioAdapter.ViewHolder>{
     public void onBindViewHolder(ViewHolder holder, int position) {
         Radio radio = Storage.getRadioStation(radios.get(position),mContext);
 
+        holder.item.setText(position+"");
+
         if(radio.getImageURL()!="")
             Glide.with(mContext).load(radio.getImageURL()).override(200,200).fitCenter().diskCacheStrategy( DiskCacheStrategy.SOURCE ).into(holder.image_radio);
 
@@ -86,6 +89,7 @@ public class RadioAdapter extends RecyclerView.Adapter<RadioAdapter.ViewHolder>{
         private ImageView equalizer;
         private ImageButton favourite;
         private CardView cardView;
+        private TextView item;
 
         public ViewHolder(View view) {
             super(view);
@@ -99,6 +103,7 @@ public class RadioAdapter extends RecyclerView.Adapter<RadioAdapter.ViewHolder>{
             favourite.setOnClickListener(this);
             cardView = (CardView) view.findViewById(R.id.cardView);
             cardView.setOnClickListener(this);
+            item = (TextView) view.findViewById(R.id.item);
 
         }
         @Override
