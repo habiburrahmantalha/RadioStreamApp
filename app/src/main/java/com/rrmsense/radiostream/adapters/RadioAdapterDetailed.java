@@ -1,14 +1,14 @@
 package com.rrmsense.radiostream.adapters;
 
 import android.content.Context;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -24,15 +24,17 @@ import java.util.ArrayList;
  * Created by Talha on 2/12/2017.
  */
 
-public class RadioAdapter extends RecyclerView.Adapter<RadioAdapter.ViewHolder>{
+public class RadioAdapterDetailed extends RecyclerView.Adapter<RadioAdapterDetailed.ViewHolder>{
 
     private ArrayList<String> radios;
     private Context mContext;
     private int CURRENT_FRAGMENT;
+    //private String streamURL;
+
 
     private static RecyclerViewClickListener itemListener;
 
-    public RadioAdapter(ArrayList<String> radios, Context mContext,RecyclerViewClickListener itemListener,int CURRENT_FRAGMENT) {
+    public RadioAdapterDetailed(ArrayList<String> radios, Context mContext, RecyclerViewClickListener itemListener, int CURRENT_FRAGMENT) {
         this.radios = radios;
         this.mContext = mContext;
         this.itemListener = itemListener;
@@ -47,26 +49,39 @@ public class RadioAdapter extends RecyclerView.Adapter<RadioAdapter.ViewHolder>{
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         Radio radio = Storage.getRadioStation(radios.get(position),mContext);
-
+        //Toast.makeText(mContext,radio.isFavourite()+""+radio.isPlaying()+""+radio.isLoading()+"",Toast.LENGTH_SHORT).show();
+        //Log.d("Bool",radio.isFavourite()+""+radio.isPlaying()+""+radio.isLoading()+"");
+        holder.text_title.setText(radio.getName());
+        holder.text_type.setText(radio.getCategory());
         if(radio.getImageURL()!="")
-            Glide.with(mContext).load(radio.getImageURL()).override(200,200).fitCenter().diskCacheStrategy( DiskCacheStrategy.SOURCE ).into(holder.image_radio);
+            Glide.with(mContext).load(radio.getImageURL()).override(300,300).fitCenter().diskCacheStrategy( DiskCacheStrategy.SOURCE ).into(holder.image_radio);
 
         if(radio.isLoading()){
             holder.progressBar.setVisibility(ProgressBar.VISIBLE);
+            holder.button_play.setVisibility(Button.INVISIBLE);
+            holder.button_stop.setVisibility(Button.INVISIBLE);
         }
         else{
             holder.progressBar.setVisibility(ProgressBar.INVISIBLE);
+            if(radio.isPlaying()){
+                holder.button_play.setVisibility(Button.INVISIBLE);
+                holder.button_stop.setVisibility(Button.VISIBLE);
+
+            }else{
+                holder.button_play.setVisibility(Button.VISIBLE);
+                holder.button_stop.setVisibility(Button.INVISIBLE);
+            }
         }
 
         if(radio.isEqualizer())
-            holder.equalizer.setVisibility(ImageView.VISIBLE);
+            holder.image_equalizer.setVisibility(ImageView.VISIBLE);
         else
-            holder.equalizer.setVisibility(ImageView.INVISIBLE);
+            holder.image_equalizer.setVisibility(ImageView.INVISIBLE);
 
         if(radio.isFavourite())
-            holder.favourite.setImageResource(R.drawable.heart_yellow);
+            holder.button_favourite.setCompoundDrawablesWithIntrinsicBounds(R.drawable.heart,0,0,0);
         else
-            holder.favourite.setImageResource(R.drawable.heart_outline);
+            holder.button_favourite.setCompoundDrawablesWithIntrinsicBounds(R.drawable.heart_outline,0,0,0);
 
     }
     @Override
@@ -82,23 +97,35 @@ public class RadioAdapter extends RecyclerView.Adapter<RadioAdapter.ViewHolder>{
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         private ImageView image_radio;
+        private TextView text_title;
+        private TextView text_type;
+        private Button button_play;
+        private Button button_stop;
         private ProgressBar progressBar;
-        private ImageView equalizer;
-        private ImageButton favourite;
-        private CardView cardView;
+        private ImageView image_equalizer;
+        protected Button button_favourite;
 
         public ViewHolder(View view) {
             super(view);
             view.setOnClickListener(this);
             image_radio = (ImageView) view.findViewById(R.id.image_radio);
-            progressBar = (ProgressBar)view.findViewById(R.id.progressBar);
-            equalizer = (ImageView) view.findViewById(R.id.equalizer);
-            //Glide.with(mContext).load("http://soulsearchrecords.com/media/images/levels.gif").diskCacheStrategy( DiskCacheStrategy.RESULT).into(equalizer);
+            text_title = (TextView) view.findViewById(R.id.text_title);
+            text_type= (TextView) view.findViewById(R.id.text_type);
+            button_play = (Button) view.findViewById(R.id.button_play);
+            button_play.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_play_arrow_black_24dp,0,0,0);
+            button_play.setOnClickListener(this);
 
-            favourite = (ImageButton) view.findViewById(R.id.favourite);
-            favourite.setOnClickListener(this);
-            cardView = (CardView) view.findViewById(R.id.cardView);
-            cardView.setOnClickListener(this);
+            button_stop = (Button) view.findViewById(R.id.button_stop);
+            button_stop.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_stop,0,0,0);
+            button_stop.setOnClickListener(this);
+
+            progressBar = (ProgressBar)view.findViewById(R.id.progressBar);
+
+            image_equalizer = (ImageView) view.findViewById(R.id.image_equalizer);
+            Glide.with(mContext).load("http://soulsearchrecords.com/media/images/levels.gif").diskCacheStrategy( DiskCacheStrategy.RESULT).into(image_equalizer);
+            //Glide.with(mContext).load("http://www.beyzadogan.com/images/animated-sound-waves11.gif").diskCacheStrategy( DiskCacheStrategy.ALL ).into(image_equalizer);
+            button_favourite = (Button) view.findViewById(R.id.button_favourite);
+            button_favourite.setOnClickListener(this);
 
         }
         @Override
@@ -128,7 +155,7 @@ public class RadioAdapter extends RecyclerView.Adapter<RadioAdapter.ViewHolder>{
                     notifyItemRangeChanged(0,getItemCount());
                     itemListener.recyclerViewListClicked(v, this.getAdapterPosition());
                     break;
-                case R.id.favourite:
+                case R.id.button_favourite:
                     //Toast.makeText(mContext,"Favourite",Toast.LENGTH_SHORT).show();
                     boolean f = Storage.getRadioStationSingleValueBoolean(id,"favourite",mContext);
                     if(f){
@@ -143,10 +170,6 @@ public class RadioAdapter extends RecyclerView.Adapter<RadioAdapter.ViewHolder>{
                     }
                     Storage.setRadioStationSingleValueBoolean(id,"favourite",!f,mContext);
 
-
-                    break;
-                case R.id.cardView:
-                    Storage.setRadioStationSingleValueString("playing","id",id,mContext);
 
                     break;
             }

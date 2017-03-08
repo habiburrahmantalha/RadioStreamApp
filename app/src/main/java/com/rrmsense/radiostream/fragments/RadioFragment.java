@@ -10,8 +10,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.rrmsense.radiostream.activities.MainActivity;
 import com.rrmsense.radiostream.R;
+import com.rrmsense.radiostream.activities.MainActivity;
 import com.rrmsense.radiostream.adapters.RadioAdapter;
 import com.rrmsense.radiostream.interfaces.OnPreparedCallback;
 import com.rrmsense.radiostream.interfaces.RecyclerViewClickListener;

@@ -1,39 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:Button="http://schemas.android.com/tools"
-    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/cardview_expanded"
     android:orientation="vertical">
 
 
+
+
     <ImageView
-        android:id="@+id/image"
-        android:layout_width="128dp"
-        android:layout_height="128dp"
+        android:layout_marginTop="20dp"
+        android:id="@+id/image_radio"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
         android:layout_centerHorizontal="true"
-        android:layout_margin="5dp"
-        android:paddingTop="10dp"
-        android:src="@drawable/radio_circle" />
+        android:scaleType="fitCenter"
+        android:padding="30dp"
+
+        />
+    <ImageView
+        android:layout_marginTop="20dp"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:layout_centerHorizontal="true"
+
+        android:src="@drawable/radio_circle"/>
 
     <ImageView
         android:id="@+id/equalizer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/image"
+        android:layout_below="@+id/image_radio"
         android:layout_margin="5dp"
-        android:src="@drawable/beats" />
+
+        android:src="@drawable/beats"/>
 
     <android.support.v7.widget.CardView
+        android:id="@+id/cardView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_margin="10dp"
         card_view:cardBackgroundColor="@color/icon"
         card_view:cardCornerRadius="10dp"
-        card_view:cardElevation="2dp">
+        card_view:cardElevation="10dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -48,56 +62,13 @@
                 android:paddingBottom="10dp"
                 android:paddingTop="10dp">
 
-                <Button
+                <ImageButton
                     android:id="@+id/headphone"
                     style="@style/Widget.AppCompat.Button.Borderless"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:drawableTint="@color/yellow"
-                    android:drawableTop="@drawable/ic_headset_black_24dp"
-
+                    android:layout_width="@dimen/button_width_expanded"
+                    android:layout_height="@dimen/button_height_expanded"
+                    android:scaleType="fitStart"
                     />
-
-                <Button
-                    android:id="@+id/favourite"
-                    style="@style/Widget.AppCompat.Button.Borderless"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:drawableTint="@color/yellow"
-                    android:drawableTop="@drawable/heart" />
-
-
-                <Button
-                    android:id="@+id/volume"
-                    style="@style/Widget.AppCompat.Button.Borderless"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:drawableTint="@color/yellow"
-                    android:drawableTop="@drawable/ic_volume_mute_black_24dp" />
-            </LinearLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="2dp"
-                android:background="@color/line" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingBottom="10dp"
-                android:paddingTop="10dp">
-
-                <Button
-                    android:id="@+id/previous"
-                    style="@style/Widget.AppCompat.Button.Borderless"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:drawableTint="@color/yellow"
-                    android:drawableTop="@drawable/ic_chevron_left_black_24dp" />
 
                 <RelativeLayout
                     android:layout_width="0dp"
@@ -105,40 +76,87 @@
                     android:layout_weight="1"
                     android:gravity="center">
 
-                    <ProgressBar
-                        android:id="@+id/progressBar"
-                        style="@android:style/Widget.Holo.ProgressBar"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerHorizontal="true" />
-
-                    <Button
-                        android:id="@+id/play"
+                    <ImageButton
+                        android:id="@+id/favourite"
                         style="@style/Widget.AppCompat.Button.Borderless"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_centerInParent="true"
-                        android:drawableTint="@color/yellow"
-                        android:drawableTop="@drawable/ic_play_arrow_black_24dp" />
+                        android:layout_width="@dimen/button_width_expanded"
+                        android:layout_height="@dimen/button_height_expanded"
 
-                    <Button
-                        android:id="@+id/stop"
-                        style="@style/Widget.AppCompat.Button.Borderless"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_centerInParent="true"
-                        android:drawableTint="@color/yellow"
-                        android:drawableTop="@drawable/ic_stop" />
+                        android:scaleType="fitStart"
+                        />
                 </RelativeLayout>
 
-                <Button
+                <ImageButton
+                    android:id="@+id/volume"
+                    style="@style/Widget.AppCompat.Button.Borderless"
+                    android:layout_width="@dimen/button_width_expanded"
+                    android:layout_height="@dimen/button_height_expanded"
+
+                    android:scaleType="fitStart"
+                    />
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="@color/line"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="10dp"
+                android:paddingTop="10dp">
+
+                <ImageButton
+                    android:id="@+id/previous"
+                    style="@style/Widget.AppCompat.Button.Borderless"
+                    android:layout_width="@dimen/button_width_expanded"
+                    android:layout_height="@dimen/button_height_expanded"
+                    android:scaleType="fitStart"
+                    android:src="@drawable/previous"/>
+
+                <RelativeLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center">
+
+
+                    <ImageButton
+                        android:id="@+id/play"
+                        style="@style/Widget.AppCompat.Button.Borderless"
+                        android:layout_width="@dimen/button_width_expanded"
+                        android:layout_height="@dimen/button_height_expanded"
+                        android:layout_centerInParent="true"
+                        android:scaleType="fitStart"
+                        android:src="@drawable/play"/>
+
+                    <ImageButton
+                        android:id="@+id/stop"
+                        style="@style/Widget.AppCompat.Button.Borderless"
+                        android:layout_width="@dimen/button_width_expanded"
+                        android:layout_height="@dimen/button_height_expanded"
+                        android:layout_centerInParent="true"
+                        android:scaleType="fitStart"
+                        android:src="@drawable/stop"/>
+
+                    <ProgressBar
+                        android:id="@+id/progressBar"
+                        style="?android:attr/progressBarStyle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+
+                        android:layout_centerInParent="true"/>
+                </RelativeLayout>
+
+                <ImageButton
                     android:id="@+id/next"
                     style="@style/Widget.AppCompat.Button.Borderless"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:drawableTint="@color/yellow"
-                    android:drawableTop="@drawable/ic_chevron_right_black_24dp" />
+                    android:layout_width="@dimen/button_width_expanded"
+                    android:layout_height="@dimen/button_height_expanded"
+
+                    android:scaleType="fitStart"
+                    android:src="@drawable/next"/>
 
             </LinearLayout>
 

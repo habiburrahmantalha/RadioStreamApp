@@ -5,6 +5,9 @@ package com.rrmsense.radiostream.models;
  */
 
 public class Radio {
+    public static final int PLAYING = 2;
+    public static final int LOADING = 1;
+    public static final int STOPPED = 0;
     private String imageURL;
     private String streamURL;
     private String name;
@@ -15,6 +18,7 @@ public class Radio {
     private boolean loading;
     private boolean favourite;
     private boolean recent;
+    private int state;
 
     public Radio(){
 
@@ -120,4 +124,11 @@ public class Radio {
         this.recent = recent;
     }
 
+    public int getState() {
+        return state;
+    }
+
+    public void setState(int state) {
+        this.state = state;
+    }
 }

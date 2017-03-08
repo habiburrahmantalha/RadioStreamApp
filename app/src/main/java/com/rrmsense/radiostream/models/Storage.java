@@ -2,7 +2,6 @@ package com.rrmsense.radiostream.models;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.rrmsense.radiostream.activities.MainActivity;
 
@@ -193,9 +192,6 @@ public class Storage {
         editor.putString("stack",s);
         editor.apply();
 
-    }
-    public static void T(Context context, String string){
-        Toast.makeText(context, string,Toast.LENGTH_SHORT).show();
     }
     public static String getValue(String key, Context context){
         SharedPreferences sharedPreferences = context.getSharedPreferences("SharedPreferences", Context.MODE_PRIVATE);

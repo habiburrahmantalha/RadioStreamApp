@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.sothree.slidinguppanel.SlidingUpPanelLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.sothree.slidinguppanel.SlidingUpPanelLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:sothree="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/sliding_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="bottom"
     android:layout_marginTop="?attr/actionBarSize"
+    android:gravity="bottom"
     sothree:umanoDragView="@+id/dragView"
     sothree:umanoOverlay="false"
-    sothree:umanoPanelHeight="100dp"
-    sothree:umanoParallaxOffset="100dp"
+    sothree:umanoPanelHeight="80dp"
+    sothree:umanoParallaxOffset="80dp"
     sothree:umanoScrollableView="@+id/list"
     sothree:umanoShadowHeight="4dp">
 
@@ -23,7 +23,7 @@
         <FrameLayout
             android:id="@+id/fragment_holder"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"/>
 
         <!--<android.support.design.widget.TabLayout
             android:id="@+id/tab_layout"
@@ -40,15 +40,16 @@
             android:layout_below="@id/tab_layout" />-->
 
     </RelativeLayout>
+
     <LinearLayout
+        android:id="@+id/cardView_holder"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:animateLayoutChanges="true"
         android:background="#ffffff"
-        android:orientation="vertical"
         android:clickable="true"
         android:focusable="false"
-        android:animateLayoutChanges="true"
-        android:id="@+id/cardView_holder">
+        android:orientation="vertical">
     </LinearLayout>
 
 </com.sothree.slidinguppanel.SlidingUpPanelLayout>

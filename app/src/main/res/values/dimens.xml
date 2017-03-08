@@ -6,4 +6,9 @@
     <dimen name="nav_header_vertical_spacing">16dp</dimen>
     <dimen name="nav_header_height">200dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
+    <dimen name="button_height_collapsed">80dp</dimen>
+    <dimen name="button_width_collapsed">80dp</dimen>
+    <dimen name="button_height_expanded">80dp</dimen>
+    <dimen name="button_width_expanded">80dp</dimen>
+
 </resources>

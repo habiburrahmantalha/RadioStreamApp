@@ -21,7 +21,8 @@ public class SplashScreenActivity extends AppCompatActivity {
         image = (ImageView) findViewById(R.id.image);
 
         Glide.with(SplashScreenActivity.this)
-                .load(R.drawable.app_icon)
+                .load(R.drawable.splash_screen)
+                .centerCrop()
                 .crossFade()
                 .into(image);
 
