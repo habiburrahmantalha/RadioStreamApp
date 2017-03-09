@@ -56,14 +56,16 @@ import java.util.Deque;
 import cz.msebera.android.httpclient.Header;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, MediaPlayer.OnBufferingUpdateListener, MediaPlayer.OnPreparedListener, SharedPreferences.OnSharedPreferenceChangeListener, MediaPlayer.OnErrorListener, View.OnClickListener {
+        implements NavigationView.OnNavigationItemSelectedListener, MediaPlayer.OnBufferingUpdateListener, MediaPlayer.OnPreparedListener, SharedPreferences.OnSharedPreferenceChangeListener, MediaPlayer.OnErrorListener, View.OnClickListener{
     public MediaPlayer mediaPlayer;
+
     public ArrayList<String> banglaRadios = new ArrayList<>();
     public ArrayList<String> internationalRadios = new ArrayList<>();
     public ArrayList<String> newsRadios = new ArrayList<>();
     public ArrayList<String> musicRadios = new ArrayList<>();
     public ArrayList<String> recentRadios = new ArrayList<>();
     public ArrayList<String> favouriteRadios = new ArrayList<>();
+
     public int FRAGMENT = SelectFragment.FRAGMENT_BANGLA_RADIO;
     OnPreparedCallback onPreparedCallback;
     int position;
@@ -73,7 +75,8 @@ public class MainActivity extends AppCompatActivity
     LinearLayout cardView_holder;
     CardViewCollapsed cardViewCollapsed;
     CardViewExpanded cardViewExpanded;
-    Radio playingNow;
+    Radio playingNew;
+    Radio playingOld;
     private MusicIntentReceiver musicIntentReceiver;
     private SlidingUpPanelLayout slidingUpPanelLayout;
 
@@ -122,7 +125,7 @@ public class MainActivity extends AppCompatActivity
 
             @Override
             public void onPanelStateChanged(View panel, SlidingUpPanelLayout.PanelState previousState, SlidingUpPanelLayout.PanelState newState) {
-                Toast.makeText(MainActivity.this, previousState.toString() + " " + newState.toString(), Toast.LENGTH_SHORT).show();
+                //Toast.makeText(MainActivity.this, previousState.toString() + " " + newState.toString(), Toast.LENGTH_SHORT).show();
 
                 if (previousState == SlidingUpPanelLayout.PanelState.DRAGGING) {
 
@@ -153,10 +156,13 @@ public class MainActivity extends AppCompatActivity
 
         String id = Storage.getRadioStationSingleValueString("playing", "id", getApplicationContext());
         if (id != "") {
-            playingNow = Storage.getRadioStation(id, getApplicationContext());
-            cardViewCollapsed.setValue(playingNow, getApplicationContext());
-            cardViewCollapsed.favourite(playingNow.isFavourite());
+            playingNew = Storage.getRadioStation(id, getApplicationContext());
+            cardViewCollapsed.setValue(playingNew, getApplicationContext());
+            cardViewCollapsed.favourite(playingNew.isFavourite());
         }
+        playingNew = Storage.getRadioStation(Storage.getValue("playing_id", getApplicationContext()),getApplicationContext());
+        playingNew.setState(Radio.STOPPED);
+
     }
 
     private void onPanelCollapsed() {
@@ -165,9 +171,9 @@ public class MainActivity extends AppCompatActivity
     private void onPanelExpanded() {
         AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         cardViewExpanded.headphone(!audioManager.isSpeakerphoneOn());
-        cardViewExpanded.setValue(playingNow, getApplicationContext());
-        cardViewExpanded.favourite(playingNow.isFavourite());
-        if (playingNow.getState() == Radio.STOPPED) {
+        cardViewExpanded.setValue(playingNew, getApplicationContext());
+        cardViewExpanded.favourite(playingNew.isFavourite());
+        if (playingNew.getState() == Radio.STOPPED) {
             cardViewExpanded.stop();
         }
         new MusicIntentReceiver();
@@ -227,9 +233,7 @@ public class MainActivity extends AppCompatActivity
                     Radio r = null;
                     try {
                         r = gson.fromJson(response.get(i).toString(), Radio.class);
-                        r.setPlaying(false);
-                        r.setEqualizer(false);
-                        r.setLoading(false);
+                        r.setState(Radio.STOPPED);
                         r.setFavourite(false);
                         r.setRecent(false);
                         if (!Storage.isRadioStationSaved(r.getId(), getApplication())) {
@@ -237,9 +241,8 @@ public class MainActivity extends AppCompatActivity
                             //Log.d("NO",r.getId());
                         } else {
                             //Log.d("YES",r.getId());
-                            Storage.setRadioStationSingleValueBoolean(r.getId(), "playing", false, getApplication());
-                            Storage.setRadioStationSingleValueBoolean(r.getId(), "loading", false, getApplication());
-                            Storage.setRadioStationSingleValueBoolean(r.getId(), "equalizer", false, getApplication());
+
+                            Storage.saveState(r.getId(), Radio.STOPPED, getApplicationContext());
                         }
                         switch (r.getCategory()) {
                             case "bangla":
@@ -251,7 +254,6 @@ public class MainActivity extends AppCompatActivity
                             case "music":
                                 musicRadios.add(r.getId());
                                 break;
-
                             case "international":
                                 internationalRadios.add(r.getId());
                                 break;
@@ -264,7 +266,7 @@ public class MainActivity extends AppCompatActivity
                 }
                 //openFragment(SelectFragment.FRAGMENT_BANGLA_RADIO);
                 //loadRecentRadioStation();
-                loadFavouriteRadioStation();
+                //loadFavouriteRadioStation();
                 //loadViewPager();
                 openFragment(SelectFragment.FRAGMENT_BANGLA_RADIO);
             }
@@ -372,36 +374,42 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
+        switch (id){
+            case R.id.nav_music:
+                openFragment(SelectFragment.FRAGMENT_MUSIC_RADIO);
 
-        if (id == R.id.nav_music) {
-            openFragment(SelectFragment.FRAGMENT_MUSIC_RADIO);
+                FRAGMENT = SelectFragment.FRAGMENT_MUSIC_RADIO;
+                break;
+            case R.id.nav_news:
+                FRAGMENT = SelectFragment.FRAGMENT_NEWS_RADIO;
 
-            FRAGMENT = SelectFragment.FRAGMENT_MUSIC_RADIO;
+                openFragment(SelectFragment.FRAGMENT_NEWS_RADIO);
+                break;
+            case R.id.nav_international:
+                FRAGMENT = SelectFragment.FRAGMENT_INTERNATIONAL_RADIO;
 
+                openFragment(SelectFragment.FRAGMENT_INTERNATIONAL_RADIO);
+                break;
+            case R.id.nav_bangla:
+                FRAGMENT = SelectFragment.FRAGMENT_BANGLA_RADIO;
+                openFragment(SelectFragment.FRAGMENT_BANGLA_RADIO);
+                break;
 
-        } else if (id == R.id.nav_news) {
-
-
-            FRAGMENT = SelectFragment.FRAGMENT_NEWS_RADIO;
-
-            openFragment(SelectFragment.FRAGMENT_NEWS_RADIO);
-        } else if (id == R.id.nav_international) {
-
-            FRAGMENT = SelectFragment.FRAGMENT_INTERNATIONAL_RADIO;
-
-            openFragment(SelectFragment.FRAGMENT_INTERNATIONAL_RADIO);
-        } else if (id == R.id.nav_bangla) {
-
-            FRAGMENT = SelectFragment.FRAGMENT_BANGLA_RADIO;
-            openFragment(SelectFragment.FRAGMENT_BANGLA_RADIO);
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_about) {
-
-            startActivity(new Intent(this, AboutActivity.class));
-
+            case R.id.nav_favourite:
+                FRAGMENT = SelectFragment.FRAGMENT_FAVOURITE;
+                openFragment(SelectFragment.FRAGMENT_FAVOURITE);
+                break;
+            case R.id.nav_recent:
+                FRAGMENT = SelectFragment.FRAGMENT_RECENT;
+                openFragment(SelectFragment.FRAGMENT_RECENT);
+                break;
+            case R.id.nav_share:
+                break;
+            case R.id.nav_about:
+                startActivity(new Intent(this, AboutActivity.class));
+                break;
         }
+
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
@@ -412,15 +420,12 @@ public class MainActivity extends AppCompatActivity
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         switch (key) {
             case "playing_id":
-                playingNow = Storage.getRadioStation(Storage.getValue(key, getApplicationContext()), getApplicationContext());
+                playingOld = playingNew;
+                Storage.saveState(playingOld.getId(),Radio.STOPPED,getApplicationContext());
 
-                cardViewCollapsed.setValue(playingNow, getApplicationContext());
-                cardViewCollapsed.loading();
-                cardViewCollapsed.favourite(playingNow.isFavourite());
+                playingNew = Storage.getRadioStation(Storage.getValue(key, getApplicationContext()), getApplicationContext());
 
-                cardViewExpanded.setValue(playingNow, getApplicationContext());
-                cardViewExpanded.loading();
-                cardViewExpanded.favourite(playingNow.isFavourite());
+
 
                 playRadio();
                 break;
@@ -434,9 +439,10 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void playRadio() {
-        playingNow.setState(Radio.LOADING);
         stopRadio();
-        Uri uri = Uri.parse(playingNow.getStreamURL());
+        playingNew.setState(Radio.LOADING);
+        onStateChanged();
+        Uri uri = Uri.parse(playingNew.getStreamURL());
         mediaPlayer = new MediaPlayer();
         mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
         mediaPlayer.reset();
@@ -448,18 +454,19 @@ public class MainActivity extends AppCompatActivity
             mediaPlayer.prepareAsync();
         } catch (Exception e) {
         }
-
     }
 
     public void stopRadio() {
-        playingNow.setState(Radio.STOPPED);
-        //resetRadio();
+
         try {
             if (mediaPlayer != null) {
                 mediaPlayer.stop();
                 mediaPlayer.reset();
                 mediaPlayer.release();
                 mediaPlayer = null;
+                playingNew.setState(Radio.STOPPED);
+                Storage.saveState(playingNew.getId(),Radio.STOPPED,getApplicationContext());
+                onStateChanged();
             }
         } catch (Exception e) {
         }
@@ -472,8 +479,7 @@ public class MainActivity extends AppCompatActivity
 
                 break;
             case R.id.stop:
-                cardViewCollapsed.stop();
-                cardViewExpanded.stop();
+
                 stopRadio();
                 break;
 
@@ -482,8 +488,6 @@ public class MainActivity extends AppCompatActivity
                 break;
 
             case R.id.play:
-                cardViewCollapsed.loading();
-                cardViewExpanded.loading();
                 playRadio();
 
                 break;
@@ -526,56 +530,29 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    public void playRadio(String id, String url, int position, OnPreparedCallback onPreparedCallback) {
-
-        resetRadio();
-        history.push(id);
-        this.position = position;
-        this.onPreparedCallback = onPreparedCallback;
-        stopRadio();
-        Uri uri = Uri.parse(url);
-        mediaPlayer = new MediaPlayer();
-        mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-        mediaPlayer.reset();
-        try {
-            mediaPlayer.setDataSource(this, uri);
-            mediaPlayer.setOnPreparedListener(this);
-            mediaPlayer.setOnBufferingUpdateListener(this);
-            mediaPlayer.setOnErrorListener(this);
-            mediaPlayer.prepareAsync();
-        } catch (Exception e) {
-        }
-
+    void toast(String s) {
+        Toast.makeText(this, s, Toast.LENGTH_SHORT).show();
     }
 
-    public void resetRadio() {
-        while (!history.isEmpty()) {
-            Storage.setRadioStationSingleValueBoolean(history.peek(), "playing", false, getApplication());
-            //Storage.setRadioStationSingleValueBoolean(history.peek(),"loading",false,getApplication());
-            Storage.setRadioStationSingleValueBoolean(history.peek(), "equalizer", false, getApplication());
-            history.pop();
-        }
+    public void callBack(int position, OnPreparedCallback onPreparedCallback) {
+        this.position = position;
+        this.onPreparedCallback = onPreparedCallback;
     }
 
     @Override
     public void onPrepared(MediaPlayer mediaPlayer) {
-        //((ImageView) radioView.findViewById(R.id.image_gif)).setVisibility(ProgressBar.VISIBLE);
-        //((ProgressBar) radioView.findViewById(R.id.progressBar)).setVisibility(ProgressBar.INVISIBLE);
-        playingNow.setState(Radio.PLAYING);
-        cardViewCollapsed.play();
-        cardViewExpanded.play();
-        mediaPlayer.start();
-        //onPreparedCallback.OnPreparedCallback(position);
-    }
+        Storage.saveState(playingNew.getId(),Radio.PLAYING,getApplicationContext());
+        playingNew.setState(Radio.PLAYING);
+        onStateChanged();
 
+        mediaPlayer.start();
+        if(onPreparedCallback!=null)
+            onPreparedCallback.OnPreparedCallback(position);
+    }
     @Override
     public void onBufferingUpdate(MediaPlayer mp, int percent) {
         Log.d("Progress", String.valueOf(percent));
         toast(String.valueOf(percent));
-    }
-
-    void toast(String s) {
-        Toast.makeText(this, s, Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -586,6 +563,40 @@ public class MainActivity extends AppCompatActivity
 
     void log(String s) {
         Log.d("LOG", s);
+    }
+
+    public void resumePlay() {
+
+        if(playingNew.getState()==Radio.STOPPED)
+            playRadio();
+    }
+
+    public void onStateChanged() {
+        switch (playingNew.getState()){
+            case Radio.PLAYING:
+                toast("PLAying");
+                cardViewCollapsed.play();
+                cardViewExpanded.play();
+                break;
+
+            case Radio.LOADING:
+
+                cardViewCollapsed.setValue(playingNew, getApplicationContext());
+                cardViewCollapsed.loading();
+                cardViewCollapsed.favourite(playingNew.isFavourite());
+
+                cardViewExpanded.setValue(playingNew, getApplicationContext());
+                cardViewExpanded.loading();
+                cardViewExpanded.favourite(playingNew.isFavourite());
+                toast("loading");
+                break;
+
+            case Radio.STOPPED:
+                cardViewCollapsed.stop();
+                cardViewExpanded.stop();
+                toast("Stopped");
+                break;
+        }
     }
 
     public class MusicIntentReceiver extends BroadcastReceiver {
@@ -606,6 +617,12 @@ public class MainActivity extends AppCompatActivity
                 }
             }
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        stopRadio();
+        super.onDestroy();
     }
 }
 

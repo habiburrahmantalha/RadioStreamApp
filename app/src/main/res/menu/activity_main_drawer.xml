@@ -18,6 +18,14 @@
             android:id="@+id/nav_international"
             android:icon="@drawable/ic_public_black_24dp"
             android:title="International" />
+        <item
+            android:id="@+id/nav_favourite"
+            android:icon="@drawable/heart_yellow"
+            android:title="Favourite" />
+        <item
+            android:id="@+id/nav_recent"
+            android:icon="@drawable/ic_history_black_24dp"
+            android:title="Recent" />
     </group>
 
     <item android:title="More...">

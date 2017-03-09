@@ -4,6 +4,7 @@ package com.rrmsense.radiostream.models;
  * Created by Talha on 2/12/2017.
  */
 
+
 public class Radio {
     public static final int PLAYING = 2;
     public static final int LOADING = 1;
@@ -13,17 +14,16 @@ public class Radio {
     private String name;
     private String id;
     private String category;
-    private boolean playing;
-    private boolean equalizer;
-    private boolean loading;
     private boolean favourite;
     private boolean recent;
     private int state;
 
-    public Radio(){
+
+    public Radio() {
 
     }
-    public Radio(String imageURL, String streamURL,String name,String id,String category) {
+
+    public Radio(String imageURL, String streamURL, String name, String id, String category) {
         this.imageURL = imageURL;
         this.streamURL = streamURL;
         this.name = name;
@@ -31,17 +31,15 @@ public class Radio {
         this.category = category;
     }
 
-    public Radio(String imageURL, String streamURL, String name, String id, String category, boolean playing, boolean equalizer, boolean loading, boolean favourite, boolean recent) {
+    public Radio(String imageURL, String streamURL, String name, String id, String category, boolean favourite, boolean recent, int state) {
         this.imageURL = imageURL;
         this.streamURL = streamURL;
         this.name = name;
         this.id = id;
         this.category = category;
-        this.playing = playing;
-        this.equalizer = equalizer;
-        this.loading = loading;
         this.favourite = favourite;
         this.recent = recent;
+        this.state = state;
     }
 
     public String getImageURL() {
@@ -84,30 +82,6 @@ public class Radio {
         this.category = category;
     }
 
-    public boolean isPlaying() {
-        return playing;
-    }
-
-    public void setPlaying(boolean playing) {
-        this.playing = playing;
-    }
-
-    public boolean isEqualizer() {
-        return equalizer;
-    }
-
-    public void setEqualizer(boolean equalizer) {
-        this.equalizer = equalizer;
-    }
-
-    public boolean isLoading() {
-        return loading;
-    }
-
-    public void setLoading(boolean loading) {
-        this.loading = loading;
-    }
-
     public boolean isFavourite() {
         return favourite;
     }
@@ -130,5 +104,8 @@ public class Radio {
 
     public void setState(int state) {
         this.state = state;
+
     }
+
+
 }

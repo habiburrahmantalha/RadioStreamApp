@@ -64,6 +64,7 @@ public class CardViewCollapsed {
 
     }
     public void play(){
+        this.stop.setVisibility(Button.VISIBLE);
         this.progressBar.setVisibility(Button.INVISIBLE);
 
     }
