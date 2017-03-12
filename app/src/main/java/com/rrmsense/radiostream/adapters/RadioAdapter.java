@@ -51,7 +51,7 @@ public class RadioAdapter extends RecyclerView.Adapter<RadioAdapter.ViewHolder> 
     public void onBindViewHolder(ViewHolder holder, int position) {
         Radio radio = Storage.getRadioStation(radios.get(position), mContext);
 
-        holder.item.setText(position + "");
+        holder.item.setText((position+1) + "");
 
         if (radio.getImageURL() != "")
             Glide.with(mContext).load(radio.getImageURL()).override(300, 200).fitCenter().diskCacheStrategy(DiskCacheStrategy.SOURCE).into(holder.image_radio);
