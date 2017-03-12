@@ -10,7 +10,8 @@
         android:icon="@mipmap/app_icon_2"
         android:label="Radio Station"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:hardwareAccelerated="false"
+        android:theme="@style/Theme.AppCompat.Light.NoActionBar">
         <activity
             android:name=".activities.MainActivity"
 
@@ -23,7 +24,8 @@
         </receiver>
         <receiver android:name="com.rrmsense.radiostream.Services.RadioControllerBroadcastReceiver" >
             <intent-filter>
-                <action android:name="com.example.app.ACTION_PLAY" />
+                <action android:name="com.rrmsense.radiostream.ACTION_CONTROLLER" />
+                <action android:name="com.rrmsense.radiostream.ACTION_CLOSE" />
             </intent-filter>
         </receiver>
         <activity

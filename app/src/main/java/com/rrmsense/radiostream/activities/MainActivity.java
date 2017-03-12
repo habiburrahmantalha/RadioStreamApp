@@ -1,6 +1,5 @@
 package com.rrmsense.radiostream.activities;
 
-import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.ProgressDialog;
@@ -17,6 +16,7 @@ import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -41,7 +41,6 @@ import com.google.gson.Gson;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.rrmsense.radiostream.R;
-import com.rrmsense.radiostream.Services.RadioControllerBroadcastReceiver;
 import com.rrmsense.radiostream.fragments.RadioFragment;
 import com.rrmsense.radiostream.interfaces.OnPreparedCallback;
 import com.rrmsense.radiostream.models.CardViewCollapsed;
@@ -84,6 +83,7 @@ public class MainActivity extends AppCompatActivity
     Radio playingOld;
     private MusicIntentReceiver musicIntentReceiver;
     private SlidingUpPanelLayout slidingUpPanelLayout;
+
 
     public static int dipToPixels(Context context, int dipValue) {
         DisplayMetrics metrics = context.getResources().getDisplayMetrics();
@@ -167,8 +167,40 @@ public class MainActivity extends AppCompatActivity
         }
         playingNew = Storage.getRadioStation(Storage.getValue("playing_id", getApplicationContext()), getApplicationContext());
         playingNew.setState(Radio.STOPPED);
+        setNotification();
+        registerReceiver(broadcastReceiver,new IntentFilter("CLOSE"));
+        registerReceiver(broadcastReceiver,new IntentFilter("CONTROLLER"));
+
+
 
     }
+    BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            switch (action){
+                case "CLOSE":
+                    notificationManager.cancel(1);
+                    finish();
+                    break;
+                case "CONTROLLER":
+                    if(Radio.PLAYING == playingNew.getState()){
+                        stopRadio();
+                        notificationView.setImageViewResource(R.id.controller, R.drawable.play);
+
+
+                    }
+                    else if(Radio.STOPPED == playingNew.getState()) {
+                        playRadio();
+                        notificationView.setImageViewResource(R.id.controller, R.drawable.stop);
+                    }
+                    notificationManager.notify(1,notificationBuilder.build());
+
+                    break;
+
+            }
+        }
+    };
 
     private void onPanelCollapsed() {
     }
@@ -327,6 +359,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onDestroy() {
         stopRadio();
+        unregisterReceiver(broadcastReceiver);
         super.onDestroy();
     }
 
@@ -339,7 +372,8 @@ public class MainActivity extends AppCompatActivity
             slidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
 
         } else {
-            super.onBackPressed();
+            //super.onBackPressed();
+            moveTaskToBack(true);
         }
     }
 
@@ -613,31 +647,48 @@ public class MainActivity extends AppCompatActivity
         if (playingNew.getState() == Radio.STOPPED)
             playRadio();
     }
+    NotificationManager notificationManager;
+    RemoteViews notificationView;
+    NotificationCompat.Builder notificationBuilder;
+    public void setNotification() {
+        notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
-    public void setNotification(String songName) {
-        String ns = Context.NOTIFICATION_SERVICE;
-        NotificationManager notificationManager = (NotificationManager) getSystemService(ns);
 
+       // @SuppressWarnings("deprecation")
+       // Notification notification = new Notification(R.drawable.radio_background, null, System.currentTimeMillis());
 
-        @SuppressWarnings("deprecation")
-        Notification notification = new Notification(R.drawable.radio_background, null, System.currentTimeMillis());
+        notificationView = new RemoteViews(getPackageName(), R.layout.notification_drawer_controller);
 
-        RemoteViews notificationView = new RemoteViews(getPackageName(), R.layout.notification_drawer_controller);
+        if(playingNew.getState()==Radio.STOPPED)
+            notificationView.setImageViewResource(R.id.controller, R.drawable.play);
+        else if(playingNew.getState()==Radio.PLAYING)
+            notificationView.setImageViewResource(R.id.controller, R.drawable.stop);
+
 
         //the intent that is started when the notification is clicked (works)
         Intent notificationIntent = new Intent(this, MainActivity.class);
         PendingIntent pendingNotificationIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
 
-        notification.contentView = notificationView;
-        notification.contentIntent = pendingNotificationIntent;
-        notification.flags |= Notification.FLAG_NO_CLEAR;
+        //notification.contentView = notificationView;
+       // notification.contentIntent = pendingNotificationIntent;
+       // notification.flags |= Notification.FLAG_NO_CLEAR;
+
+        notificationBuilder = new NotificationCompat.Builder(this).setSmallIcon(R.drawable.app_icon_2).setTicker("Radio Sration").setContent(notificationView).setContentIntent(pendingNotificationIntent);
+
 
         //this is the intent that is supposed to be called when the button is clicked
-        Intent switchIntent = new Intent(this, RadioControllerBroadcastReceiver.class);
-        PendingIntent pendingSwitchIntent = PendingIntent.getBroadcast(this, 0, switchIntent, 0);
+        Intent switchIntentController = new Intent("com.rrmsense.radiostream.ACTION_CONTROLLER");
+        Intent switchIntentClose = new Intent("com.rrmsense.radiostream.ACTION_CLOSE");
 
-        //notificationView.setOnClickPendingIntent(R.id.btn_play_pause_in_notification, pendingSwitchIntent);
-        notificationManager.notify(1, notification);
+
+        PendingIntent pendingSwitchIntentController = PendingIntent.getBroadcast(this, 0, switchIntentController, 0);
+        PendingIntent pendingSwitchIntentClose = PendingIntent.getBroadcast(this, 0, switchIntentClose, 0);
+
+        notificationView.setOnClickPendingIntent(R.id.close, pendingSwitchIntentClose);
+        notificationView.setOnClickPendingIntent(R.id.controller, pendingSwitchIntentController);
+        notificationManager.notify(1, notificationBuilder.build());
+
+
     }
 
     public class MusicIntentReceiver extends BroadcastReceiver {
@@ -659,5 +710,6 @@ public class MainActivity extends AppCompatActivity
             }
         }
     }
+
 }
 
