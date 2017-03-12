@@ -13,7 +13,7 @@ import android.view.ViewGroup;
 import com.rrmsense.radiostream.R;
 import com.rrmsense.radiostream.activities.MainActivity;
 import com.rrmsense.radiostream.adapters.RadioAdapter;
-import com.rrmsense.radiostream.interfaces.OnPreparedCallback;
+import com.rrmsense.radiostream.interfaces.onPreparedCallback;
 import com.rrmsense.radiostream.interfaces.RecyclerViewClickListener;
 import com.rrmsense.radiostream.models.SelectFragment;
 import com.rrmsense.radiostream.models.Storage;
@@ -23,7 +23,7 @@ import java.util.ArrayList;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class RadioFragment extends Fragment implements RecyclerViewClickListener,OnPreparedCallback {
+public class RadioFragment extends Fragment implements RecyclerViewClickListener,onPreparedCallback {
 
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;

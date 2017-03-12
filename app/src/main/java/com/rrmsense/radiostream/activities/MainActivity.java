@@ -38,7 +38,6 @@ import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.rrmsense.radiostream.R;
 import com.rrmsense.radiostream.fragments.RadioFragment;
-import com.rrmsense.radiostream.interfaces.OnPreparedCallback;
 import com.rrmsense.radiostream.models.CardViewCollapsed;
 import com.rrmsense.radiostream.models.CardViewExpanded;
 import com.rrmsense.radiostream.models.Radio;
@@ -67,7 +66,7 @@ public class MainActivity extends AppCompatActivity
     public ArrayList<String> favouriteRadios = new ArrayList<>();
 
     public int FRAGMENT = SelectFragment.FRAGMENT_BANGLA_RADIO;
-    OnPreparedCallback onPreparedCallback;
+    com.rrmsense.radiostream.interfaces.onPreparedCallback onPreparedCallback;
     int position;
     Deque<String> history = new ArrayDeque<>();
     View layout_collapsed;
@@ -80,10 +79,10 @@ public class MainActivity extends AppCompatActivity
     private MusicIntentReceiver musicIntentReceiver;
     private SlidingUpPanelLayout slidingUpPanelLayout;
 
-    public static int dipToPixels(Context context, int dipValue) {
+/*    public static int dipToPixels(Context context, int dipValue) {
         DisplayMetrics metrics = context.getResources().getDisplayMetrics();
         return Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dipValue, metrics));
-    }
+    }*/
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -274,9 +273,11 @@ public class MainActivity extends AppCompatActivity
         pd.hide();
     }
 
+/*
     private void loadFavouriteRadioStation() {
         favouriteRadios = Storage.getFavourite(getApplicationContext());
     }
+*/
 
     public void openFragment(int fragmentID) {
         FragmentManager fragmentManager = getSupportFragmentManager();
@@ -364,10 +365,10 @@ public class MainActivity extends AppCompatActivity
 
         return super.onOptionsItemSelected(item);
     }
-
+/*
     private void loadRecentRadioStation() {
         recentRadios = Storage.getRecent(getApplicationContext());
-    }
+    }*/
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
@@ -518,8 +519,6 @@ public class MainActivity extends AppCompatActivity
                         cardViewExpanded.volume(false);
                     }
                 }
-
-
                 break;
             case R.id.cardview_collapsed:
                 toast("c");
@@ -534,7 +533,7 @@ public class MainActivity extends AppCompatActivity
         Toast.makeText(this, s, Toast.LENGTH_SHORT).show();
     }
 
-    public void callBack(int position, OnPreparedCallback onPreparedCallback) {
+    public void callBack(int position, com.rrmsense.radiostream.interfaces.onPreparedCallback onPreparedCallback) {
         this.position = position;
         this.onPreparedCallback = onPreparedCallback;
     }
@@ -574,7 +573,7 @@ public class MainActivity extends AppCompatActivity
     public void onStateChanged() {
         switch (playingNew.getState()){
             case Radio.PLAYING:
-                toast("PLAying");
+                toast("Playing");
                 cardViewCollapsed.play();
                 cardViewExpanded.play();
                 break;

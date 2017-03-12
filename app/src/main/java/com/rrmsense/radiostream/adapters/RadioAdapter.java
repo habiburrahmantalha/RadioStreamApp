@@ -51,25 +51,25 @@ public class RadioAdapter extends RecyclerView.Adapter<RadioAdapter.ViewHolder> 
     public void onBindViewHolder(ViewHolder holder, int position) {
         Radio radio = Storage.getRadioStation(radios.get(position), mContext);
 
-        holder.item.setText(position + "");
+        holder.item.setText((position+1) + "");
 
         if (radio.getImageURL() != "")
             Glide.with(mContext).load(radio.getImageURL()).override(300, 200).fitCenter().diskCacheStrategy(DiskCacheStrategy.SOURCE).into(holder.image_radio);
 
         switch (radio.getState()) {
             case Radio.LOADING:
-                holder.progressBar.setVisibility(ProgressBar.VISIBLE);
+                //holder.progressBar.setVisibility(ProgressBar.VISIBLE);
                 holder.equalizer.setVisibility(ImageView.INVISIBLE);
                 break;
 
             case Radio.PLAYING:
                 holder.equalizer.setVisibility(ImageView.VISIBLE);
-                holder.progressBar.setVisibility(ProgressBar.INVISIBLE);
+                //holder.progressBar.setVisibility(ProgressBar.INVISIBLE);
                 break;
 
             case Radio.STOPPED:
                 holder.equalizer.setVisibility(ImageView.INVISIBLE);
-                holder.progressBar.setVisibility(ProgressBar.INVISIBLE);
+                //holder.progressBar.setVisibility(ProgressBar.INVISIBLE);
                 break;
         }
         if (radio.isFavourite())
