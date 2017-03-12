@@ -58,18 +58,18 @@ public class RadioAdapter extends RecyclerView.Adapter<RadioAdapter.ViewHolder> 
 
         switch (radio.getState()) {
             case Radio.LOADING:
-                holder.progressBar.setVisibility(ProgressBar.VISIBLE);
+                //holder.progressBar.setVisibility(ProgressBar.VISIBLE);
                 holder.equalizer.setVisibility(ImageView.INVISIBLE);
                 break;
 
             case Radio.PLAYING:
                 holder.equalizer.setVisibility(ImageView.VISIBLE);
-                holder.progressBar.setVisibility(ProgressBar.INVISIBLE);
+                //holder.progressBar.setVisibility(ProgressBar.INVISIBLE);
                 break;
 
             case Radio.STOPPED:
                 holder.equalizer.setVisibility(ImageView.INVISIBLE);
-                holder.progressBar.setVisibility(ProgressBar.INVISIBLE);
+                //holder.progressBar.setVisibility(ProgressBar.INVISIBLE);
                 break;
         }
         if (radio.isFavourite())
@@ -118,8 +118,10 @@ public class RadioAdapter extends RecyclerView.Adapter<RadioAdapter.ViewHolder> 
                     boolean f = Storage.getRadioStationSingleValueBoolean(id, "favourite", mContext);
                     if (f) {
                         Storage.removeFavourite(id, mContext);
-                        if (CURRENT_FRAGMENT == SelectFragment.FRAGMENT_FAVOURITE)
+                        if (CURRENT_FRAGMENT == SelectFragment.FRAGMENT_FAVOURITE){
                             notifyItemRemoved(this.getAdapterPosition());
+                            notifyItemRangeChanged(0,getItemCount());
+                        }
                         else
                             notifyItemChanged(this.getAdapterPosition());
                     } else {

@@ -10,7 +10,7 @@ import com.bumptech.glide.Glide;
 import com.rrmsense.radiostream.R;
 
 public class SplashScreenActivity extends AppCompatActivity {
-    private static int SPLASH_TIME_OUT = 1000;
+    private static int SPLASH_TIME_OUT = 6000;
     ImageView image;
 
     @Override
@@ -21,8 +21,8 @@ public class SplashScreenActivity extends AppCompatActivity {
         image = (ImageView) findViewById(R.id.image);
 
         Glide.with(SplashScreenActivity.this)
-                .load(R.drawable.splash_screen)
-                .centerCrop()
+                .load(R.drawable.giphy)
+                .asGif()
                 .crossFade()
                 .into(image);
 

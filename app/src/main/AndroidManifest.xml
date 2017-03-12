@@ -21,6 +21,11 @@
                 <action android:name="android.intent.action.HEADSET_PLUG"/>
             </intent-filter>
         </receiver>
+        <receiver android:name="com.rrmsense.radiostream.Services.RadioControllerBroadcastReceiver" >
+            <intent-filter>
+                <action android:name="com.example.app.ACTION_PLAY" />
+            </intent-filter>
+        </receiver>
         <activity
             android:name=".activities.SettingsActivity"
             android:screenOrientation="portrait"

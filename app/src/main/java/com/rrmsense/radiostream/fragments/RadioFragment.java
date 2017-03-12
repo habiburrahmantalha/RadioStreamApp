@@ -16,7 +16,6 @@ import com.rrmsense.radiostream.adapters.RadioAdapter;
 import com.rrmsense.radiostream.interfaces.OnPreparedCallback;
 import com.rrmsense.radiostream.interfaces.RecyclerViewClickListener;
 import com.rrmsense.radiostream.models.SelectFragment;
-import com.rrmsense.radiostream.models.Storage;
 
 import java.util.ArrayList;
 
@@ -74,11 +73,11 @@ public class RadioFragment extends Fragment implements RecyclerViewClickListener
                 //Log.d("ID", String.valueOf(fragmentID));
                 break;
             case SelectFragment.FRAGMENT_FAVOURITE:
-                radios = Storage.getFavourite(getActivity());
+                radios = ((MainActivity)getContext()).favouriteRadios;
                 mAdapter = new RadioAdapter(radios,getActivity(),this,SelectFragment.FRAGMENT_FAVOURITE);
                 break;
             case SelectFragment.FRAGMENT_RECENT:
-                radios = Storage.getRecent(getActivity());
+                radios = ((MainActivity)getContext()).recentRadios;
                 mAdapter = new RadioAdapter(radios,getActivity(),this,SelectFragment.FRAGMENT_RECENT);
                 break;
         }

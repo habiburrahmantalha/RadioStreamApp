@@ -1,5 +1,8 @@
 package com.rrmsense.radiostream.activities;
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -31,12 +34,14 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.RemoteViews;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.rrmsense.radiostream.R;
+import com.rrmsense.radiostream.Services.RadioControllerBroadcastReceiver;
 import com.rrmsense.radiostream.fragments.RadioFragment;
 import com.rrmsense.radiostream.interfaces.OnPreparedCallback;
 import com.rrmsense.radiostream.models.CardViewCollapsed;
@@ -158,7 +163,7 @@ public class MainActivity extends AppCompatActivity
         if (id != "") {
             playingNew = Storage.getRadioStation(id, getApplicationContext());
             cardViewCollapsed.setValue(playingNew, getApplicationContext());
-            cardViewCollapsed.favourite(playingNew.isFavourite());
+            //cardViewCollapsed.favourite(playingNew.isFavourite());
         }
         playingNew = Storage.getRadioStation(Storage.getValue("playing_id", getApplicationContext()),getApplicationContext());
         playingNew.setState(Radio.STOPPED);
@@ -172,6 +177,7 @@ public class MainActivity extends AppCompatActivity
         AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         cardViewExpanded.headphone(!audioManager.isSpeakerphoneOn());
         cardViewExpanded.setValue(playingNew, getApplicationContext());
+        playingNew.setFavourite(Storage.getRadioStationSingleValueBoolean(playingNew.getId(), "favourite", getApplicationContext()));
         cardViewExpanded.favourite(playingNew.isFavourite());
         if (playingNew.getState() == Radio.STOPPED) {
             cardViewExpanded.stop();
@@ -199,12 +205,12 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void CardViewInit() {
-        cardViewCollapsed = new CardViewCollapsed((ImageButton) layout_collapsed.findViewById(R.id.previous), (ImageButton) layout_collapsed.findViewById(R.id.next), (ImageButton) layout_collapsed.findViewById(R.id.play), (ImageButton) layout_collapsed.findViewById(R.id.stop), (ImageButton) layout_collapsed.findViewById(R.id.favourite), (ProgressBar) layout_collapsed.findViewById(R.id.progressBar), (ImageView) layout_collapsed.findViewById(R.id.image_radio));
+        cardViewCollapsed = new CardViewCollapsed((ImageButton) layout_collapsed.findViewById(R.id.previous), (ImageButton) layout_collapsed.findViewById(R.id.next), (ImageButton) layout_collapsed.findViewById(R.id.play), (ImageButton) layout_collapsed.findViewById(R.id.stop), /*(ImageButton) layout_collapsed.findViewById(R.id.favourite),*/ (ProgressBar) layout_collapsed.findViewById(R.id.progressBar), (ImageView) layout_collapsed.findViewById(R.id.image_radio));
         cardViewCollapsed.previous.setOnClickListener(this);
         cardViewCollapsed.next.setOnClickListener(this);
         cardViewCollapsed.play.setOnClickListener(this);
         cardViewCollapsed.stop.setOnClickListener(this);
-        cardViewCollapsed.favourite.setOnClickListener(this);
+        //cardViewCollapsed.favourite.setOnClickListener(this);
 
         cardViewExpanded = new CardViewExpanded((ImageButton) layout_expanded.findViewById(R.id.previous), (ImageButton) layout_expanded.findViewById(R.id.next), (ImageButton) layout_expanded.findViewById(R.id.play), (ImageButton) layout_expanded.findViewById(R.id.stop), (ImageButton) layout_expanded.findViewById(R.id.favourite), (ImageButton) layout_expanded.findViewById(R.id.headphone), (ImageButton) layout_expanded.findViewById(R.id.volume), (ProgressBar) layout_expanded.findViewById(R.id.progressBar), (ImageView) layout_expanded.findViewById(R.id.image_radio), (ImageView) layout_expanded.findViewById(R.id.equalizer));
         cardViewExpanded.previous.setOnClickListener(this);
@@ -265,8 +271,8 @@ public class MainActivity extends AppCompatActivity
                     }
                 }
                 //openFragment(SelectFragment.FRAGMENT_BANGLA_RADIO);
-                //loadRecentRadioStation();
-                //loadFavouriteRadioStation();
+                loadRecentRadioStation();
+                loadFavouriteRadioStation();
                 //loadViewPager();
                 openFragment(SelectFragment.FRAGMENT_BANGLA_RADIO);
             }
@@ -422,18 +428,16 @@ public class MainActivity extends AppCompatActivity
             case "playing_id":
                 playingOld = playingNew;
                 Storage.saveState(playingOld.getId(),Radio.STOPPED,getApplicationContext());
-
                 playingNew = Storage.getRadioStation(Storage.getValue(key, getApplicationContext()), getApplicationContext());
-
-
-
                 playRadio();
                 break;
-            case "playing_favourite":
-
-                boolean f = Storage.getRadioStationSingleValueBoolean("playing", "favourite", getApplicationContext());
-                cardViewCollapsed.favourite(f);
-
+            case "New_Favourite_Added":
+                String fa = Storage.getValue(key, getApplicationContext());
+                favouriteRadios.add(fa);
+                break;
+            case "New_Favourite_Removed":
+                String fr = Storage.getValue(key, getApplicationContext());
+                favouriteRadios.remove(fr);
                 break;
         }
     }
@@ -493,12 +497,16 @@ public class MainActivity extends AppCompatActivity
                 break;
 
             case R.id.favourite:
-                boolean f = Storage.getRadioStationSingleValueBoolean("playing", "favourite", getApplicationContext());
-                Storage.setRadioStationSingleValueBoolean("playing", "favourite", !f, getApplicationContext());
-                cardViewCollapsed.favourite(!f);
+                boolean f = Storage.getRadioStationSingleValueBoolean(playingNew.getId(), "favourite", getApplicationContext());
+                if(f){
+                    Storage.removeFavourite(playingNew.getId(), getApplicationContext());
+                }else{
+                    Storage.saveFavourite(playingNew.getId(),getApplicationContext());
+                }
+                Storage.setRadioStationSingleValueBoolean(playingNew.getId(), "favourite", !f, getApplicationContext());
+                playingNew.setFavourite(!f);
 
                 cardViewExpanded.favourite(!f);
-
                 break;
             case R.id.volume:
                 AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
@@ -557,7 +565,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onError(MediaPlayer mp, int what, int extra) {
-        //Storage.si
+        toast("Playing Error!");
         return false;
     }
 
@@ -574,7 +582,7 @@ public class MainActivity extends AppCompatActivity
     public void onStateChanged() {
         switch (playingNew.getState()){
             case Radio.PLAYING:
-                toast("PLAying");
+                //toast("PLAying");
                 cardViewCollapsed.play();
                 cardViewExpanded.play();
                 break;
@@ -583,18 +591,18 @@ public class MainActivity extends AppCompatActivity
 
                 cardViewCollapsed.setValue(playingNew, getApplicationContext());
                 cardViewCollapsed.loading();
-                cardViewCollapsed.favourite(playingNew.isFavourite());
+                //cardViewCollapsed.favourite(playingNew.isFavourite());
 
                 cardViewExpanded.setValue(playingNew, getApplicationContext());
                 cardViewExpanded.loading();
                 cardViewExpanded.favourite(playingNew.isFavourite());
-                toast("loading");
+                //toast("loading");
                 break;
 
             case Radio.STOPPED:
                 cardViewCollapsed.stop();
                 cardViewExpanded.stop();
-                toast("Stopped");
+                //toast("Stopped");
                 break;
         }
     }
@@ -623,6 +631,31 @@ public class MainActivity extends AppCompatActivity
     protected void onDestroy() {
         stopRadio();
         super.onDestroy();
+    }
+    public void setNotification(String songName){
+        String ns = Context.NOTIFICATION_SERVICE;
+        NotificationManager notificationManager = (NotificationManager) getSystemService(ns);
+
+
+        @SuppressWarnings("deprecation")
+        Notification notification = new Notification(R.drawable.radio_background, null, System.currentTimeMillis());
+
+        RemoteViews notificationView = new RemoteViews(getPackageName(), R.layout.notification_drawer_controller);
+
+        //the intent that is started when the notification is clicked (works)
+        Intent notificationIntent = new Intent(this, MainActivity.class);
+        PendingIntent pendingNotificationIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
+
+        notification.contentView = notificationView;
+        notification.contentIntent = pendingNotificationIntent;
+        notification.flags |= Notification.FLAG_NO_CLEAR;
+
+        //this is the intent that is supposed to be called when the button is clicked
+        Intent switchIntent = new Intent(this, RadioControllerBroadcastReceiver.class);
+        PendingIntent pendingSwitchIntent = PendingIntent.getBroadcast(this, 0, switchIntent, 0);
+
+        //notificationView.setOnClickPendingIntent(R.id.btn_play_pause_in_notification, pendingSwitchIntent);
+        notificationManager.notify(1, notification);
     }
 }
 

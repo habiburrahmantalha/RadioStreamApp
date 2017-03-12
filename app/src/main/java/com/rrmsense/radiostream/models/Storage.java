@@ -121,8 +121,10 @@ public class Storage {
             return;
         }
         favourite = s + "," + favourite;
+        editor.putString("New_Favourite_Added",s);
         editor.putString("favourite", favourite).apply();
-        ((MainActivity) context).favouriteRadios.add(s);
+        //((MainActivity) context).favouriteRadios.add(s);
+
     }
 
     public static void removeFavourite(String s, Context context) {
@@ -130,8 +132,9 @@ public class Storage {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         String favourite = sharedPreferences.getString("favourite", "");
         favourite = favourite.replace(s + ",", "");
+        editor.putString("New_Favourite_Removed",s);
         editor.putString("favourite", favourite).apply();
-        ((MainActivity) context).favouriteRadios.remove(s);
+        //((MainActivity) context).favouriteRadios.remove(s);
     }
 
     public static void saveRadioStation(Radio r, Context context) {
