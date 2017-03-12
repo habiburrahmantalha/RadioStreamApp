@@ -48,7 +48,7 @@
             android:layout_marginEnd="5dp"
             android:layout_centerHorizontal="true"
             android:id="@+id/border"
-            android:layout_toEndOf="@id/item"
+            android:layout_toEndOf="@id/round_card"
             android:background="@color/lightgrey"
             android:layout_width="1dp"
             android:layout_height="45dp"/>
