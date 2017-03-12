@@ -61,7 +61,7 @@ import java.util.Deque;
 import cz.msebera.android.httpclient.Header;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, MediaPlayer.OnBufferingUpdateListener, MediaPlayer.OnPreparedListener, SharedPreferences.OnSharedPreferenceChangeListener, MediaPlayer.OnErrorListener, View.OnClickListener{
+        implements NavigationView.OnNavigationItemSelectedListener, MediaPlayer.OnBufferingUpdateListener, MediaPlayer.OnPreparedListener, SharedPreferences.OnSharedPreferenceChangeListener, MediaPlayer.OnErrorListener, View.OnClickListener {
     public MediaPlayer mediaPlayer;
 
     public ArrayList<String> banglaRadios = new ArrayList<>();
@@ -165,7 +165,7 @@ public class MainActivity extends AppCompatActivity
             cardViewCollapsed.setValue(playingNew, getApplicationContext());
             //cardViewCollapsed.favourite(playingNew.isFavourite());
         }
-        playingNew = Storage.getRadioStation(Storage.getValue("playing_id", getApplicationContext()),getApplicationContext());
+        playingNew = Storage.getRadioStation(Storage.getValue("playing_id", getApplicationContext()), getApplicationContext());
         playingNew.setState(Radio.STOPPED);
 
     }
@@ -280,6 +280,10 @@ public class MainActivity extends AppCompatActivity
         pd.hide();
     }
 
+    private void loadRecentRadioStation() {
+        recentRadios = Storage.getRecent(getApplicationContext());
+    }
+
     private void loadFavouriteRadioStation() {
         favouriteRadios = Storage.getFavourite(getApplicationContext());
     }
@@ -318,6 +322,12 @@ public class MainActivity extends AppCompatActivity
         fragmentManager.beginTransaction()
                 .replace(R.id.fragment_holder, fragment)
                 .commit();
+    }
+
+    @Override
+    protected void onDestroy() {
+        stopRadio();
+        super.onDestroy();
     }
 
     @Override
@@ -371,16 +381,12 @@ public class MainActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
-    private void loadRecentRadioStation() {
-        recentRadios = Storage.getRecent(getApplicationContext());
-    }
-
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
-        switch (id){
+        switch (id) {
             case R.id.nav_music:
                 openFragment(SelectFragment.FRAGMENT_MUSIC_RADIO);
 
@@ -427,7 +433,7 @@ public class MainActivity extends AppCompatActivity
         switch (key) {
             case "playing_id":
                 playingOld = playingNew;
-                Storage.saveState(playingOld.getId(),Radio.STOPPED,getApplicationContext());
+                Storage.saveState(playingOld.getId(), Radio.STOPPED, getApplicationContext());
                 playingNew = Storage.getRadioStation(Storage.getValue(key, getApplicationContext()), getApplicationContext());
                 playRadio();
                 break;
@@ -469,10 +475,38 @@ public class MainActivity extends AppCompatActivity
                 mediaPlayer.release();
                 mediaPlayer = null;
                 playingNew.setState(Radio.STOPPED);
-                Storage.saveState(playingNew.getId(),Radio.STOPPED,getApplicationContext());
+                Storage.saveState(playingNew.getId(), Radio.STOPPED, getApplicationContext());
                 onStateChanged();
             }
         } catch (Exception e) {
+        }
+    }
+
+    public void onStateChanged() {
+        switch (playingNew.getState()) {
+            case Radio.PLAYING:
+                //toast("PLAying");
+                cardViewCollapsed.play();
+                cardViewExpanded.play();
+                break;
+
+            case Radio.LOADING:
+
+                cardViewCollapsed.setValue(playingNew, getApplicationContext());
+                cardViewCollapsed.loading();
+                //cardViewCollapsed.favourite(playingNew.isFavourite());
+
+                cardViewExpanded.setValue(playingNew, getApplicationContext());
+                cardViewExpanded.loading();
+                cardViewExpanded.favourite(playingNew.isFavourite());
+                //toast("loading");
+                break;
+
+            case Radio.STOPPED:
+                cardViewCollapsed.stop();
+                cardViewExpanded.stop();
+                //toast("Stopped");
+                break;
         }
     }
 
@@ -498,10 +532,10 @@ public class MainActivity extends AppCompatActivity
 
             case R.id.favourite:
                 boolean f = Storage.getRadioStationSingleValueBoolean(playingNew.getId(), "favourite", getApplicationContext());
-                if(f){
+                if (f) {
                     Storage.removeFavourite(playingNew.getId(), getApplicationContext());
-                }else{
-                    Storage.saveFavourite(playingNew.getId(),getApplicationContext());
+                } else {
+                    Storage.saveFavourite(playingNew.getId(), getApplicationContext());
                 }
                 Storage.setRadioStationSingleValueBoolean(playingNew.getId(), "favourite", !f, getApplicationContext());
                 playingNew.setFavourite(!f);
@@ -549,14 +583,15 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onPrepared(MediaPlayer mediaPlayer) {
-        Storage.saveState(playingNew.getId(),Radio.PLAYING,getApplicationContext());
+        Storage.saveState(playingNew.getId(), Radio.PLAYING, getApplicationContext());
         playingNew.setState(Radio.PLAYING);
         onStateChanged();
 
         mediaPlayer.start();
-        if(onPreparedCallback!=null)
+        if (onPreparedCallback != null)
             onPreparedCallback.OnPreparedCallback(position);
     }
+
     @Override
     public void onBufferingUpdate(MediaPlayer mp, int percent) {
         Log.d("Progress", String.valueOf(percent));
@@ -575,64 +610,11 @@ public class MainActivity extends AppCompatActivity
 
     public void resumePlay() {
 
-        if(playingNew.getState()==Radio.STOPPED)
+        if (playingNew.getState() == Radio.STOPPED)
             playRadio();
     }
 
-    public void onStateChanged() {
-        switch (playingNew.getState()){
-            case Radio.PLAYING:
-                //toast("PLAying");
-                cardViewCollapsed.play();
-                cardViewExpanded.play();
-                break;
-
-            case Radio.LOADING:
-
-                cardViewCollapsed.setValue(playingNew, getApplicationContext());
-                cardViewCollapsed.loading();
-                //cardViewCollapsed.favourite(playingNew.isFavourite());
-
-                cardViewExpanded.setValue(playingNew, getApplicationContext());
-                cardViewExpanded.loading();
-                cardViewExpanded.favourite(playingNew.isFavourite());
-                //toast("loading");
-                break;
-
-            case Radio.STOPPED:
-                cardViewCollapsed.stop();
-                cardViewExpanded.stop();
-                //toast("Stopped");
-                break;
-        }
-    }
-
-    public class MusicIntentReceiver extends BroadcastReceiver {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (intent.getAction().equals(Intent.ACTION_HEADSET_PLUG)) {
-                int state = intent.getIntExtra("state", -1);
-                switch (state) {
-                    case 0:
-                        log("Headset is unplugged");
-                        cardViewExpanded.headphone(false);
-                        break;
-                    case 1:
-                        cardViewExpanded.headphone(true);
-                        break;
-                    default:
-
-                }
-            }
-        }
-    }
-
-    @Override
-    protected void onDestroy() {
-        stopRadio();
-        super.onDestroy();
-    }
-    public void setNotification(String songName){
+    public void setNotification(String songName) {
         String ns = Context.NOTIFICATION_SERVICE;
         NotificationManager notificationManager = (NotificationManager) getSystemService(ns);
 
@@ -656,6 +638,26 @@ public class MainActivity extends AppCompatActivity
 
         //notificationView.setOnClickPendingIntent(R.id.btn_play_pause_in_notification, pendingSwitchIntent);
         notificationManager.notify(1, notification);
+    }
+
+    public class MusicIntentReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent.getAction().equals(Intent.ACTION_HEADSET_PLUG)) {
+                int state = intent.getIntExtra("state", -1);
+                switch (state) {
+                    case 0:
+                        log("Headset is unplugged");
+                        cardViewExpanded.headphone(false);
+                        break;
+                    case 1:
+                        cardViewExpanded.headphone(true);
+                        break;
+                    default:
+
+                }
+            }
+        }
     }
 }
 
