@@ -64,7 +64,7 @@
         <ImageView
             android:id="@+id/equalizer"
             android:layout_width="wrap_content"
-            android:src="@drawable/left_indicator"
+
             android:layout_height="50dp"
             android:layout_alignTop="@+id/image_radio"
             android:layout_toStartOf="@+id/favourite"

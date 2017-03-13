@@ -46,6 +46,7 @@ public class CardViewExpanded {
     public void setValue(Radio r, Context context){
 
         Glide.with(context).load(r.getImageURL()).override(150,150).fitCenter().diskCacheStrategy( DiskCacheStrategy.RESULT ).into(image_radio);
+        Glide.with(context).load(R.drawable.music_spectrum).asGif().into(equalizer);
 
     }
 

@@ -55,6 +55,7 @@ public class RadioAdapter extends RecyclerView.Adapter<RadioAdapter.ViewHolder> 
 
         if (radio.getImageURL() != "")
             Glide.with(mContext).load(radio.getImageURL()).override(300, 200).fitCenter().diskCacheStrategy(DiskCacheStrategy.SOURCE).into(holder.image_radio);
+        Glide.with(mContext).load(R.drawable.music_spectrum).asGif().into(holder.equalizer);
 
         switch (radio.getState()) {
             case Radio.LOADING:

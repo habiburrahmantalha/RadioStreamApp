@@ -641,11 +641,13 @@ public class MainActivity extends AppCompatActivity
                 break;
             case "New_Favourite_Added":
                 String fa = Storage.getValue(key, getApplicationContext());
-                favouriteRadios.add(fa);
+                if(fa!="")
+                    favouriteRadios.add(fa);
                 break;
             case "New_Favourite_Removed":
                 String fr = Storage.getValue(key, getApplicationContext());
-                favouriteRadios.remove(fr);
+                if(fr!="")
+                    favouriteRadios.remove(fr);
                 break;
         }
     }
