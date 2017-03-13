@@ -8,7 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import com.rrmsense.radiostream.R;
 
 public class SplashScreenActivity extends AppCompatActivity {
-    private static int SPLASH_TIME_OUT = 6000;
+    private static int SPLASH_TIME_OUT = 1000;
     //ImageView image;
 
     @Override

@@ -35,6 +35,8 @@ import android.widget.ProgressBar;
 import android.widget.RemoteViews;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.NotificationTarget;
 import com.google.gson.Gson;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -83,18 +85,16 @@ public class MainActivity extends AppCompatActivity
             String action = intent.getAction();
             switch (action) {
                 case "CLOSE":
+                    notificationBuilder.setOngoing(true);
                     notificationManager.cancel(1);
                     finish();
                     break;
                 case "CONTROLLER":
                     if (Radio.PLAYING == playingNew.getState()) {
                         stopRadio();
-                        notificationView.setImageViewResource(R.id.controller, R.drawable.play);
                     } else if (Radio.STOPPED == playingNew.getState()) {
                         playRadio();
-                        notificationView.setImageViewResource(R.id.controller, R.drawable.stop);
                     }
-                    notificationManager.notify(1, notificationBuilder.build());
                     break;
             }
         }
@@ -171,14 +171,8 @@ public class MainActivity extends AppCompatActivity
 
         loadRadioStation();
 
-        String id = Storage.getRadioStationSingleValueString("playing", "id", getApplicationContext());
-        if (id != "") {
-            playingNew = Storage.getRadioStation(id, getApplicationContext());
-            cardViewCollapsed.setValue(playingNew, getApplicationContext());
-        }
-        playingNew = Storage.getRadioStation(Storage.getValue("playing_id", getApplicationContext()), getApplicationContext());
-        playingNew.setState(Radio.STOPPED);
-        setNotification();
+
+
         registerReceiver(broadcastReceiver, new IntentFilter("CLOSE"));
         registerReceiver(broadcastReceiver, new IntentFilter("CONTROLLER"));
     }
@@ -232,6 +226,7 @@ public class MainActivity extends AppCompatActivity
                 //toast("Stopped");
                 break;
         }
+        updateNotification(true);
     }
 
     private void onPanelCollapsed() {
@@ -339,9 +334,21 @@ public class MainActivity extends AppCompatActivity
                 loadFavouriteRadioStation();
                 //loadViewPager();
                 openFragment(SelectFragment.FRAGMENT_BANGLA_RADIO);
+                String id = Storage.getRadioStationSingleValueString("playing", "id", getApplicationContext());
+                if (id == "") {
+                    id = banglaRadios.get(0);
+                }
+                playingNew = Storage.getRadioStation(id, getApplicationContext());
+                cardViewCollapsed.setValue(playingNew, getApplicationContext());
+                playingNew = Storage.getRadioStation(Storage.getValue("playing_id", getApplicationContext()), getApplicationContext());
+                playingNew.setState(Radio.STOPPED);
+                setNotification();
             }
         });
         pd.hide();
+
+
+
     }
 
     private void loadRecentRadioStation() {
@@ -391,19 +398,51 @@ public class MainActivity extends AppCompatActivity
     public void setNotification() {
         notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         notificationView = new RemoteViews(getPackageName(), R.layout.notification_drawer_controller);
-        if (playingNew.getState() == Radio.STOPPED)
-            notificationView.setImageViewResource(R.id.controller, R.drawable.play);
-        else if (playingNew.getState() == Radio.PLAYING)
-            notificationView.setImageViewResource(R.id.controller, R.drawable.stop);
+
+
         Intent notificationIntent = new Intent(this, MainActivity.class);
         PendingIntent pendingNotificationIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
-        notificationBuilder = new NotificationCompat.Builder(this).setSmallIcon(R.drawable.app_icon_2).setTicker("Radio Sration").setContent(notificationView).setContentIntent(pendingNotificationIntent);
+        notificationBuilder = new NotificationCompat.Builder(this).setSmallIcon(R.drawable.notification_icon).setTicker("Radio Sration").setContent(notificationView).setContentIntent(pendingNotificationIntent);
         Intent switchIntentController = new Intent("com.rrmsense.radiostream.ACTION_CONTROLLER");
         Intent switchIntentClose = new Intent("com.rrmsense.radiostream.ACTION_CLOSE");
         PendingIntent pendingSwitchIntentController = PendingIntent.getBroadcast(this, 0, switchIntentController, 0);
         PendingIntent pendingSwitchIntentClose = PendingIntent.getBroadcast(this, 0, switchIntentClose, 0);
         notificationView.setOnClickPendingIntent(R.id.close, pendingSwitchIntentClose);
         notificationView.setOnClickPendingIntent(R.id.controller, pendingSwitchIntentController);
+        notificationBuilder.setOngoing(true);
+        updateNotification(false);
+        notificationManager.notify(1, notificationBuilder.build());
+    }
+
+    public void updateNotification(boolean f) {
+        switch (playingNew.getState()) {
+            case Radio.PLAYING:
+                notificationView.setImageViewResource(R.id.controller, R.drawable.stop);
+                notificationView.setViewVisibility(R.id.progressBar, ProgressBar.INVISIBLE);
+                break;
+            case Radio.LOADING:
+                notificationView.setImageViewResource(R.id.controller, R.drawable.stop);
+                notificationView.setViewVisibility(R.id.progressBar, ProgressBar.VISIBLE);
+                break;
+            case Radio.STOPPED:
+                notificationView.setImageViewResource(R.id.controller, R.drawable.play);
+                notificationView.setViewVisibility(R.id.progressBar, ProgressBar.INVISIBLE);
+                break;
+        }
+        NotificationTarget notificationTarget = new NotificationTarget(
+                getApplicationContext(),
+                notificationView,
+                R.id.image_radio,
+                notificationBuilder.build(),
+                1);
+        Glide
+                .with( getApplicationContext() )
+                .load( playingNew.getImageURL() )
+                .asBitmap()
+                .fitCenter()
+                .into( notificationTarget );
+        if(!f)
+            return;
         notificationManager.notify(1, notificationBuilder.build());
     }
 
@@ -518,6 +557,7 @@ public class MainActivity extends AppCompatActivity
                 break;
 
             case R.id.previous:
+
 
                 break;
 
