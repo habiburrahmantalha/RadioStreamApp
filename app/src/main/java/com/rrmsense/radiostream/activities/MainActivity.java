@@ -42,7 +42,7 @@ import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.rrmsense.radiostream.R;
 import com.rrmsense.radiostream.fragments.RadioFragment;
-import com.rrmsense.radiostream.interfaces.OnPreparedCallback;
+import com.rrmsense.radiostream.interfaces.NotifyItem;
 import com.rrmsense.radiostream.models.CardViewCollapsed;
 import com.rrmsense.radiostream.models.CardViewExpanded;
 import com.rrmsense.radiostream.models.Radio;
@@ -56,6 +56,7 @@ import org.json.JSONException;
 import java.util.ArrayList;
 
 import cz.msebera.android.httpclient.Header;
+import io.gresse.hugo.vumeterlibrary.VuMeterView;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, MediaPlayer.OnBufferingUpdateListener, MediaPlayer.OnPreparedListener, SharedPreferences.OnSharedPreferenceChangeListener, MediaPlayer.OnErrorListener, View.OnClickListener {
@@ -67,8 +68,7 @@ public class MainActivity extends AppCompatActivity
     public ArrayList<String> recentRadios = new ArrayList<>();
     public ArrayList<String> favouriteRadios = new ArrayList<>();
     public int FRAGMENT = SelectFragment.FRAGMENT_BANGLA_RADIO;
-    OnPreparedCallback onPreparedCallback;
-    int position;
+    NotifyItem notifyItem;
     View layout_collapsed;
     View layout_expanded;
     LinearLayout cardView_holder;
@@ -198,6 +198,8 @@ public class MainActivity extends AppCompatActivity
             }
         } catch (Exception e) {
         }
+        if (notifyItem != null)
+            notifyItem.OnItemChanged(playingNew.getId());
     }
 
     public void onStateChanged() {
@@ -271,7 +273,7 @@ public class MainActivity extends AppCompatActivity
         cardViewCollapsed.stop.setOnClickListener(this);
         //cardViewCollapsed.favourite.setOnClickListener(this);
 
-        cardViewExpanded = new CardViewExpanded((ImageButton) layout_expanded.findViewById(R.id.previous), (ImageButton) layout_expanded.findViewById(R.id.next), (ImageButton) layout_expanded.findViewById(R.id.play), (ImageButton) layout_expanded.findViewById(R.id.stop), (ImageButton) layout_expanded.findViewById(R.id.favourite), (ImageButton) layout_expanded.findViewById(R.id.headphone), (ImageButton) layout_expanded.findViewById(R.id.volume), (ProgressBar) layout_expanded.findViewById(R.id.progressBar), (ImageView) layout_expanded.findViewById(R.id.image_radio), (ImageView) layout_expanded.findViewById(R.id.equalizer));
+        cardViewExpanded = new CardViewExpanded((ImageButton) layout_expanded.findViewById(R.id.previous), (ImageButton) layout_expanded.findViewById(R.id.next), (ImageButton) layout_expanded.findViewById(R.id.play), (ImageButton) layout_expanded.findViewById(R.id.stop), (ImageButton) layout_expanded.findViewById(R.id.favourite), (ImageButton) layout_expanded.findViewById(R.id.headphone), (ImageButton) layout_expanded.findViewById(R.id.volume), (ProgressBar) layout_expanded.findViewById(R.id.progressBar), (ImageView) layout_expanded.findViewById(R.id.image_radio), (VuMeterView) layout_expanded.findViewById(R.id.visualizer));
         cardViewExpanded.previous.setOnClickListener(this);
         cardViewExpanded.next.setOnClickListener(this);
         cardViewExpanded.play.setOnClickListener(this);
@@ -609,6 +611,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void playRadio() {
+
         stopRadio();
         playingNew.setState(Radio.LOADING);
         onStateChanged();
@@ -624,6 +627,8 @@ public class MainActivity extends AppCompatActivity
             mediaPlayer.prepareAsync();
         } catch (Exception e) {
         }
+        if (notifyItem != null)
+            notifyItem.OnItemChanged(playingNew.getId());
     }
 
     void toast(String s) {
@@ -663,10 +668,9 @@ public class MainActivity extends AppCompatActivity
         Storage.saveState(playingNew.getId(), Radio.PLAYING, getApplicationContext());
         playingNew.setState(Radio.PLAYING);
         onStateChanged();
-
         mediaPlayer.start();
-        if (onPreparedCallback != null)
-            onPreparedCallback.OnPreparedCallback(position);
+        if (notifyItem != null)
+            notifyItem.OnItemChanged(playingNew.getId());
     }
 
     @Override
@@ -685,9 +689,8 @@ public class MainActivity extends AppCompatActivity
         Log.d("LOG", s);
     }
 
-    public void callBack(int position, OnPreparedCallback onPreparedCallback) {
-        this.position = position;
-        this.onPreparedCallback = onPreparedCallback;
+    public void notifyItemChanged(NotifyItem notifyItem) {
+        this.notifyItem = notifyItem;
     }
 
     public class MusicIntentReceiver extends BroadcastReceiver {

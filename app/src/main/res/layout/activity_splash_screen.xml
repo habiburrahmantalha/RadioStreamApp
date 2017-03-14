@@ -4,14 +4,22 @@
     android:id="@+id/activity_splash_screen"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-
     tools:context="com.rrmsense.radiostream.activities.SplashScreenActivity">
-
     <ImageView
-        android:id="@+id/image"
+        android:id="@+id/splashImage"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_centerInParent="true"
-        android:background="@drawable/giphy"
+        android:scaleType="fitCenter"
         />
+
+    <ImageView
+        android:id="@+id/noInternet"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true"
+        android:scaleType="centerCrop"
+        android:src="@drawable/internet_unavailable"
+        />
+
 </RelativeLayout>

@@ -4,6 +4,7 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:vumeter="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/cardview_expanded"
@@ -29,15 +30,19 @@
         android:layout_centerHorizontal="true"
 
         android:src="@drawable/radio_circle"/>
+    <io.gresse.hugo.vumeterlibrary.VuMeterView
+        android:layout_below="@id/image_radio"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:layout_centerInParent="true"
+        android:id="@+id/visualizer"
+        vumeter:vumeter_stopSize="5dp"
+        vumeter:vumeter_speed="20"
+        vumeter:vumeter_blockNumber="25"
+        vumeter:vumeter_blockSpacing="5dp"
+        vumeter:vumeter_backgroundColor="@color/yellow"
+        vumeter:vumeter_startOff="true"/>
 
-    <ImageView
-        android:id="@+id/equalizer"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/image_radio"
-        android:layout_margin="5dp"
-
-        />
 
     <android.support.v7.widget.CardView
         android:id="@+id/cardView"
@@ -61,6 +66,7 @@
                 android:layout_height="wrap_content"
                 android:paddingBottom="10dp"
                 android:paddingTop="10dp">
+
 
                 <ImageButton
                     android:id="@+id/headphone"
