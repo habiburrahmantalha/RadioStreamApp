@@ -39,10 +39,6 @@ public class SplashScreenActivity extends AppCompatActivity implements NetworkSt
                 .crossFade()
                 .fitCenter()
                 .into(splashImage);
-
-
-
-
     }
 
     @Override

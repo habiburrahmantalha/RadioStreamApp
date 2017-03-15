@@ -75,6 +75,7 @@ public class RadioAdapter extends RecyclerView.Adapter<RadioAdapter.ViewHolder> 
         else
             holder.favourite.setImageResource(R.drawable.heart_yellow);
 
+
     }
 
     @Override

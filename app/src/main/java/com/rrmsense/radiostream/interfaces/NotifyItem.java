@@ -5,5 +5,7 @@ package com.rrmsense.radiostream.interfaces;
  */
 
 public interface NotifyItem {
-    public void OnItemChanged(String id);
+    void onItemChanged(String id);
+    void playNext(String id);
+    void playPrevious(String id);
 }

@@ -3,7 +3,6 @@ package com.rrmsense.radiostream.Services;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.widget.Toast;
 
 /**
  * Created by Talha on 3/12/2017.
@@ -19,10 +18,10 @@ public class RadioControllerBroadcastReceiver extends BroadcastReceiver {
         switch (action){
             case "com.rrmsense.radiostream.ACTION_CONTROLLER":
                 context.sendBroadcast(new Intent("CONTROLLER"));
-                Toast.makeText(context,"Controller",Toast.LENGTH_SHORT).show();
+                //Toast.makeText(context,"Controller",Toast.LENGTH_SHORT).show();
                 break;
             case "com.rrmsense.radiostream.ACTION_CLOSE":
-                Toast.makeText(context,"Close",Toast.LENGTH_SHORT).show();
+                //Toast.makeText(context,"Close",Toast.LENGTH_SHORT).show();
                 //((MainActivity)context).finish();
                 context.sendBroadcast(new Intent("CLOSE"));
                 break;

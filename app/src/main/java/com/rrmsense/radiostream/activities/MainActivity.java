@@ -87,6 +87,7 @@ public class MainActivity extends AppCompatActivity
                 case "CLOSE":
                     notificationBuilder.setOngoing(true);
                     notificationManager.cancel(1);
+
                     finish();
                     break;
                 case "CONTROLLER":
@@ -172,7 +173,6 @@ public class MainActivity extends AppCompatActivity
         loadRadioStation();
 
 
-
         registerReceiver(broadcastReceiver, new IntentFilter("CLOSE"));
         registerReceiver(broadcastReceiver, new IntentFilter("CONTROLLER"));
     }
@@ -199,7 +199,7 @@ public class MainActivity extends AppCompatActivity
         } catch (Exception e) {
         }
         if (notifyItem != null)
-            notifyItem.OnItemChanged(playingNew.getId());
+            notifyItem.onItemChanged(playingNew.getId());
     }
 
     public void onStateChanged() {
@@ -350,7 +350,6 @@ public class MainActivity extends AppCompatActivity
         pd.hide();
 
 
-
     }
 
     private void loadRecentRadioStation() {
@@ -438,12 +437,12 @@ public class MainActivity extends AppCompatActivity
                 notificationBuilder.build(),
                 1);
         Glide
-                .with( getApplicationContext() )
-                .load( playingNew.getImageURL() )
+                .with(getApplicationContext())
+                .load(playingNew.getImageURL())
                 .asBitmap()
                 .fitCenter()
-                .into( notificationTarget );
-        if(!f)
+                .into(notificationTarget);
+        if (!f)
             return;
         notificationManager.notify(1, notificationBuilder.build());
     }
@@ -516,11 +515,6 @@ public class MainActivity extends AppCompatActivity
 
                 openFragment(SelectFragment.FRAGMENT_NEWS_RADIO);
                 break;
-            case R.id.nav_international:
-                FRAGMENT = SelectFragment.FRAGMENT_INTERNATIONAL_RADIO;
-
-                openFragment(SelectFragment.FRAGMENT_INTERNATIONAL_RADIO);
-                break;
             case R.id.nav_bangla:
                 FRAGMENT = SelectFragment.FRAGMENT_BANGLA_RADIO;
                 openFragment(SelectFragment.FRAGMENT_BANGLA_RADIO);
@@ -551,7 +545,8 @@ public class MainActivity extends AppCompatActivity
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.next:
-
+                notifyItem.playNext(playingNew.getId());
+                //toast("next");
                 break;
             case R.id.stop:
 
@@ -559,8 +554,8 @@ public class MainActivity extends AppCompatActivity
                 break;
 
             case R.id.previous:
-
-
+                notifyItem.playPrevious(playingNew.getId());
+                //toast("previous");
                 break;
 
             case R.id.play:
@@ -577,8 +572,8 @@ public class MainActivity extends AppCompatActivity
                 }
                 Storage.setRadioStationSingleValueBoolean(playingNew.getId(), "favourite", !f, getApplicationContext());
                 playingNew.setFavourite(!f);
-
                 cardViewExpanded.favourite(!f);
+                notifyItem.onItemChanged(playingNew.getId());
                 break;
             case R.id.volume:
                 AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
@@ -628,11 +623,7 @@ public class MainActivity extends AppCompatActivity
         } catch (Exception e) {
         }
         if (notifyItem != null)
-            notifyItem.OnItemChanged(playingNew.getId());
-    }
-
-    void toast(String s) {
-        Toast.makeText(this, s, Toast.LENGTH_SHORT).show();
+            notifyItem.onItemChanged(playingNew.getId());
     }
 
     @Override
@@ -640,18 +631,19 @@ public class MainActivity extends AppCompatActivity
         switch (key) {
             case "playing_id":
                 playingOld = playingNew;
+                notifyItem.onItemChanged(playingOld.getId());
                 Storage.saveState(playingOld.getId(), Radio.STOPPED, getApplicationContext());
                 playingNew = Storage.getRadioStation(Storage.getValue(key, getApplicationContext()), getApplicationContext());
                 playRadio();
                 break;
             case "New_Favourite_Added":
                 String fa = Storage.getValue(key, getApplicationContext());
-                if(fa!="")
+                if (fa != "")
                     favouriteRadios.add(fa);
                 break;
             case "New_Favourite_Removed":
                 String fr = Storage.getValue(key, getApplicationContext());
-                if(fr!="")
+                if (fr != "")
                     favouriteRadios.remove(fr);
                 break;
         }
@@ -670,13 +662,17 @@ public class MainActivity extends AppCompatActivity
         onStateChanged();
         mediaPlayer.start();
         if (notifyItem != null)
-            notifyItem.OnItemChanged(playingNew.getId());
+            notifyItem.onItemChanged(playingNew.getId());
     }
 
     @Override
     public void onBufferingUpdate(MediaPlayer mp, int percent) {
         Log.d("Progress", String.valueOf(percent));
         toast(String.valueOf(percent));
+    }
+
+    void toast(String s) {
+        Toast.makeText(this, s, Toast.LENGTH_SHORT).show();
     }
 
     @Override

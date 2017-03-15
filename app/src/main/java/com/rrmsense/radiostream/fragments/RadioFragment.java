@@ -9,12 +9,15 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.rrmsense.radiostream.R;
 import com.rrmsense.radiostream.activities.MainActivity;
 import com.rrmsense.radiostream.adapters.RadioAdapter;
 import com.rrmsense.radiostream.interfaces.NotifyItem;
+import com.rrmsense.radiostream.models.Radio;
 import com.rrmsense.radiostream.models.SelectFragment;
+import com.rrmsense.radiostream.models.Storage;
 
 import java.util.ArrayList;
 
@@ -85,10 +88,45 @@ public class RadioFragment extends Fragment implements NotifyItem {
     }
 
     @Override
-    public void OnItemChanged(String id) {
+    public void onItemChanged(String id) {
         int position = -1;
         position = radios.indexOf(id);
         if(position>=0)
         mAdapter.notifyItemChanged(position);
+    }
+
+    @Override
+    public void playNext(String id) {
+        int position = -1;
+        position = radios.indexOf(id);
+        if(position+1< radios.size() ){
+            //Toast.makeText(getActivity(),"next1",Toast.LENGTH_LONG).show();
+            id = radios.get(position+1);
+            Storage.saveState(id, Radio.LOADING, getActivity());
+            Storage.setRadioStationSingleValueString("playing", "id", id, getActivity());
+            Storage.saveRecent(id, getActivity());
+            onItemChanged(id);
+        }else{
+            Toast.makeText(getActivity(),"End",Toast.LENGTH_LONG).show();
+        }
+
+
+    }
+
+    @Override
+    public void playPrevious(String id) {
+        int position = -1;
+        position = radios.indexOf(id);
+        if(position-1>=0){
+            //Toast.makeText(getActivity(),"previous1",Toast.LENGTH_LONG).show();
+            id = radios.get(position-1);
+            Storage.saveState(id, Radio.LOADING, getActivity());
+            Storage.setRadioStationSingleValueString("playing", "id", id, getActivity());
+            Storage.saveRecent(id, getActivity());
+            onItemChanged(id);
+        }else{
+            Toast.makeText(getActivity(),"Start",Toast.LENGTH_LONG).show();
+        }
+
     }
 }

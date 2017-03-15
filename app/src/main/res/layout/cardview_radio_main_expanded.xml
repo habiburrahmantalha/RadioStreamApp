@@ -5,170 +5,176 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
     xmlns:vumeter="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/cardview_expanded"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/cardview_expanded"
     android:orientation="vertical">
 
 
-
-
     <ImageView
-        android:layout_marginTop="20dp"
         android:id="@+id/image_radio"
         android:layout_width="200dp"
         android:layout_height="200dp"
         android:layout_centerHorizontal="true"
-        android:scaleType="fitCenter"
+        android:layout_marginTop="20dp"
         android:padding="30dp"
+        android:scaleType="fitCenter"
 
         />
+
     <ImageView
-        android:layout_marginTop="20dp"
         android:layout_width="200dp"
         android:layout_height="200dp"
         android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
 
         android:src="@drawable/radio_circle"/>
-    <io.gresse.hugo.vumeterlibrary.VuMeterView
-        android:layout_below="@id/image_radio"
-        android:layout_width="match_parent"
-        android:layout_height="80dp"
-        android:layout_centerInParent="true"
-        android:id="@+id/visualizer"
-        vumeter:vumeter_stopSize="5dp"
-        vumeter:vumeter_speed="20"
-        vumeter:vumeter_blockNumber="25"
-        vumeter:vumeter_blockSpacing="5dp"
-        vumeter:vumeter_backgroundColor="@color/yellow"
-        vumeter:vumeter_startOff="true"/>
 
-
-    <android.support.v7.widget.CardView
-        android:id="@+id/cardView"
-        android:layout_width="match_parent"
+    <LinearLayout
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_margin="10dp"
-        card_view:cardBackgroundColor="@color/icon"
-        card_view:cardCornerRadius="10dp"
-        card_view:cardElevation="10dp">
+        android:layout_centerHorizontal="true"
+        android:orientation="vertical">
 
-        <LinearLayout
+        <io.gresse.hugo.vumeterlibrary.VuMeterView
+
+            android:id="@+id/visualizer"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+
+            android:layout_height="80dp"
+            vumeter:vumeter_backgroundColor="@color/yellow"
+            vumeter:vumeter_blockNumber="35"
+            vumeter:vumeter_blockSpacing="5dp"
+            vumeter:vumeter_speed="10"
+            vumeter:vumeter_startOff="true"
+            vumeter:vumeter_stopSize="5dp"/>
+
+
+        <android.support.v7.widget.CardView
+            android:id="@+id/cardView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:layout_margin="10dp"
-            android:background="@drawable/cardview_border"
-            android:orientation="vertical">
+            card_view:cardBackgroundColor="@color/icon"
+            card_view:cardCornerRadius="10dp"
+            card_view:cardElevation="10dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingBottom="10dp"
-                android:paddingTop="10dp">
+                android:layout_height="match_parent"
+                android:layout_margin="10dp"
+                android:background="@drawable/cardview_border"
+                android:orientation="vertical">
 
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="10dp"
+                    android:paddingTop="10dp">
 
-                <ImageButton
-                    android:id="@+id/headphone"
-                    style="@style/Widget.AppCompat.Button.Borderless"
-                    android:layout_width="@dimen/button_width_expanded"
-                    android:layout_height="@dimen/button_height_expanded"
-                    android:scaleType="fitStart"
-                    />
-
-                <RelativeLayout
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:gravity="center">
 
                     <ImageButton
-                        android:id="@+id/favourite"
+                        android:id="@+id/headphone"
+                        style="@style/Widget.AppCompat.Button.Borderless"
+                        android:layout_width="@dimen/button_width_expanded"
+                        android:layout_height="@dimen/button_height_expanded"
+                        android:scaleType="fitStart"
+                        />
+
+                    <RelativeLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:gravity="center">
+
+                        <ImageButton
+                            android:id="@+id/favourite"
+                            style="@style/Widget.AppCompat.Button.Borderless"
+                            android:layout_width="@dimen/button_width_expanded"
+                            android:layout_height="@dimen/button_height_expanded"
+
+                            android:scaleType="fitStart"
+                            />
+                    </RelativeLayout>
+
+                    <ImageButton
+                        android:id="@+id/volume"
                         style="@style/Widget.AppCompat.Button.Borderless"
                         android:layout_width="@dimen/button_width_expanded"
                         android:layout_height="@dimen/button_height_expanded"
 
                         android:scaleType="fitStart"
                         />
-                </RelativeLayout>
+                </LinearLayout>
 
-                <ImageButton
-                    android:id="@+id/volume"
-                    style="@style/Widget.AppCompat.Button.Borderless"
-                    android:layout_width="@dimen/button_width_expanded"
-                    android:layout_height="@dimen/button_height_expanded"
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="2dp"
+                    android:background="@color/line"/>
 
-                    android:scaleType="fitStart"
-                    />
-            </LinearLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="2dp"
-                android:background="@color/line"/>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingBottom="10dp"
-                android:paddingTop="10dp">
-
-                <ImageButton
-                    android:id="@+id/previous"
-                    style="@style/Widget.AppCompat.Button.Borderless"
-                    android:layout_width="@dimen/button_width_expanded"
-                    android:layout_height="@dimen/button_height_expanded"
-                    android:scaleType="fitStart"
-                    android:src="@drawable/previous"/>
-
-                <RelativeLayout
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:gravity="center">
-
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="10dp"
+                    android:paddingTop="10dp">
 
                     <ImageButton
-                        android:id="@+id/play"
+                        android:id="@+id/previous"
                         style="@style/Widget.AppCompat.Button.Borderless"
                         android:layout_width="@dimen/button_width_expanded"
                         android:layout_height="@dimen/button_height_expanded"
-                        android:layout_centerInParent="true"
                         android:scaleType="fitStart"
-                        android:src="@drawable/play"/>
+                        android:src="@drawable/previous"/>
+
+                    <RelativeLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:gravity="center">
+
+
+                        <ImageButton
+                            android:id="@+id/play"
+                            style="@style/Widget.AppCompat.Button.Borderless"
+                            android:layout_width="@dimen/button_width_expanded"
+                            android:layout_height="@dimen/button_height_expanded"
+                            android:layout_centerInParent="true"
+                            android:scaleType="fitStart"
+                            android:src="@drawable/play"/>
+
+                        <ImageButton
+                            android:id="@+id/stop"
+                            style="@style/Widget.AppCompat.Button.Borderless"
+                            android:layout_width="@dimen/button_width_expanded"
+                            android:layout_height="@dimen/button_height_expanded"
+                            android:layout_centerInParent="true"
+                            android:scaleType="fitStart"
+                            android:src="@drawable/stop"/>
+
+                        <ProgressBar
+                            android:id="@+id/progressBar"
+                            style="?android:attr/progressBarStyle"
+                            android:layout_width="60dp"
+                            android:layout_height="60dp"
+
+                            android:layout_centerInParent="true"/>
+                    </RelativeLayout>
 
                     <ImageButton
-                        android:id="@+id/stop"
+                        android:id="@+id/next"
                         style="@style/Widget.AppCompat.Button.Borderless"
                         android:layout_width="@dimen/button_width_expanded"
                         android:layout_height="@dimen/button_height_expanded"
-                        android:layout_centerInParent="true"
+
                         android:scaleType="fitStart"
-                        android:src="@drawable/stop"/>
+                        android:src="@drawable/next"/>
 
-                    <ProgressBar
-                        android:id="@+id/progressBar"
-                        style="?android:attr/progressBarStyle"
-                        android:layout_width="60dp"
-                        android:layout_height="60dp"
-
-                        android:layout_centerInParent="true"/>
-                </RelativeLayout>
-
-                <ImageButton
-                    android:id="@+id/next"
-                    style="@style/Widget.AppCompat.Button.Borderless"
-                    android:layout_width="@dimen/button_width_expanded"
-                    android:layout_height="@dimen/button_height_expanded"
-
-                    android:scaleType="fitStart"
-                    android:src="@drawable/next"/>
+                </LinearLayout>
 
             </LinearLayout>
-
-        </LinearLayout>
-    </android.support.v7.widget.CardView>
-
+        </android.support.v7.widget.CardView>
+    </LinearLayout>
 
 </RelativeLayout>
 
