@@ -35,7 +35,7 @@ public class SplashScreenActivity extends AppCompatActivity {
         //container.useDefaults();
         container.setRepeatMode(ObjectAnimator.REVERSE);
         //container.setRepeatCount(6);
-        //container.setTilt(0);
+        //container.setTilt(0);/////
         //container.setIntensity(0.1f);
         //container.setMaskShape(ShimmerFrameLayout.MaskShape.RADIAL);
         container.startShimmerAnimation();
