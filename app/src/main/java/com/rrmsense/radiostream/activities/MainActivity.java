@@ -139,7 +139,13 @@ public class MainActivity extends AppCompatActivity
         slidingUpPanelLayout.addPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
             @Override
             public void onPanelSlide(View panel, float slideOffset) {
-                //Toast.makeText(MainActivity.this, "" +slideOffset,Toast.LENGTH_LONG).show();
+                //Toast.makeText(MainActivity.this, "" + slideOffset, Toast.LENGTH_LONG).show();
+                if (slideOffset > 0.5) {
+                    cardView_holder.removeView(layout_collapsed);
+
+                } else {
+                    cardView_holder.removeView(layout_expanded);
+                }
             }
 
             @Override
@@ -149,20 +155,24 @@ public class MainActivity extends AppCompatActivity
                 if (previousState == SlidingUpPanelLayout.PanelState.DRAGGING) {
 
                     if (newState == SlidingUpPanelLayout.PanelState.COLLAPSED) {
-                        cardView_holder.addView(layout_collapsed);
-                        //slidingUpPanelLayout.setTouchEnabled(true);
-                        onPanelCollapsed();
+                        if (cardView_holder.getChildAt(0) == null) {
+                            cardView_holder.addView(layout_collapsed);
+                            //slidingUpPanelLayout.setTouchEnabled(true);
+                            onPanelCollapsed();
+                        }
                     } else if (newState == SlidingUpPanelLayout.PanelState.EXPANDED) {
-                        cardView_holder.addView(layout_expanded);
-                        //slidingUpPanelLayout.setTouchEnabled(false);
-                        onPanelExpanded();
+                        if (cardView_holder.getChildAt(0) == null) {
+
+                            cardView_holder.addView(layout_expanded);
+                            //slidingUpPanelLayout.setTouchEnabled(false);
+                            onPanelExpanded();
+                        }
                     }
                 } else if (previousState == SlidingUpPanelLayout.PanelState.EXPANDED && newState == SlidingUpPanelLayout.PanelState.DRAGGING) {
 
-                    cardView_holder.removeView(layout_expanded);
 
                 } else if (previousState == SlidingUpPanelLayout.PanelState.COLLAPSED && newState == SlidingUpPanelLayout.PanelState.DRAGGING) {
-                    cardView_holder.removeView(layout_collapsed);
+
                 }
             }
 
