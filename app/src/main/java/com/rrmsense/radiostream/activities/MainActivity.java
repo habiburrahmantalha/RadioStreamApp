@@ -139,7 +139,13 @@ public class MainActivity extends AppCompatActivity
         slidingUpPanelLayout.addPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
             @Override
             public void onPanelSlide(View panel, float slideOffset) {
-                //Toast.makeText(MainActivity.this, "" +slideOffset,Toast.LENGTH_LONG).show();
+                Toast.makeText(MainActivity.this, "" +slideOffset,Toast.LENGTH_LONG).show();
+                if (slideOffset > 0.5) {
+                    cardView_holder.removeView(layout_collapsed);
+
+                } else {
+                    cardView_holder.removeView(layout_expanded);
+                }
             }
 
             @Override
@@ -159,10 +165,10 @@ public class MainActivity extends AppCompatActivity
                     }
                 } else if (previousState == SlidingUpPanelLayout.PanelState.EXPANDED && newState == SlidingUpPanelLayout.PanelState.DRAGGING) {
 
-                    cardView_holder.removeView(layout_expanded);
+
 
                 } else if (previousState == SlidingUpPanelLayout.PanelState.COLLAPSED && newState == SlidingUpPanelLayout.PanelState.DRAGGING) {
-                    cardView_holder.removeView(layout_collapsed);
+
                 }
             }
 
