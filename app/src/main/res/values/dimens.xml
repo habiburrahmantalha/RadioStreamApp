@@ -10,5 +10,6 @@
     <dimen name="button_width_collapsed">80dp</dimen>
     <dimen name="button_height_expanded">80dp</dimen>
     <dimen name="button_width_expanded">80dp</dimen>
+    <dimen name="loading_bottom_margin">75dp</dimen>
 
 </resources>
