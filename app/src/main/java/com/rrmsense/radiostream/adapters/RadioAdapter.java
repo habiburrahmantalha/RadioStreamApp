@@ -15,12 +15,13 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.rrmsense.radiostream.R;
 import com.rrmsense.radiostream.activities.MainActivity;
-import com.rrmsense.radiostream.interfaces.RecyclerViewClickListener;
 import com.rrmsense.radiostream.models.Radio;
 import com.rrmsense.radiostream.models.SelectFragment;
 import com.rrmsense.radiostream.models.Storage;
 
 import java.util.ArrayList;
+
+import io.gresse.hugo.vumeterlibrary.VuMeterView;
 
 /**
  * Created by Talha on 2/12/2017.
@@ -28,17 +29,14 @@ import java.util.ArrayList;
 
 public class RadioAdapter extends RecyclerView.Adapter<RadioAdapter.ViewHolder> {
 
-    private static RecyclerViewClickListener itemListener;
     private ArrayList<String> radios;
     private Context mContext;
     private int CURRENT_FRAGMENT;
 
-    public RadioAdapter(ArrayList<String> radios, Context mContext, RecyclerViewClickListener itemListener, int CURRENT_FRAGMENT) {
+    public RadioAdapter(ArrayList<String> radios, Context mContext, int CURRENT_FRAGMENT) {
         this.radios = radios;
         this.mContext = mContext;
-        this.itemListener = itemListener;
         this.CURRENT_FRAGMENT = CURRENT_FRAGMENT;
-
     }
 
     @Override
@@ -53,29 +51,30 @@ public class RadioAdapter extends RecyclerView.Adapter<RadioAdapter.ViewHolder> 
 
         holder.item.setText((position+1) + "");
 
+
         if (radio.getImageURL() != "")
             Glide.with(mContext).load(radio.getImageURL()).override(300, 200).fitCenter().diskCacheStrategy(DiskCacheStrategy.SOURCE).into(holder.image_radio);
 
         switch (radio.getState()) {
             case Radio.LOADING:
-                //holder.progressBar.setVisibility(ProgressBar.VISIBLE);
-                holder.equalizer.setVisibility(ImageView.INVISIBLE);
+                holder.visualizer.stop(true);
+                holder.visualizer.setVisibility(VuMeterView.INVISIBLE);
                 break;
-
             case Radio.PLAYING:
-                holder.equalizer.setVisibility(ImageView.VISIBLE);
-                //holder.progressBar.setVisibility(ProgressBar.INVISIBLE);
+                holder.visualizer.resume(true);
+                holder.visualizer.setVisibility(VuMeterView.VISIBLE);
                 break;
-
             case Radio.STOPPED:
-                holder.equalizer.setVisibility(ImageView.INVISIBLE);
-                //holder.progressBar.setVisibility(ProgressBar.INVISIBLE);
+                holder.visualizer.stop(true);
+                holder.visualizer.setVisibility(VuMeterView.INVISIBLE);
                 break;
         }
+
         if (radio.isFavourite())
             holder.favourite.setImageResource(R.drawable.heart_outline);
         else
             holder.favourite.setImageResource(R.drawable.heart_yellow);
+
 
     }
 
@@ -92,22 +91,23 @@ public class RadioAdapter extends RecyclerView.Adapter<RadioAdapter.ViewHolder> 
 
         private ImageView image_radio;
         private ProgressBar progressBar;
-        private ImageView equalizer;
         private ImageButton favourite;
         private CardView cardView;
         private TextView item;
+        private VuMeterView visualizer;
 
         public ViewHolder(View view) {
             super(view);
             view.setOnClickListener(this);
             image_radio = (ImageView) view.findViewById(R.id.image_radio);
             progressBar = (ProgressBar) view.findViewById(R.id.progressBar);
-            equalizer = (ImageView) view.findViewById(R.id.equalizer);
             favourite = (ImageButton) view.findViewById(R.id.favourite);
             favourite.setOnClickListener(this);
             cardView = (CardView) view.findViewById(R.id.cardView);
             cardView.setOnClickListener(this);
             item = (TextView) view.findViewById(R.id.item);
+            visualizer = (VuMeterView) view.findViewById(R.id.visualizer);
+
         }
 
         @Override
@@ -139,8 +139,7 @@ public class RadioAdapter extends RecyclerView.Adapter<RadioAdapter.ViewHolder> 
                         Storage.saveRecent(id, mContext);
 
                     }
-                    notifyItemRangeChanged(0, getItemCount());
-                    itemListener.recyclerViewListClicked(v, this.getAdapterPosition());
+                    notifyItemChanged(this.getAdapterPosition());
                     break;
             }
         }

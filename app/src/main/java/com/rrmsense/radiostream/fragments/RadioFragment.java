@@ -9,20 +9,22 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.rrmsense.radiostream.R;
 import com.rrmsense.radiostream.activities.MainActivity;
 import com.rrmsense.radiostream.adapters.RadioAdapter;
-import com.rrmsense.radiostream.interfaces.OnPreparedCallback;
-import com.rrmsense.radiostream.interfaces.RecyclerViewClickListener;
+import com.rrmsense.radiostream.interfaces.NotifyItem;
+import com.rrmsense.radiostream.models.Radio;
 import com.rrmsense.radiostream.models.SelectFragment;
+import com.rrmsense.radiostream.models.Storage;
 
 import java.util.ArrayList;
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class RadioFragment extends Fragment implements RecyclerViewClickListener,OnPreparedCallback {
+public class RadioFragment extends Fragment implements NotifyItem {
 
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
@@ -39,6 +41,7 @@ public class RadioFragment extends Fragment implements RecyclerViewClickListener
         super.onCreate(savedInstanceState);
         Bundle bundle = this.getArguments();
         fragmentID = bundle.getInt("ID", SelectFragment.FRAGMENT_BANGLA_RADIO);
+        ((MainActivity)getActivity()).notifyItemChanged(this);
         Log.d("ID", String.valueOf(fragmentID));
     }
     @Override
@@ -54,42 +57,76 @@ public class RadioFragment extends Fragment implements RecyclerViewClickListener
         switch (fragmentID){
             case SelectFragment.FRAGMENT_BANGLA_RADIO:
                 radios = ((MainActivity)getContext()).banglaRadios;
-                mAdapter = new RadioAdapter(radios,getActivity(),this,SelectFragment.FRAGMENT_BANGLA_RADIO);
+                mAdapter = new RadioAdapter(radios,getActivity(),SelectFragment.FRAGMENT_BANGLA_RADIO);
                 //Log.d("ID", String.valueOf(fragmentID));
                 break;
             case SelectFragment.FRAGMENT_INTERNATIONAL_RADIO:
                 radios = ((MainActivity)getContext()).internationalRadios;
-                mAdapter = new RadioAdapter(radios,getActivity(),this,SelectFragment.FRAGMENT_INTERNATIONAL_RADIO);
+                mAdapter = new RadioAdapter(radios,getActivity(),SelectFragment.FRAGMENT_INTERNATIONAL_RADIO);
                 //Log.d("ID", String.valueOf(fragmentID));
                 break;
             case SelectFragment.FRAGMENT_MUSIC_RADIO:
                 radios = ((MainActivity)getContext()).musicRadios;
-                mAdapter = new RadioAdapter(radios,getActivity(),this,SelectFragment.FRAGMENT_MUSIC_RADIO);
+                mAdapter = new RadioAdapter(radios,getActivity(),SelectFragment.FRAGMENT_MUSIC_RADIO);
                 //Log.d("ID", String.valueOf(fragmentID));
                 break;
             case SelectFragment.FRAGMENT_NEWS_RADIO:
                 radios = ((MainActivity)getContext()).newsRadios;
-                mAdapter = new RadioAdapter(radios,getActivity(),this,SelectFragment.FRAGMENT_NEWS_RADIO);
+                mAdapter = new RadioAdapter(radios,getActivity(),SelectFragment.FRAGMENT_NEWS_RADIO);
                 //Log.d("ID", String.valueOf(fragmentID));
                 break;
             case SelectFragment.FRAGMENT_FAVOURITE:
                 radios = ((MainActivity)getContext()).favouriteRadios;
-                mAdapter = new RadioAdapter(radios,getActivity(),this,SelectFragment.FRAGMENT_FAVOURITE);
+                mAdapter = new RadioAdapter(radios,getActivity(),SelectFragment.FRAGMENT_FAVOURITE);
                 break;
             case SelectFragment.FRAGMENT_RECENT:
                 radios = ((MainActivity)getContext()).recentRadios;
-                mAdapter = new RadioAdapter(radios,getActivity(),this,SelectFragment.FRAGMENT_RECENT);
+                mAdapter = new RadioAdapter(radios,getActivity(),SelectFragment.FRAGMENT_RECENT);
                 break;
         }
         mRecyclerView.setAdapter(mAdapter);
     }
+
     @Override
-    public void recyclerViewListClicked(View v, int position) {
-            ((MainActivity)getActivity()).callBack(position,this);
+    public void onItemChanged(String id) {
+        int position = -1;
+        position = radios.indexOf(id);
+        if(position>=0)
+        mAdapter.notifyItemChanged(position);
     }
 
     @Override
-    public void OnPreparedCallback(int position) {
-        mAdapter.notifyItemChanged(position);
+    public void playNext(String id) {
+        int position = -1;
+        position = radios.indexOf(id);
+        if(position+1< radios.size() ){
+            //Toast.makeText(getActivity(),"next1",Toast.LENGTH_LONG).show();
+            id = radios.get(position+1);
+            Storage.saveState(id, Radio.LOADING, getActivity());
+            Storage.setRadioStationSingleValueString("playing", "id", id, getActivity());
+            Storage.saveRecent(id, getActivity());
+            onItemChanged(id);
+        }else{
+            Toast.makeText(getActivity(),"End",Toast.LENGTH_LONG).show();
+        }
+
+
+    }
+
+    @Override
+    public void playPrevious(String id) {
+        int position = -1;
+        position = radios.indexOf(id);
+        if(position-1>=0){
+            //Toast.makeText(getActivity(),"previous1",Toast.LENGTH_LONG).show();
+            id = radios.get(position-1);
+            Storage.saveState(id, Radio.LOADING, getActivity());
+            Storage.setRadioStationSingleValueString("playing", "id", id, getActivity());
+            Storage.saveRecent(id, getActivity());
+            onItemChanged(id);
+        }else{
+            Toast.makeText(getActivity(),"Start",Toast.LENGTH_LONG).show();
+        }
+
     }
 }
