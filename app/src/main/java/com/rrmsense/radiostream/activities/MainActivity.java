@@ -492,10 +492,15 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        /*if (id == R.id.action_settings) {
-            startActivity(new Intent(MainActivity.this, SettingsActivity.class));
+        if (id == R.id.bangla) {
+            item.setChecked(!item.isChecked());
+            Toast.makeText(this, "Bangla selected", Toast.LENGTH_SHORT).show();
             return true;
-        }*/
+        } else if (id == R.id.english) {
+            item.setChecked(!item.isChecked());
+            Toast.makeText(this, "English selected", Toast.LENGTH_SHORT).show();
+            return true;
+        }
 
         return super.onOptionsItemSelected(item);
     }
