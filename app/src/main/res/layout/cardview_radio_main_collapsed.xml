@@ -11,7 +11,6 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/cardview_border"
         android:orientation="horizontal">
 
         <ImageButton
@@ -31,9 +30,6 @@
             android:layout_height="wrap_content"
             android:scaleType="fitStart"
             />
-
-
-
 
         <RelativeLayout
             android:layout_centerInParent="true"
