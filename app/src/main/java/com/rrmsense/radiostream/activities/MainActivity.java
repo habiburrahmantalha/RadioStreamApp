@@ -89,6 +89,7 @@ public class MainActivity extends AppCompatActivity
                     notificationManager.cancel(1);
 
                     finish();
+                    System.exit(0);
                     break;
                 case "CONTROLLER":
                     if (Radio.PLAYING == playingNew.getState()) {
@@ -491,10 +492,10 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        /*if (id == R.id.action_settings) {
             startActivity(new Intent(MainActivity.this, SettingsActivity.class));
             return true;
-        }
+        }*/
 
         return super.onOptionsItemSelected(item);
     }
@@ -523,6 +524,9 @@ public class MainActivity extends AppCompatActivity
             case R.id.nav_favourite:
                 FRAGMENT = SelectFragment.FRAGMENT_FAVOURITE;
                 openFragment(SelectFragment.FRAGMENT_FAVOURITE);
+                break;
+            case R.id.nav_settings:
+                startActivity(new Intent(MainActivity.this, SettingsActivity.class));
                 break;
             case R.id.nav_recent:
                 FRAGMENT = SelectFragment.FRAGMENT_RECENT;

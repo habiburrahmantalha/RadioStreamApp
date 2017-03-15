@@ -9,12 +9,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
-import com.bumptech.glide.Glide;
 import com.rrmsense.radiostream.R;
 import com.rrmsense.radiostream.Services.NetworkStateReceiver;
 
 public class SplashScreenActivity extends AppCompatActivity implements NetworkStateReceiver.NetworkStateReceiverListener {
-    private static int SPLASH_TIME_OUT = 6000;
+    private static int SPLASH_TIME_OUT = 2000;
     private NetworkStateReceiver networkStateReceiver;
     RelativeLayout relativeLayout;
     ImageView splashImage;
@@ -33,12 +32,12 @@ public class SplashScreenActivity extends AppCompatActivity implements NetworkSt
 
         splashImage = (ImageView) findViewById(R.id.splashImage);
         noInternet = (ImageView) findViewById(R.id.noInternet);
-        Glide.with(SplashScreenActivity.this)
-                .load(R.drawable.giphy)
+        /*Glide.with(SplashScreenActivity.this)
+                .load(R.drawable.splash_screen)
                 .asGif()
                 .crossFade()
                 .fitCenter()
-                .into(splashImage);
+                .into(splashImage);*/
     }
 
     @Override
