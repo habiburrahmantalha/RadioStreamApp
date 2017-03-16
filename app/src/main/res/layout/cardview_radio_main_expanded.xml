@@ -37,6 +37,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
+        android:padding="5dp"
         android:orientation="vertical">
 
         <io.gresse.hugo.vumeterlibrary.VuMeterView
@@ -44,22 +45,21 @@
             android:id="@+id/visualizer"
             android:layout_width="match_parent"
 
-            android:layout_height="80dp"
+            android:layout_height="70dp"
             vumeter:vumeter_backgroundColor="@color/yellow"
-            vumeter:vumeter_blockNumber="35"
+            vumeter:vumeter_blockNumber="40"
             vumeter:vumeter_blockSpacing="5dp"
-            vumeter:vumeter_speed="10"
+            vumeter:vumeter_speed="5"
             vumeter:vumeter_startOff="true"
-            vumeter:vumeter_stopSize="5dp"/>
+            vumeter:vumeter_stopSize="5dp"
+            android:layout_marginBottom="2dp"/>
 
 
         <android.support.v7.widget.CardView
             android:id="@+id/cardView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-
-            card_view:cardBackgroundColor="#45282F44"
+            card_view:cardBackgroundColor="#20F8B902"
             card_view:cardCornerRadius="10dp"
 
             card_view:cardElevation="10dp">
@@ -161,7 +161,7 @@
                             style="?android:attr/progressBarStyle"
                             android:layout_width="60dp"
                             android:layout_height="60dp"
-
+                            android:translationY="-2dp"
                             android:layout_centerInParent="true"/>
                     </RelativeLayout>
 

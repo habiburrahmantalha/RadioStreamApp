@@ -1,6 +1,7 @@
 package com.rrmsense.radiostream.models;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -48,6 +49,7 @@ public class CardViewExpanded {
     public void setValue(Radio r, Context context){
 
         Glide.with(context).load(r.getImageURL()).override(150,150).fitCenter().diskCacheStrategy( DiskCacheStrategy.RESULT ).into(image_radio);
+        progressBar.getIndeterminateDrawable().setColorFilter(Color.parseColor("#F8B902"), android.graphics.PorterDuff.Mode.SRC_IN);
     }
 
 
