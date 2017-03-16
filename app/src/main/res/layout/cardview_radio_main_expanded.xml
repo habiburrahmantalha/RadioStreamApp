@@ -5,6 +5,8 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
     xmlns:vumeter="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@drawable/background"
     android:id="@+id/cardview_expanded"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -56,15 +58,17 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
-            card_view:cardBackgroundColor="@color/icon"
+
+            card_view:cardBackgroundColor="#45282F44"
             card_view:cardCornerRadius="10dp"
+
             card_view:cardElevation="10dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+
                 android:layout_margin="10dp"
-                android:background="@drawable/cardview_border"
                 android:orientation="vertical">
 
                 <LinearLayout
@@ -111,7 +115,7 @@
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="2dp"
-                    android:background="@color/line"/>
+                    android:background="#282F44"/>
 
                 <LinearLayout
                     android:layout_width="match_parent"
