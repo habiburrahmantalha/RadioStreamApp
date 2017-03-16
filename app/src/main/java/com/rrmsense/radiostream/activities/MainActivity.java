@@ -504,6 +504,7 @@ public class MainActivity extends AppCompatActivity
         //noinspection SimplifiableIfStatement
         if (id == R.id.bangla) {
             item.setChecked(!item.isChecked());
+
             Toast.makeText(this, "Bangla selected", Toast.LENGTH_SHORT).show();
             return true;
         } else if (id == R.id.english) {
@@ -523,7 +524,6 @@ public class MainActivity extends AppCompatActivity
         switch (id) {
             case R.id.nav_music:
                 openFragment(SelectFragment.FRAGMENT_MUSIC_RADIO);
-
                 FRAGMENT = SelectFragment.FRAGMENT_MUSIC_RADIO;
                 break;
             case R.id.nav_news:
