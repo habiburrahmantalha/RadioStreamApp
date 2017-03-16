@@ -175,15 +175,11 @@ public class MainActivity extends AppCompatActivity
 
                 }
             }
-
-
         });
 
         CardViewInit();
 
         loadRadioStation();
-
-
         registerReceiver(broadcastReceiver, new IntentFilter("CLOSE"));
         registerReceiver(broadcastReceiver, new IntentFilter("CONTROLLER"));
     }
@@ -247,7 +243,8 @@ public class MainActivity extends AppCompatActivity
 
     private void onPanelExpanded() {
         AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-        cardViewExpanded.headphone(!audioManager.isSpeakerphoneOn());
+        cardViewExpanded.headphone(audioManager.isWiredHeadsetOn());
+
         cardViewExpanded.setValue(playingNew, getApplicationContext());
         playingNew.setFavourite(Storage.getRadioStationSingleValueBoolean(playingNew.getId(), "favourite", getApplicationContext()));
         cardViewExpanded.favourite(playingNew.isFavourite());
@@ -411,14 +408,18 @@ public class MainActivity extends AppCompatActivity
         notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         notificationView = new RemoteViews(getPackageName(), R.layout.notification_drawer_controller);
 
-
         Intent notificationIntent = new Intent(this, MainActivity.class);
+
+        notificationIntent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT|Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         PendingIntent pendingNotificationIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
+
         notificationBuilder = new NotificationCompat.Builder(this).setSmallIcon(R.drawable.notification_icon).setTicker("Radio Sration").setContent(notificationView).setContentIntent(pendingNotificationIntent);
         Intent switchIntentController = new Intent("com.rrmsense.radiostream.ACTION_CONTROLLER");
         Intent switchIntentClose = new Intent("com.rrmsense.radiostream.ACTION_CLOSE");
+
         PendingIntent pendingSwitchIntentController = PendingIntent.getBroadcast(this, 0, switchIntentController, 0);
         PendingIntent pendingSwitchIntentClose = PendingIntent.getBroadcast(this, 0, switchIntentClose, 0);
+
         notificationView.setOnClickPendingIntent(R.id.close, pendingSwitchIntentClose);
         notificationView.setOnClickPendingIntent(R.id.controller, pendingSwitchIntentController);
         notificationBuilder.setOngoing(true);

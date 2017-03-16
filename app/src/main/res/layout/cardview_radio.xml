@@ -10,7 +10,7 @@
     android:focusable="true"
     android:clickable="true"
     android:foreground="?android:attr/selectableItemBackground"
-    card_view:cardBackgroundColor="@color/white"
+
     card_view:cardCornerRadius="2dp"
     card_view:cardElevation="2dp">
 
@@ -41,7 +41,7 @@
                 android:textSize="16sp"/>
         </android.support.v7.widget.CardView>
 
-        <View
+       <!-- <View
             android:layout_marginStart="5dp"
             android:layout_marginEnd="5dp"
             android:layout_centerHorizontal="true"
@@ -49,7 +49,7 @@
             android:layout_toEndOf="@id/round_card"
             android:background="@color/lightgrey"
             android:layout_width="1dp"
-            android:layout_height="45dp"/>
+            android:layout_height="45dp"/>-->
 
 
         <ImageView
@@ -57,7 +57,7 @@
             android:layout_width="wrap_content"
             android:layout_height="50dp"
             android:layout_margin="5dp"
-            android:layout_toEndOf="@id/border"
+            android:layout_toEndOf="@id/round_card"
             />
 
         <io.gresse.hugo.vumeterlibrary.VuMeterView
