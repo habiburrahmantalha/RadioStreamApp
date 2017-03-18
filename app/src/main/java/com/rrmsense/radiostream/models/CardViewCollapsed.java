@@ -1,6 +1,7 @@
 package com.rrmsense.radiostream.models;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -52,7 +53,7 @@ public class CardViewCollapsed {
         this.previous.setVisibility(Button.VISIBLE);
         this.next.setVisibility(Button.VISIBLE);
         //this.favourite.setVisibility(Button.INVISIBLE);
-
+        progressBar.getIndeterminateDrawable().setColorFilter(Color.parseColor("#F8B902"), android.graphics.PorterDuff.Mode.SRC_IN);
     }
 
 

@@ -261,7 +261,7 @@ public class MainActivity extends AppCompatActivity
                 cardViewExpanded.volume(true);
             }
         } else {
-            if (audioManager.getStreamVolume(AudioManager.STREAM_MUSIC) == 0) {
+            if (audioManager.getMode() == AudioManager.RINGER_MODE_SILENT) {
 
                 cardViewExpanded.volume(false);
             } else {
@@ -597,6 +597,9 @@ public class MainActivity extends AppCompatActivity
                 break;
             case R.id.volume:
                 AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+
+
+
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     audioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_TOGGLE_MUTE, 0);
                     if (audioManager.isStreamMute(AudioManager.STREAM_MUSIC)) {
@@ -605,12 +608,14 @@ public class MainActivity extends AppCompatActivity
                         cardViewExpanded.volume(true);
                     }
                 } else {
-                    if (audioManager.getStreamVolume(AudioManager.STREAM_MUSIC) == 0) {
-                        audioManager.setStreamMute(AudioManager.STREAM_MUSIC, true);
-                        cardViewExpanded.volume(true);
-                    } else {
-                        audioManager.setStreamMute(AudioManager.STREAM_MUSIC, false);
+
+                    if (audioManager.getMode() == AudioManager.RINGER_MODE_SILENT) {
+                        audioManager.setMode(AudioManager.STREAM_MUSIC);
                         cardViewExpanded.volume(false);
+                    } else {
+
+                        audioManager.setMode(AudioManager.RINGER_MODE_SILENT);
+                        cardViewExpanded.volume(true);
                     }
                 }
 
