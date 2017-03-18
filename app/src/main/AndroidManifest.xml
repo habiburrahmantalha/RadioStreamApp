@@ -27,7 +27,7 @@
                 <action android:name="android.intent.action.HEADSET_PLUG"/>
             </intent-filter>
         </receiver>
-        <receiver android:name="com.rrmsense.radiostream.Services.RadioControllerBroadcastReceiver">
+        <receiver android:name="com.rrmsense.radiostream.Services.RadioControllerReceiver">
             <intent-filter>
                 <action android:name="com.rrmsense.radiostream.ACTION_CONTROLLER"/>
                 <action android:name="com.rrmsense.radiostream.ACTION_CLOSE"/>

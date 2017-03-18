@@ -8,7 +8,7 @@ import android.content.Intent;
  * Created by Talha on 3/12/2017.
  */
 
-public class RadioControllerBroadcastReceiver extends BroadcastReceiver {
+public class RadioControllerReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         String action = intent.getAction();
