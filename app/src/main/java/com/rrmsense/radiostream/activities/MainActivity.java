@@ -470,6 +470,7 @@ public class MainActivity extends AppCompatActivity
         } else {
             //super.onBackPressed();
             moveTaskToBack(true);
+            toast("360 Radio is running in background.");
         }
     }
 
@@ -487,7 +488,7 @@ public class MainActivity extends AppCompatActivity
         this.getSharedPreferences("SharedPreferences", Context.MODE_PRIVATE).registerOnSharedPreferenceChangeListener(this);
         super.onResume();
     }
-
+/*
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present. //
@@ -515,7 +516,7 @@ public class MainActivity extends AppCompatActivity
         }
 
         return super.onOptionsItemSelected(item);
-    }
+    }*/
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
@@ -541,9 +542,9 @@ public class MainActivity extends AppCompatActivity
                 FRAGMENT = SelectFragment.FRAGMENT_FAVOURITE;
                 openFragment(SelectFragment.FRAGMENT_FAVOURITE);
                 break;
-            case R.id.nav_settings:
+/*            case R.id.nav_settings:
                 startActivity(new Intent(MainActivity.this, SettingsActivity.class));
-                break;
+                break;*/
             case R.id.nav_recent:
                 FRAGMENT = SelectFragment.FRAGMENT_RECENT;
                 openFragment(SelectFragment.FRAGMENT_RECENT);

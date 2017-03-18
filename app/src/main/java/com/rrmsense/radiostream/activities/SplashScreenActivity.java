@@ -16,7 +16,7 @@ import com.rrmsense.radiostream.R;
 import com.rrmsense.radiostream.Services.NetworkStateReceiver;
 
 public class SplashScreenActivity extends AppCompatActivity implements NetworkStateReceiver.NetworkStateReceiverListener {
-    private static int SPLASH_TIME_OUT = 2000;
+    private static int SPLASH_TIME_OUT = 3000;
     RelativeLayout relativeLayout;
     RelativeLayout internet;
     RelativeLayout noInternet;
@@ -54,7 +54,7 @@ public class SplashScreenActivity extends AppCompatActivity implements NetworkSt
         tx.setTypeface(custom_font);
         ShimmerFrameLayout container = (ShimmerFrameLayout) findViewById(R.id.shimmer_view_container);
         container.setBaseAlpha(0.25f);
-        container.setDuration(1600);
+        container.setDuration(1500);
         //container.setDropoff(0.1f);
         //container.useDefaults();
         container.setRepeatMode(ObjectAnimator.REVERSE);
