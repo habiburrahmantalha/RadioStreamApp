@@ -45,10 +45,9 @@ public class CardViewCollapsed {
     }
 
 
+    public void setValue(Radio r, Context context) {
 
-    public void setValue(Radio r, Context context){
-
-        Glide.with(context).load(r.getImageURL()).override(150,150).fitCenter().diskCacheStrategy( DiskCacheStrategy.RESULT ).into(image_radio);
+        Glide.with(context).load(r.getImageURL()).override(120, 120).fitCenter().diskCacheStrategy(DiskCacheStrategy.RESULT).into(image_radio);
         this.play.setVisibility(Button.VISIBLE);
         this.previous.setVisibility(Button.VISIBLE);
         this.next.setVisibility(Button.VISIBLE);
@@ -57,18 +56,20 @@ public class CardViewCollapsed {
     }
 
 
-    public void loading(){
+    public void loading() {
         this.play.setVisibility(Button.INVISIBLE);
         this.stop.setVisibility(Button.VISIBLE);
         this.progressBar.setVisibility(Button.VISIBLE);
 
     }
-    public void play(){
+
+    public void play() {
         this.stop.setVisibility(Button.VISIBLE);
         this.progressBar.setVisibility(Button.INVISIBLE);
 
     }
-    public void stop(){
+
+    public void stop() {
         this.play.setVisibility(Button.VISIBLE);
         this.stop.setVisibility(Button.INVISIBLE);
         this.progressBar.setVisibility(Button.INVISIBLE);

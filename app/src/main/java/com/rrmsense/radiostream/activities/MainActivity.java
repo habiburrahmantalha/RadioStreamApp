@@ -98,6 +98,14 @@ public class MainActivity extends AppCompatActivity
                         playRadio();
                     }
                     break;
+                case "OUTGOING_CALL_STARTED":
+                case "INCOMING_CALL_STARTED":
+                    stopRadio();
+                    break;
+                case "OUTGOING_CALL_ENDED":
+                case "INCOMING_CALL_ENDED":
+                    resumePlay();
+                    break;
             }
         }
     };
@@ -182,6 +190,10 @@ public class MainActivity extends AppCompatActivity
         loadRadioStation();
         registerReceiver(broadcastReceiver, new IntentFilter("CLOSE"));
         registerReceiver(broadcastReceiver, new IntentFilter("CONTROLLER"));
+        registerReceiver(broadcastReceiver, new IntentFilter("OUTGOING_CALL_STARTED"));
+        registerReceiver(broadcastReceiver, new IntentFilter("INCOMING_CALL_STARTED"));
+        registerReceiver(broadcastReceiver, new IntentFilter("OUTGOING_CALL_ENDED"));
+        registerReceiver(broadcastReceiver, new IntentFilter("INCOMING_CALL_ENDED"));
     }
 
     @Override
