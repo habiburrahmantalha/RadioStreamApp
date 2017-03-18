@@ -186,6 +186,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     protected void onDestroy() {
+        notificationManager.cancel(1);
         stopRadio();
         unregisterReceiver(broadcastReceiver);
         super.onDestroy();
@@ -488,7 +489,7 @@ public class MainActivity extends AppCompatActivity
         this.getSharedPreferences("SharedPreferences", Context.MODE_PRIVATE).registerOnSharedPreferenceChangeListener(this);
         super.onResume();
     }
-/*
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present. //
@@ -504,7 +505,7 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.bangla) {
+        /*if (id == R.id.bangla) {
             item.setChecked(!item.isChecked());
 
             Toast.makeText(this, "Bangla selected", Toast.LENGTH_SHORT).show();
@@ -513,10 +514,17 @@ public class MainActivity extends AppCompatActivity
             item.setChecked(!item.isChecked());
             Toast.makeText(this, "English selected", Toast.LENGTH_SHORT).show();
             return true;
+        }*/
+
+        if (id == R.id.exit) {
+            notificationManager.cancel(1);
+            finish();
+            System.exit(0);
+            return true;
         }
 
         return super.onOptionsItemSelected(item);
-    }*/
+    }
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
@@ -559,6 +567,7 @@ public class MainActivity extends AppCompatActivity
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
+        slidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
         return true;
     }
 

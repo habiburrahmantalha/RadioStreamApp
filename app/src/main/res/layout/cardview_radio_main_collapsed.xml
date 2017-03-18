@@ -5,7 +5,7 @@
     android:id="@+id/cardview_collapsed"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    card_view:cardBackgroundColor="@color/white">
+    card_view:cardBackgroundColor="#40696969">
 
 
     <RelativeLayout

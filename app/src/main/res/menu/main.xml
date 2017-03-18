@@ -3,12 +3,15 @@
 
     <group android:checkableBehavior="single">
 
-        <item
+        <!--<item
             android:id="@+id/bangla"
             android:title="@string/bangla"/>
         <item
             android:id="@+id/english"
-            android:title="@string/english"/>
+            android:title="@string/english"/>-->
+        <item
+            android:id="@+id/exit"
+            android:title="Exit"/>
     </group>
 
 </menu>
