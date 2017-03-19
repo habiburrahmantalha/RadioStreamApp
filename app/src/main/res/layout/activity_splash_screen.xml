@@ -24,11 +24,10 @@
             android:id="@+id/splash_image"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true"
             android:layout_gravity="center"
-            android:layout_marginTop="22dp"
-            android:background="@drawable/ic_logo_splash"/>
+            android:background="@drawable/ic_logo_splash"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"/>
 
         <com.facebook.shimmer.ShimmerFrameLayout
             android:id="@+id/shimmer_view_container"
@@ -38,7 +37,6 @@
             android:layout_centerHorizontal="true"
             android:layout_marginBottom="@dimen/loading_bottom_margin">
 
-
             <TextView
                 android:id="@+id/loading_text"
                 android:layout_width="wrap_content"
@@ -46,10 +44,23 @@
                 android:text="@string/loading"
                 android:textColor="#FFFF"
                 android:textSize="26sp"
-                android:textStyle="bold"/>
-
+                android:textStyle="bold"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"/>
 
         </com.facebook.shimmer.ShimmerFrameLayout>
+
+
+        <ImageView
+            android:layout_width="200dp"
+            android:layout_height="100dp"
+            android:src="@drawable/logo_tootlbar"
+            android:layout_gravity="center"
+            android:id="@+id/imageView2"
+            android:layout_alignBottom="@+id/shimmer_view_container"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="19dp"/>
+
 
     </RelativeLayout>
 
@@ -63,6 +74,7 @@
             android:layout_height="match_parent"
             android:src="@drawable/internet_unavailable"
             android:scaleType="centerCrop"/>
+
     </RelativeLayout>
 
 </RelativeLayout>
