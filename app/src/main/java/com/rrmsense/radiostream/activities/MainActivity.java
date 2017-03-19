@@ -79,6 +79,7 @@ public class MainActivity extends AppCompatActivity
     NotificationManager notificationManager;
     RemoteViews notificationView;
     NotificationCompat.Builder notificationBuilder;
+    boolean stopOnCall = false;
     BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -100,11 +101,16 @@ public class MainActivity extends AppCompatActivity
                     break;
                 case "OUTGOING_CALL_STARTED":
                 case "INCOMING_CALL_STARTED":
+                    stopOnCall = true;
                     stopRadio();
                     break;
+                case "MISSED_CALL":
                 case "OUTGOING_CALL_ENDED":
                 case "INCOMING_CALL_ENDED":
-                    resumePlay();
+                    if(stopOnCall) {
+                        stopOnCall = false;
+                        resumePlay();
+                    }
                     break;
             }
         }
@@ -194,6 +200,7 @@ public class MainActivity extends AppCompatActivity
         registerReceiver(broadcastReceiver, new IntentFilter("INCOMING_CALL_STARTED"));
         registerReceiver(broadcastReceiver, new IntentFilter("OUTGOING_CALL_ENDED"));
         registerReceiver(broadcastReceiver, new IntentFilter("INCOMING_CALL_ENDED"));
+        registerReceiver(broadcastReceiver, new IntentFilter("MISSED_CALL"));
     }
 
     @Override
@@ -698,6 +705,7 @@ public class MainActivity extends AppCompatActivity
 
     public void resumePlay() {
 
+        stopOnCall = false;
         if (playingNew.getState() == Radio.STOPPED)
             playRadio();
     }
