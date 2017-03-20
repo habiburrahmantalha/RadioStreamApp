@@ -1,24 +1,255 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/activity_about"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-
     tools:context="com.rrmsense.radiostream.activities.AboutActivity">
+
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="?actionBarSize"
         android:theme="@style/AppTheme.AppBarOverlay">
-
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="@color/yellow"
-            app:popupTheme="@style/AppTheme.PopupOverlay" />
+            app:popupTheme="@style/AppTheme.PopupOverlay"/>
 
     </android.support.design.widget.AppBarLayout>
 
+
+    <ScrollView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/activity_about"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="10dp"
+        android:layout_marginTop="?attr/actionBarSize">
+
+        <LinearLayout
+            android:id="@+id/lin_1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+
+            <TextView
+                android:id="@+id/textView3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="14dp"
+                android:layout_marginTop="13dp"
+                android:text="@string/company_information"
+                android:textColor="@color/yellow"
+                android:textSize="20sp"
+                android:textStyle="bold"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="25dp"
+                android:fontFamily="sans-serif-smallcaps"
+                android:gravity="start"
+                android:padding="5dp"
+                android:text="@string/company_name"
+                android:textColor="#3d3d3d"
+                android:textStyle="bold"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="25dp"
+                android:autoLink="web"
+                android:gravity="start"
+                android:padding="5dp"
+                android:text="Google Play: http://www.play.google.com"
+                android:textColor="#3d3d3d"/>
+
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="25dp"
+                android:autoLink="web"
+                android:fontFamily="sans-serif"
+                android:gravity="start"
+                android:padding="5dp"
+                android:text="@string/website"
+                android:textColor="#3d3d3d"/>
+
+            <LinearLayout
+                android:id="@+id/lin_2"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="14dp"
+                    android:layout_marginTop="13dp"
+                    android:text="@string/dev_info"
+                    android:textColor="@color/yellow"
+                    android:textSize="20sp"
+                    android:textStyle="bold"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="25dp"
+                    android:fontFamily="sans-serif-smallcaps"
+                    android:gravity="start"
+                    android:padding="5dp"
+                    android:text="@string/developer_name"
+                    android:textColor="#3d3d3d"
+                    android:textStyle="bold"/>
+
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="25dp"
+                    android:autoLink="web"
+                    android:fontFamily="sans-serif"
+                    android:gravity="start"
+                    android:padding="5dp"
+                    android:text="@string/website"
+                    android:textColor="#3d3d3d"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="25dp"
+                    android:autoLink="web"
+                    android:fontFamily="sans-serif"
+                    android:gravity="start"
+                    android:padding="5dp"
+                    android:text="Facebook: http://www.facebook.com/samcse10"
+                    android:textColor="#3d3d3d"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="25dp"
+                    android:autoLink="web"
+                    android:fontFamily="sans-serif"
+                    android:gravity="start"
+                    android:padding="5dp"
+                    android:text="Linkdin: http://www.linkdin.com/sam43"
+                    android:textColor="#3d3d3d"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="25dp"
+                    android:fontFamily="sans-serif-smallcaps"
+                    android:gravity="start"
+                    android:padding="5dp"
+                    android:text="Md. Habibur Rahman"
+                    android:textColor="#3d3d3d"
+                    android:textStyle="bold"/>
+
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="25dp"
+                    android:autoLink="web"
+                    android:fontFamily="sans-serif"
+                    android:gravity="start"
+                    android:padding="5dp"
+                    android:text="Website: http://www.rrmsense.com"
+                    android:textColor="#3d3d3d"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="25dp"
+                    android:autoLink="web"
+                    android:fontFamily="sans-serif"
+                    android:gravity="start"
+                    android:padding="5dp"
+                    android:text="Facebook: http://www.facebook.com/talha629"
+                    android:textColor="#3d3d3d"/>
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="14dp"
+                        android:layout_marginTop="13dp"
+                        android:text="Resources Information"
+                        android:textColor="@color/yellow"
+                        android:textSize="20sp"
+                        android:textStyle="bold"/>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="25dp"
+                        android:autoLink="web"
+                        android:gravity="center|start"
+                        android:padding="5dp"
+                        android:text="Splash Screen: Facebook shimmer style"
+                        android:textColor="#3d3d3d"/>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="25dp"
+                        android:fontFamily="sans-serif"
+                        android:gravity="start"
+                        android:padding="5dp"
+                        android:text="API Info: Both streaming and online radio channels"
+                        android:textColor="#666666"
+                        android:textStyle="bold"/>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical">
+
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="5dp"
+                            android:layout_marginStart="14dp"
+                            android:layout_marginTop="13dp"
+                            android:text="Other Informations"
+                            android:textColor="@color/yellow"
+                            android:textSize="20sp"
+                            android:textStyle="bold"/>
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="25dp"
+                            android:fontFamily="sans-serif"
+                            android:gravity="start"
+                            android:padding="2dp"
+                            android:text="@string/company_info_details"
+                            android:textColor="#686868"
+                            android:textSize="13sp"
+                            android:textStyle="bold"/>
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
 </RelativeLayout>

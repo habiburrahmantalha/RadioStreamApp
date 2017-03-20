@@ -48,7 +48,7 @@ public class RadioAdapter extends RecyclerView.Adapter<RadioAdapter.ViewHolder> 
     public void onBindViewHolder(ViewHolder holder, int position) {
         Radio radio = Storage.getRadioStation(radios.get(position), mContext);
 
-        holder.item.setText((position+1) + "");
+        //holder.item.setText((position+1) + "");
         holder.title.setText(radio.getName());
 
         if (radio.getImageURL() != "")
@@ -94,7 +94,7 @@ public class RadioAdapter extends RecyclerView.Adapter<RadioAdapter.ViewHolder> 
         private TextView title;
         private ImageButton favourite;
         private CardView cardView;
-        private TextView item;
+        //private TextView item;
         private VuMeterView visualizer;
 
         public ViewHolder(View view) {
@@ -106,7 +106,7 @@ public class RadioAdapter extends RecyclerView.Adapter<RadioAdapter.ViewHolder> 
             favourite.setOnClickListener(this);
             cardView = (CardView) view.findViewById(R.id.cardView);
             cardView.setOnClickListener(this);
-            item = (TextView) view.findViewById(R.id.item);
+            //item = (TextView) view.findViewById(R.id.item);
             visualizer = (VuMeterView) view.findViewById(R.id.visualizer);
 
         }
