@@ -8,7 +8,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -50,7 +49,7 @@ public class RadioAdapter extends RecyclerView.Adapter<RadioAdapter.ViewHolder> 
         Radio radio = Storage.getRadioStation(radios.get(position), mContext);
 
         holder.item.setText((position+1) + "");
-
+        holder.title.setText(radio.getName());
 
         if (radio.getImageURL() != "")
             Glide.with(mContext).load(radio.getImageURL()).override(300, 200).fitCenter().diskCacheStrategy(DiskCacheStrategy.SOURCE).into(holder.image_radio);
@@ -63,10 +62,12 @@ public class RadioAdapter extends RecyclerView.Adapter<RadioAdapter.ViewHolder> 
             case Radio.PLAYING:
                 holder.visualizer.resume(true);
                 holder.visualizer.setVisibility(VuMeterView.VISIBLE);
+                holder.title.setVisibility(TextView.INVISIBLE);
                 break;
             case Radio.STOPPED:
                 holder.visualizer.stop(true);
                 holder.visualizer.setVisibility(VuMeterView.INVISIBLE);
+                holder.title.setVisibility(TextView.VISIBLE);
                 break;
         }
 
@@ -90,7 +91,7 @@ public class RadioAdapter extends RecyclerView.Adapter<RadioAdapter.ViewHolder> 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         private ImageView image_radio;
-        private ProgressBar progressBar;
+        private TextView title;
         private ImageButton favourite;
         private CardView cardView;
         private TextView item;
@@ -100,7 +101,7 @@ public class RadioAdapter extends RecyclerView.Adapter<RadioAdapter.ViewHolder> 
             super(view);
             view.setOnClickListener(this);
             image_radio = (ImageView) view.findViewById(R.id.image_radio);
-            progressBar = (ProgressBar) view.findViewById(R.id.progressBar);
+            title = (TextView) view.findViewById(R.id.title);
             favourite = (ImageButton) view.findViewById(R.id.favourite);
             favourite.setOnClickListener(this);
             cardView = (CardView) view.findViewById(R.id.cardView);
