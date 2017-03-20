@@ -44,6 +44,7 @@ import com.google.gson.Gson;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.rrmsense.radiostream.R;
+import com.rrmsense.radiostream.Services.MusicIntentReceiver;
 import com.rrmsense.radiostream.fragments.RadioFragment;
 import com.rrmsense.radiostream.interfaces.NotifyItem;
 import com.rrmsense.radiostream.models.CardViewCollapsed;
@@ -110,10 +111,17 @@ public class MainActivity extends AppCompatActivity
                 case "MISSED_CALL":
                 case "OUTGOING_CALL_ENDED":
                 case "INCOMING_CALL_ENDED":
-                    if(stopOnCall) {
+                    if (stopOnCall) {
                         stopOnCall = false;
                         resumePlay();
                     }
+                    break;
+
+                case "HEADPHONE_PLUGGED":
+                    cardViewExpanded.headphone(true);
+                    break;
+                case "HEADPHONE_UNPLUGGED":
+                    cardViewExpanded.headphone(false);
                     break;
             }
         }
@@ -204,6 +212,10 @@ public class MainActivity extends AppCompatActivity
         registerReceiver(broadcastReceiver, new IntentFilter("OUTGOING_CALL_ENDED"));
         registerReceiver(broadcastReceiver, new IntentFilter("INCOMING_CALL_ENDED"));
         registerReceiver(broadcastReceiver, new IntentFilter("MISSED_CALL"));
+        registerReceiver(broadcastReceiver, new IntentFilter("MISSED_CALL"));
+        registerReceiver(broadcastReceiver, new IntentFilter("HEADPHONE_UNPLUGGED"));
+        registerReceiver(broadcastReceiver, new IntentFilter("HEADPHONE_PLUGGED"));
+
     }
 
     @Override
@@ -433,7 +445,7 @@ public class MainActivity extends AppCompatActivity
 
         Intent notificationIntent = new Intent(this, MainActivity.class);
 
-        notificationIntent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT|Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        notificationIntent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         PendingIntent pendingNotificationIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
 
         notificationBuilder = new NotificationCompat.Builder(this).setSmallIcon(R.drawable.notification_icon).setTicker("Radio Sration").setContent(notificationView).setContentIntent(pendingNotificationIntent);
@@ -482,6 +494,26 @@ public class MainActivity extends AppCompatActivity
         notificationManager.notify(1, notificationBuilder.build());
     }
 
+    void getPermissions() {
+        int PERMISSION_ALL = 1;
+        String[] PERMISSIONS = {Manifest.permission.INTERNET, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_NETWORK_STATE, Manifest.permission.MODIFY_AUDIO_SETTINGS, Manifest.permission.READ_PHONE_STATE, Manifest.permission.PROCESS_OUTGOING_CALLS};
+
+        if (!hasPermissions(this, PERMISSIONS)) {
+            ActivityCompat.requestPermissions(this, PERMISSIONS, PERMISSION_ALL);
+        }
+    }
+
+    public static boolean hasPermissions(Context context, String... permissions) {
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && context != null && permissions != null) {
+            for (String permission : permissions) {
+                if (ActivityCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -510,6 +542,10 @@ public class MainActivity extends AppCompatActivity
         registerReceiver(musicIntentReceiver, filter);
         this.getSharedPreferences("SharedPreferences", Context.MODE_PRIVATE).registerOnSharedPreferenceChangeListener(this);
         super.onResume();
+    }
+
+    void toast(String s) {
+        Toast.makeText(this, s, Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -631,7 +667,6 @@ public class MainActivity extends AppCompatActivity
                 AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 
 
-
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     audioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_TOGGLE_MUTE, 0);
                     if (audioManager.isStreamMute(AudioManager.STREAM_MUSIC)) {
@@ -729,25 +764,13 @@ public class MainActivity extends AppCompatActivity
         toast(String.valueOf(percent));
     }
 
-    void toast(String s) {
-        Toast.makeText(this, s, Toast.LENGTH_SHORT).show();
-    }
-
     @Override
     public boolean onError(MediaPlayer mp, int what, int extra) {
         toast("Playing Error!");
         return false;
     }
 
-    void log(String s) {
-        Log.d("LOG", s);
-    }
-
-    public void notifyItemChanged(NotifyItem notifyItem) {
-        this.notifyItem = notifyItem;
-    }
-
-    public class MusicIntentReceiver extends BroadcastReceiver {
+    /*public class MusicIntentReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction().equals(Intent.ACTION_HEADSET_PLUG)) {
@@ -765,24 +788,13 @@ public class MainActivity extends AppCompatActivity
                 }
             }
         }
+    }*/
+
+    void log(String s) {
+        Log.d("LOG", s);
     }
 
-    void getPermissions() {
-        int PERMISSION_ALL = 1;
-        String[] PERMISSIONS = {Manifest.permission.INTERNET, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_NETWORK_STATE, Manifest.permission.MODIFY_AUDIO_SETTINGS, Manifest.permission.READ_PHONE_STATE,Manifest.permission.PROCESS_OUTGOING_CALLS};
-
-        if (!hasPermissions(this, PERMISSIONS)) {
-            ActivityCompat.requestPermissions(this, PERMISSIONS, PERMISSION_ALL);
-        }
-    }
-    public static boolean hasPermissions(Context context, String... permissions) {
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && context != null && permissions != null) {
-            for (String permission : permissions) {
-                if (ActivityCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
-                    return false;
-                }
-            }
-        }
-        return true;
+    public void notifyItemChanged(NotifyItem notifyItem) {
+        this.notifyItem = notifyItem;
     }
 }

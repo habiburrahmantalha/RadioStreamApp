@@ -22,7 +22,7 @@
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
 
-        <receiver android:name="com.rrmsense.radiostream.activities.MainActivity$MusicIntentReceiver">
+        <receiver android:name="com.rrmsense.radiostream.Services.MusicIntentReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.HEADSET_PLUG"/>
             </intent-filter>
