@@ -139,7 +139,7 @@
                     android:fontFamily="sans-serif"
                     android:gravity="start"
                     android:padding="5dp"
-                    android:text="Linkdin: http://www.linkdin.com/sam43"
+                    android:text="LinkedIn: http://www.linkdin.com/sam43"
                     android:textColor="#3d3d3d"/>
 
                 <TextView
@@ -154,16 +154,6 @@
                     android:textStyle="bold"/>
 
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="25dp"
-                    android:autoLink="web"
-                    android:fontFamily="sans-serif"
-                    android:gravity="start"
-                    android:padding="5dp"
-                    android:text="Website: http://www.rrmsense.com"
-                    android:textColor="#3d3d3d"/>
 
                 <TextView
                     android:layout_width="match_parent"
@@ -173,9 +163,18 @@
                     android:fontFamily="sans-serif"
                     android:gravity="start"
                     android:padding="5dp"
-                    android:text="Facebook: http://www.facebook.com/talha629"
+                    android:text="E-mail: talha629@gmail.com"
                     android:textColor="#3d3d3d"/>
-
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="25dp"
+                    android:autoLink="web"
+                    android:fontFamily="sans-serif"
+                    android:gravity="start"
+                    android:padding="5dp"
+                    android:text="LinkedIn: https://www.linkedin.com/in/talha629"
+                    android:textColor="#3d3d3d"/>
 
                 <LinearLayout
                     android:layout_width="match_parent"

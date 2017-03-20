@@ -22,21 +22,28 @@
 
         <ImageView
             android:id="@+id/splash_image"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:background="@drawable/ic_logo_splash"
-            android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true"/>
+            android:layout_width="250dp"
+            android:layout_height="205dp"
+            android:background="@drawable/logo_splash"
+            android:layout_centerInParent="true"
+            android:scaleType="centerCrop"/>
+        <ImageView
+            android:layout_width="200dp"
+            android:layout_height="100dp"
+            android:src="@drawable/logo_splash_text"
+            android:id="@+id/logo_app"
+            android:layout_below="@id/splash_image"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="-30dp"
+            />
 
         <com.facebook.shimmer.ShimmerFrameLayout
+            android:layout_marginTop="-30dp"
             android:id="@+id/shimmer_view_container"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignBottom="@+id/splash_image"
-            android:layout_centerHorizontal="true"
-            android:layout_marginBottom="@dimen/loading_bottom_margin">
-
+            android:layout_below="@id/logo_app"
+            android:layout_centerHorizontal="true">
             <TextView
                 android:id="@+id/loading_text"
                 android:layout_width="wrap_content"
@@ -51,15 +58,7 @@
         </com.facebook.shimmer.ShimmerFrameLayout>
 
 
-        <ImageView
-            android:layout_width="200dp"
-            android:layout_height="100dp"
-            android:src="@drawable/logo_tootlbar"
-            android:layout_gravity="center"
-            android:id="@+id/logo_app"
-            android:layout_alignBottom="@+id/shimmer_view_container"
-            android:layout_centerHorizontal="true"
-            android:layout_marginBottom="19dp"/>
+
 
         <TextView
             android:layout_marginBottom="10dp"
